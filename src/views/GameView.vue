@@ -8,8 +8,7 @@
     <div class="game-wrapper">
       <canvas id="game" width="300" height="500"></canvas>
       <p id="description" class="game-description">Pédalez fort pour commencer !</p>
-      
-      </div>
+    </div>
 
     <div class="modal-overlay" :class="{ active: showEndScreen }">
       <div class="end-modal">
@@ -102,8 +101,15 @@ onMounted(() => {
   const currentThemeAssets = themeAssets[gameTheme] || themeAssets['Classique'];
   let skyColor = currentThemeAssets.sky;
 
-  let customBg = new Image(); customBg.src = currentThemeAssets.bg;
-  let customObs = new Image(); customObs.src = currentThemeAssets.obs;
+  let customBg = new Image(); 
+  customBg.src = currentThemeAssets.bg;
+  
+  let customBgLoaded = false;
+  customBg.onload = () => { customBgLoaded = true; };
+  customBg.onerror = () => { customBgLoaded = false; }; // Fallback si l'image n'existe pas
+
+  let customObs = new Image(); 
+  customObs.src = currentThemeAssets.obs;
 
   let frame = 0; let degree = Math.PI/180
   
@@ -115,22 +121,32 @@ onMounted(() => {
   let bg = { 
     dx: .2, x: 0, classicImgX: 0, classicImgY: 0, classicWidth: 276, classicHeight: 228,
     render: function() { 
-      if (customBg.complete && customBg.naturalWidth > 0) {
+      // Utilisation du flag de chargement sécurisé
+      if (customBgLoaded && customBg.naturalWidth > 0) {
         let drawY = 0;
         let drawH = cvs.height; 
+        // On répète l'image sur toute la largeur du canvas
         let repeatW = cvs.width;
+        
         ctx.drawImage(customBg, this.x, drawY, repeatW, drawH); 
         ctx.drawImage(customBg, this.x + repeatW, drawY, repeatW, drawH); 
-        ctx.drawImage(customBg, this.x + repeatW*2, drawY, repeatW, drawH);
-      } else if (spriteUI.complete && spriteUI.naturalWidth > 0) { 
+        // Troisième dessin pour éviter les trous lors du défilement
+        ctx.drawImage(customBg, this.x + repeatW * 2, drawY, repeatW, drawH);
+      } 
+      // Fallback sur le thème classique si l'image custom échoue
+      else if (spriteUI.complete && spriteUI.naturalWidth > 0) { 
         let classicDrawY = cvs.height - this.classicHeight;
         ctx.drawImage(spriteUI, this.classicImgX, this.classicImgY, this.classicWidth, this.classicHeight, this.classicX, classicDrawY, this.classicWidth, this.classicHeight); 
         ctx.drawImage(spriteUI, this.classicImgX, this.classicImgY, this.classicWidth, this.classicHeight, this.classicX + this.classicWidth, classicDrawY, this.classicWidth, this.classicHeight); 
       } 
     }, 
     position: function () { 
-      let repeatWidth = (customBg.complete && customBg.naturalWidth > 0) ? cvs.width : this.classicWidth;
-      if (gameState.current == gameState.getReady) { this.classicX = 0; this.x = 0; }; 
+      let repeatWidth = (customBgLoaded && customBg.naturalWidth > 0) ? cvs.width : this.classicWidth;
+      
+      if (gameState.current == gameState.getReady) { 
+        this.classicX = 0; 
+        this.x = 0; 
+      } 
       if (gameState.current == gameState.play) { 
         this.x = (this.x - this.dx) % repeatWidth;
         this.classicX = (this.classicX - this.dx) % this.classicWidth;
@@ -184,8 +200,6 @@ onMounted(() => {
   let score = { current: 0, x: cvs.width/2, y: 40, w: 15, h: 25, reset: function() { this.current = 0 }, render: function() { if(!spriteNumbers.complete || spriteNumbers.naturalWidth === 0) return; if (gameState.current == gameState.play || gameState.current == gameState.gameOver) { let string = this.current.toString(); let ones = string.charAt(string.length-1); let tens = string.charAt(string.length-2); if (this.current >= 10) { ctx.drawImage(spriteNumbers, map[ones].imgX,map[ones].imgY,map[ones].width,map[ones].height, ( (this.x-this.w/2) + (this.w/2) + 3 ),this.y,this.w,this.h); ctx.drawImage(spriteNumbers, map[tens].imgX,map[tens].imgY,map[tens].width,map[tens].height, ( (this.x-this.w/2) - (this.w/2) - 3 ),this.y,this.w,this.h) } else { ctx.drawImage(spriteNumbers, map[ones].imgX,map[ones].imgY,map[ones].width,map[ones].height, ( this.x-this.w/2 ),this.y,this.w,this.h) } } } }
 
   let bird = {
-      // --- TAILLE ET COLLISION RÉDUITES ---
-      // Avant: width 45, r 16. Maintenant: width 30, r 10 (passe plus facilement)
       width: 30, height: 30, x: 50, y: 160, w: 30, h: 30, r: 10, fly: 5.25, gravity: .32, velocity: 0, rotation: 0,
       render: function() {
           ctx.save(); 
@@ -215,11 +229,9 @@ onMounted(() => {
 
   let getReady = { imgX: 0, imgY: 228, width: 174, height: 160, x: cvs.width/2 - 174/2, y: cvs.height/2 - 160, w: 174, h: 160, render: function() { if(spriteUI.complete && spriteUI.naturalWidth > 0 && gameState.current == gameState.getReady) { ctx.drawImage(spriteUI, this.imgX,this.imgY,this.width,this.height, this.x,this.y,this.w,this.h) } } }
   
-  // L'objet gameOver ne dessine plus l'ancien tableau de bord !
   let gameOver = { 
     render: function() { 
       if(gameState.current == gameState.gameOver) { 
-        // On ne garde que le petit texte qui dit qu'on peut cliquer pour recommencer si on ne valide pas la modale
         description.style.visibility = "visible"; 
         description.innerHTML = "Oups ! Pédalez pour recommencer." 
       } 
@@ -238,7 +250,6 @@ onMounted(() => {
       if(gameState.current === gameState.gameOver) {
           isGameOver.value = true;
           finalScore.value = score.current;
-          // --- APPARITION DIRECTE DE LA MODALE ---
           showEndScreen.value = true; 
       } else {
           isGameOver.value = false;
@@ -249,13 +260,11 @@ onMounted(() => {
 
   handleInput = (e) => {
       if (e.type === 'keydown' && e.keyCode !== 32) return;
-      // On bloque les commandes si la modale de fin est affichée pour ne pas relancer le jeu accidentellement
       if (showEndScreen.value) return; 
 
       if (gameState.current == gameState.getReady) { gameState.current = gameState.play }
       if (gameState.current == gameState.play) { bird.flap(); SFX_FLAP.play().catch(()=>{}); description.style.visibility = "hidden" }
       
-      // Si on cache manuellement la modale (via un bouton X par exemple), on peut relancer
       if (gameState.current == gameState.gameOver) { pipes.reset(); score.reset(); SFX_SWOOSH.play().catch(()=>{}); gameState.current = gameState.getReady; description.innerHTML = "Pédalez fort pour commencer !" }
   }
 

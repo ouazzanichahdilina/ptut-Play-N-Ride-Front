@@ -14,8 +14,8 @@
       </nav>
       
       <div v-if="!isLoggedIn" class="auth-buttons">
-        <router-link to="/auth" class="btn btn-outline-blue" style="text-decoration: none; display: inline-flex; align-items: center;">Connexion</router-link>
-        <router-link to="/guest-dashboard" class="btn btn-solid-green" style="text-decoration: none; display: inline-flex; align-items: center;">JOUER MAINTENANT</router-link>
+        <router-link to="/auth?tab=login" class="btn btn-outline-blue" style="text-decoration: none; display: inline-flex; align-items: center;">CONNEXION</router-link>
+        <router-link to="/auth?tab=signup" class="btn btn-solid-green" style="text-decoration: none; display: inline-flex; align-items: center;">INSCRIPTION</router-link>
       </div>
 
       <div v-else class="user-profile-menu">

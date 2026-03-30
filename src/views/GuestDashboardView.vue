@@ -38,8 +38,8 @@
     </aside>
 
     <main class="main-content">
-      <header class="content-header">
-        <h1>Prêt pour l'évasion ? 🚴</h1>
+      <header class="content-header" v-if="activeTabMain === 'bibliotheque'">
+        <h1>Prêt pour l'évasion ? </h1>
         <p class="subtitle">Installez-vous confortablement et choisissez votre prochaine destination.</p>
       </header>
 
@@ -119,13 +119,90 @@
       <div v-if="activeTabMain === 'historique'">
         <div class="section-title">
           <h2>Votre <span class="text-cyan">Historique</span></h2>
+          <p>Suivez vos progrès et consultez les détails de vos évasions passées.</p>
         </div>
+
+        <div class="history-stats-container">
+          <div class="history-stat-card">
+            <div class="stat-icon" style="background-color: #E8F8F5; color: #20C997;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <p>Séances totales</p>
+              <h3>{{ historyData.length }}</h3>
+            </div>
+          </div>
+          <div class="history-stat-card">
+            <div class="stat-icon" style="background-color: #EAF7F9; color: #00B8D9;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <p>Temps d'effort total</p>
+              <h3>{{ totalTimePlayed }} min</h3>
+            </div>
+          </div>
+          <div class="history-stat-card">
+            <div class="stat-icon" style="background-color: #F0F9FF; color: #0EA5E9;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <div class="stat-info">
+              <p>Dernière séance</p>
+              <h3 style="font-size: 1.2rem;">{{ historyData.length > 0 ? historyData[0].date : 'Aucune' }}</h3>
+            </div>
+          </div>
+        </div>
+
         <div class="table-wrapper">
           <table class="history-table">
-            <thead><tr><th>Date</th><th>Aventure (Objectif)</th><th>Matériel</th><th>Durée</th><th>Score</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Aventure (Objectif)</th>
+                <th>Matériel</th>
+                <th>Durée</th>
+                <th>Score</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody>
-              <tr v-if="lastScore > 0">
-                <td><strong>Aujourd'hui</strong></td><td>L'Aube Douce</td><td>Vélo classique</td><td>15 min</td><td><strong class="text-green">{{ lastScore }} pts</strong></td>
+              <template v-for="(session, idx) in historyData" :key="idx">
+                <tr class="history-row-clickable" @click="toggleRow(idx)">
+                  <td><strong>{{ session.date }}</strong></td>
+                  <td>{{ session.scenario }}</td>
+                  <td>{{ session.equip }}</td>
+                  <td>{{ session.duration }}</td>
+                  <td><strong class="text-green">{{ session.score }} pts</strong></td>
+                  <td style="text-align: right; color: #94A3B8;">
+                    <svg :style="{ transform: expandedRow === idx ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </td>
+                </tr>
+                <tr v-if="expandedRow === idx" class="history-details-row">
+                  <td colspan="6">
+                    <div class="history-details-box">
+                      <div class="details-grid">
+                        <div class="detail-item">
+                          <span class="detail-label">Vitesse moyenne</span>
+                          <span class="detail-value text-cyan">{{ session.avgSpeed }} km/h</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Fréq. cardiaque moy.</span>
+                          <span class="detail-value text-red">{{ session.avgBpm }} BPM</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Ressenti patient</span>
+                          <div class="detail-value-stars">
+                            <span v-for="star in 5" :key="star" class="star" :class="{ filled: star <= session.rating }">★</span>
+                            <span class="diff-badge" :class="'diff-' + session.difficulty.toLowerCase()">{{ session.difficulty }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+              
+              <tr v-if="historyData.length === 0">
+                <td colspan="6" style="text-align: center; padding: 40px; color: #94A3B8;">Aucune séance enregistrée pour le moment. Allez pédaler !</td>
               </tr>
             </tbody>
           </table>
@@ -205,7 +282,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -215,10 +292,71 @@ const activeTabMain = ref('bibliotheque')
 const gameFinishedMsg = ref(null)
 const lastScore = ref(0)
 
+// --- GESTION DE L'HISTORIQUE AVEC SAUVEGARDE LOCALE ---
+// Charge les données sauvegardées ou initialise une session par défaut
+const loadHistory = () => {
+  const savedData = localStorage.getItem('playnride_history');
+  if (savedData) {
+    return JSON.parse(savedData);
+  }
+  return [
+    {
+      date: "Hier",
+      scenario: "L'Échappée Sylvestre",
+      equip: "Vélo complet",
+      duration: "20 min",
+      score: 450,
+      avgSpeed: "18.5",
+      avgBpm: 112,
+      rating: 4,
+      difficulty: "Moyen"
+    }
+  ];
+}
+
+const historyData = ref(loadHistory());
+
+// Calcul automatique du temps total joué
+const totalTimePlayed = computed(() => {
+  return historyData.value.reduce((acc, curr) => {
+    return acc + (parseInt(curr.duration) || 0);
+  }, 0);
+});
+
+const expandedRow = ref(null)
+
+const toggleRow = (index) => {
+  if (expandedRow.value === index) {
+    expandedRow.value = null; 
+  } else {
+    expandedRow.value = index; 
+  }
+}
+
 onMounted(() => {
   if (route.query.finished) {
     lastScore.value = parseInt(route.query.score) || 0
-    let diff = route.query.diff
+    let diff = route.query.diff || "Moyen"
+    
+    // Obtention de la date du jour au format (ex: 24 Oct)
+    const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+    // Ajout de la nouvelle session
+    historyData.value.unshift({
+      date: "Aujourd'hui", // ou today si préféré
+      scenario: route.query.theme || "Aventure personnalisée",
+      equip: route.query.equip || "Vélo complet",
+      duration: "15 min", // Durée par défaut pour l'exemple
+      score: lastScore.value,
+      avgSpeed: (15 + Math.random() * 5).toFixed(1), // Génération de stats réalistes
+      avgBpm: Math.floor(90 + Math.random() * 30),
+      rating: 5, // Par défaut
+      difficulty: diff
+    })
+
+    // SAUVEGARDE dans la mémoire du navigateur !
+    localStorage.setItem('playnride_history', JSON.stringify(historyData.value));
+    
     if (diff === 'Facile') {
       gameFinishedMsg.value = "Excellente séance. Vos paramètres indiquent que vous pouvez augmenter légèrement la résistance la prochaine fois."
     } else if (diff === 'Dur') {
@@ -226,6 +364,8 @@ onMounted(() => {
     } else {
       gameFinishedMsg.value = "Performance parfaitement équilibrée dans votre zone cible. Continuez sur cette lancée !"
     }
+    
+    // On nettoie l'URL pour ne pas rajouter la séance si on rafraîchit la page
     router.replace('/guest-dashboard')
   }
 })
@@ -490,17 +630,34 @@ const startGame = () => {
 .btn-start-game { width: 100%; padding: 18px; border: none; border-radius: 12px; color: white; font-weight: 900; font-size: 1.05rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;}
 .btn-start-game:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 
-@media (max-width: 900px) {
-  .how-it-works-container { flex-direction: column; gap: 20px; }
-  .modal-inner { flex-direction: column; }
-  .clinical-briefing { border-right: none; border-bottom: 1px solid #E2E8F0; padding: 30px; }
-  .config-panel { flex: none; }
-}
+/* === STYLES POUR LE NOUVEL HISTORIQUE === */
+.history-stats-container { display: flex; gap: 20px; margin-bottom: 30px; }
+.history-stat-card { flex: 1; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 15px;}
+.stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center;}
+.stat-info p { color: #6B7C93; font-size: 0.9rem; margin-bottom: 5px; font-weight: 600;}
+.stat-info h3 { color: #0A192F; font-size: 1.6rem; font-weight: 900; margin: 0;}
 
-.table-wrapper { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+.table-wrapper { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden;}
 .history-table { width: 100%; border-collapse: collapse; }
-.history-table th { text-align: left; padding: 15px; color: #6B7C93; font-weight: 700; border-bottom: 1px solid #F1F5F9; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;}
-.history-table td { padding: 18px 15px; border-bottom: 1px solid #F8FAFC; color: #0A192F; font-size: 0.95rem; }
+.history-table th { text-align: left; padding: 18px 25px; color: #6B7C93; font-weight: 700; background-color: #F8FAFC; border-bottom: 2px solid #E2E8F0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;}
+.history-table td { padding: 18px 25px; color: #0A192F; font-size: 0.95rem; border-bottom: 1px solid #F1F5F9;}
+
+.history-row-clickable { cursor: pointer; transition: background-color 0.2s; }
+.history-row-clickable:hover { background-color: #F8FAFC; }
+
+.history-details-row td { padding: 0; border-bottom: 2px solid #E2E8F0;} 
+.history-details-box { background-color: #FAFCFF; padding: 25px; border-left: 4px solid #00B8D9; box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.05);}
+.details-grid { display: flex; justify-content: space-between; gap: 20px; }
+.detail-item { flex: 1; display: flex; flex-direction: column; gap: 8px;}
+.detail-label { color: #6B7C93; font-size: 0.85rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;}
+.detail-value { font-size: 1.2rem; font-weight: 900; }
+.detail-value-stars { display: flex; align-items: center; gap: 10px; }
+.star { color: #E2E8F0; font-size: 1.3rem; }
+.star.filled { color: #FFB800; }
+.diff-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
+.diff-facile { background: #E8F8F5; color: #20C997; }
+.diff-moyen { background: #FFF9E6; color: #FFB800; }
+.diff-dur { background: #FFF5F5; color: #FC8181; }
 
 .alert-banner { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-radius: 12px; position: relative; margin-bottom: 30px;}
 .success-banner { background: #E8F8F5; border: 1px solid #20C997; color: #0A192F; }
@@ -508,4 +665,13 @@ const startGame = () => {
 .success-banner p { color: #065F46; font-size: 0.95rem; margin: 0; }
 .alert-icon { font-size: 2rem; }
 .close-alert { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #047857; }
+
+@media (max-width: 900px) {
+  .how-it-works-container { flex-direction: column; gap: 20px; }
+  .modal-inner { flex-direction: column; }
+  .clinical-briefing { border-right: none; border-bottom: 1px solid #E2E8F0; padding: 30px; }
+  .config-panel { flex: none; }
+  .history-stats-container { flex-direction: column; gap: 15px; }
+  .details-grid { flex-direction: column; }
+}
 </style>

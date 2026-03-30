@@ -15,11 +15,12 @@
         <button class="back-btn" @click="goHome">‹ Retour à l'accueil</button>
 
         <transition name="fade" mode="out-in">
+          
           <div v-if="isLogin" key="login" class="form-wrapper">
             <h2>Connexion</h2>
-            <p class="auth-subtitle">Si vous êtes déjà membre, vous pouvez vous connecter avec votre adresse mail.</p>
+            <p class="auth-subtitle">Si vous êtes déjà membre, connectez-vous avec votre adresse mail.</p>
             
-            <form @submit.prevent="submitForm">
+            <form @submit.prevent="submitLogin">
               <div class="input-group">
                 <label>Adresse Mail</label>
                 <input type="email" v-model="loginEmail" placeholder="jean.patient@email.com" required>
@@ -34,16 +35,6 @@
                   <input type="checkbox">
                   <span class="checkmark"></span>
                   Se souvenir de moi
-                </label>
-                <label class="custom-checkbox">
-                  <input type="checkbox">
-                  <span class="checkmark"></span>
-                  Sauvegarder mes progrès
-                </label>
-                <label class="custom-checkbox">
-                  <input type="checkbox" required>
-                  <span class="checkmark"></span>
-                  Lire et accepter les <a href="#" class="text-cyan">conditions générales</a>
                 </label>
               </div>
 
@@ -60,18 +51,37 @@
             <h2>Inscription</h2>
             <p class="auth-subtitle">Créez votre compte pour commencer votre rééducation ludique.</p>
 
-            <form @submit.prevent="submitForm">
+            <form @submit.prevent="submitSignup">
               <div class="input-group">
                 <label>Nom et Prénom</label>
                 <input type="text" placeholder="Jean Dupont" required>
               </div>
+              
               <div class="input-group">
                 <label>Adresse Mail</label>
-                <input type="email" placeholder="jean.dupont@email.com" required>
+                <input type="email" v-model="signupEmail" placeholder="jean.dupont@email.com" required>
+              </div>
+
+              <div class="input-group">
+                <label>Choisissez votre photo de profil</label>
+                <div class="avatar-selection">
+                  <img 
+                    v-for="avatar in avatarList" 
+                    :key="avatar" 
+                    :src="'/images/' + avatar" 
+                    :class="['selectable-avatar', { selected: signupAvatar === avatar }]"
+                    @click="signupAvatar = avatar"
+                    alt="Choix Avatar"
+                  />
+                </div>
               </div>
               
               <div class="input-row">
-                <div class="input-group">
+                <div class="input-group" style="flex: 1;">
+                  <label>Âge</label>
+                  <input type="number" min="1" max="120" placeholder="ex: 65" required>
+                </div>
+                <div class="input-group" style="flex: 2;">
                   <label>Sexe</label>
                   <select required>
                     <option value="" disabled selected>Sélectionner...</option>
@@ -80,18 +90,29 @@
                     <option value="A">Autre</option>
                   </select>
                 </div>
-                <div class="input-group">
-                  <label>Statut</label>
-                  <select required>
-                    <option value="" disabled selected>Sélectionner...</option>
-                    <option value="patient">Patient à domicile</option>
-                    <option value="pro">Professionnel de santé</option>
-                    <option value="ehpad">Structure (EHPAD, etc.)</option>
-                  </select>
-                </div>
               </div>
 
-              <button type="submit" class="btn-gradient">Continuer</button>
+              <div class="input-group">
+                <label>Statut</label>
+                <select v-model="signupRole" required>
+                  <option value="" disabled selected>Sélectionner...</option>
+                  <option value="patient">Patient à domicile</option>
+                  <option value="pro">Professionnel de santé</option>
+                  <option value="ehpad">Structure (EHPAD, etc.)</option>
+                </select>
+              </div>
+
+              <div class="checkbox-group" style="margin-top: 15px;">
+                <label class="custom-checkbox align-start">
+                  <input type="checkbox" required>
+                  <span class="checkmark"></span>
+                  <span class="terms-text">
+                    J'accepte les <a href="#" class="text-cyan">CGU</a> et donne mon consentement au traitement de mes données selon la <a href="#" class="text-cyan">Politique de confidentialité</a>.
+                  </span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn-gradient">S'inscrire et Continuer</button>
             </form>
 
             <p class="toggle-text">
@@ -120,38 +141,62 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
+
 const isLogin = ref(true)
 
 const loginEmail = ref('')
+const signupEmail = ref('')
+const signupRole = ref('')
+
+// Liste de vos avatars d'après la capture
+const avatarList = ['avatarN.png', 'avatarRousse.png', 'avBlackW.png', 'avBlonde.png', 'azouz.png']
+const signupAvatar = ref(avatarList[3]) // Sélectionne 'avBlonde.png' par défaut
+
 const showPopup = ref(false)
 const userRole = ref('')
+
+onMounted(() => {
+  if (route.query.tab === 'signup') {
+    isLogin.value = false;
+  }
+})
 
 const goHome = () => {
   router.push('/')
 }
 
-const submitForm = () => {
-  if (isLogin.value) {
-    const emailToTest = loginEmail.value.toLowerCase()
-    
-    if (emailToTest.includes('pro')) {
-      userRole.value = 'Professionnel de Santé'
-    } else if (emailToTest.includes('patient')) {
-      userRole.value = 'Patient'
-    } else {
-      userRole.value = 'Patient' 
-    }
-    
-    showPopup.value = true
-
+const submitLogin = () => {
+  const emailToTest = loginEmail.value.toLowerCase()
+  if (emailToTest.includes('pro')) {
+    userRole.value = 'Professionnel de Santé'
   } else {
-    alert("Inscription réussie ! (Simulation)")
-    isLogin.value = true 
+    userRole.value = 'Patient' 
   }
+  
+  // S'il n'y a pas d'avatar enregistré (cas d'une connexion sans inscription préalable), on en met un par défaut
+  if (!localStorage.getItem('playnride_user_avatar')) {
+    localStorage.setItem('playnride_user_avatar', '/images/avBlonde.png')
+  }
+
+  showPopup.value = true
+}
+
+const submitSignup = () => {
+  if (signupRole.value === 'pro' || signupRole.value === 'ehpad') {
+    userRole.value = 'Professionnel de Santé'
+  } else {
+    userRole.value = 'Patient'
+  }
+  
+  // SAUVEGARDE DE L'AVATAR CHOISI POUR LE DASHBOARD
+  localStorage.setItem('playnride_user_avatar', '/images/' + signupAvatar.value)
+
+  showPopup.value = true
 }
 
 const goToDashboard = () => {
@@ -165,105 +210,48 @@ const goToDashboard = () => {
 </script>
 
 <style scoped>
-.auth-page {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  font-family: 'Nunito', sans-serif;
-  background-color: #ffffff;
-}
-
-.auth-left {
-  flex: 1;
-  background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
-  display: flex;
-  flex-direction: column;
-  padding: 40px;
-  position: relative;
-  overflow: hidden;
-}
-
-.auth-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  z-index: 10;
-}
+.auth-page { display: flex; height: 100vh; width: 100%; font-family: 'Nunito', sans-serif; background-color: #ffffff; }
+.auth-left { flex: 1; background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); display: flex; flex-direction: column; padding: 40px; position: relative; overflow: hidden; }
+.auth-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 10; }
 .logo-img { height: 40px; }
 .logo-text { font-size: 1.5rem; font-weight: 900; color: #0A192F; }
 .text-cyan { color: #00B8D9; }
+.illustration-container { flex: 1; display: flex; justify-content: center; align-items: center; }
+.auth-illustration { max-width: 90%; max-height: 80%; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1)); }
 
-.illustration-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.auth-illustration {
-  max-width: 90%;
-  max-height: 80%;
-  object-fit: contain;
-  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
-}
-
-.auth-right {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  overflow-y: auto;
-}
-
-.auth-form-container {
-  width: 100%;
-  max-width: 450px;
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  color: #6B7C93;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: 30px;
-  font-size: 1rem;
-  transition: color 0.3s;
-}
+.auth-right { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow-y: auto; }
+.auth-form-container { width: 100%; max-width: 450px; }
+.back-btn { background: none; border: none; color: #6B7C93; font-weight: 600; cursor: pointer; padding: 0; margin-bottom: 30px; font-size: 1rem; transition: color 0.3s; }
 .back-btn:hover { color: #0A192F; }
 
 h2 { font-size: 2.5rem; color: #0A192F; margin-bottom: 10px; font-weight: 800; }
-.auth-subtitle { color: #6B7C93; margin-bottom: 40px; line-height: 1.5; }
+.auth-subtitle { color: #6B7C93; margin-bottom: 30px; line-height: 1.5; }
 
 .input-group { margin-bottom: 20px; width: 100%; }
-.input-row { display: flex; gap: 20px; }
-
+.input-row { display: flex; gap: 15px; }
 label { display: block; font-size: 0.9rem; font-weight: 700; color: #0A192F; margin-bottom: 8px; }
 
-input[type="text"], input[type="email"], input[type="password"], select {
-  width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 12px;
-  font-size: 1rem; font-family: inherit; transition: all 0.3s; background-color: #F8FAFC;
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+  width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 1rem; font-family: inherit; transition: all 0.3s; background-color: #F8FAFC;
 }
-input:focus, select:focus {
-  outline: none; border-color: #00B8D9; background-color: white; box-shadow: 0 0 0 4px rgba(0, 184, 217, 0.1);
-}
+input:focus, select:focus { outline: none; border-color: #00B8D9; background-color: white; box-shadow: 0 0 0 4px rgba(0, 184, 217, 0.1); }
+
+/* STYLES DES AVATARS DE SÉLECTION */
+.avatar-selection { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px; }
+.selectable-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; background: #F8FAFC; padding: 2px;}
+.selectable-avatar:hover { transform: scale(1.05); }
+.selectable-avatar.selected { border-color: #00B8D9; background: #EAF7F9; transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,184,217,0.3);}
 
 .checkbox-group { margin-bottom: 30px; }
-.custom-checkbox {
-  display: flex; align-items: center; gap: 10px; font-weight: 500; color: #6B7C93;
-  font-size: 0.9rem; margin-bottom: 12px; cursor: pointer;
-}
-.custom-checkbox input { width: 18px; height: 18px; cursor: pointer; }
-.custom-checkbox a { text-decoration: none; font-weight: 700; }
+.custom-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; color: #6B7C93; font-size: 0.9rem; margin-bottom: 12px; cursor: pointer; }
+.custom-checkbox.align-start { align-items: flex-start; }
+.custom-checkbox input { width: 18px; height: 18px; cursor: pointer; margin-top: 2px; }
+.terms-text { font-size: 0.85rem; line-height: 1.4; }
+.terms-text a { text-decoration: none; font-weight: 800; }
+.terms-text a:hover { text-decoration: underline; }
 
-.btn-gradient {
-  width: 100%; padding: 16px; background: linear-gradient(to right, #7DE2D1, #89D4E6);
-  color: #0A192F; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800;
-  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px;
-}
-.btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(125, 226, 209, 0.3); }
+.btn-gradient { width: 100%; padding: 16px; background: linear-gradient(to right, #20C997, #00B8D9); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px; }
+.btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 184, 217, 0.3); }
 
 .toggle-text { text-align: center; color: #6B7C93; font-size: 0.95rem; }
 .toggle-link { color: #00B8D9; font-weight: 800; cursor: pointer; margin-left: 5px; }
@@ -273,44 +261,15 @@ input:focus, select:focus {
 .fade-enter-from { opacity: 0; transform: translateY(10px); }
 .fade-leave-to { opacity: 0; transform: translateY(-10px); }
 
-/* ================= STYLES DE LA POPUP ================= */
-.popup-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(10,25,47,0.8);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 1000;
-  opacity: 0; visibility: hidden; transition: 0.3s;
-}
+/* POPUP */
+.popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
 .popup-overlay.active { opacity: 1; visibility: visible; }
-
-.popup-content {
-  background: white; padding: 40px; border-radius: 24px;
-  max-width: 400px; width: 90%; text-align: center;
-  transform: translateY(30px); transition: 0.3s;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-}
+.popup-content { background: white; padding: 40px; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; transform: translateY(30px); transition: 0.3s; box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
 .popup-overlay.active .popup-content { transform: translateY(0); }
-
-.popup-icon {
-  font-size: 4rem;
-  margin-bottom: 10px;
-}
-.popup-content h3 {
-  font-size: 1.8rem;
-  color: #0A192F;
-  margin-bottom: 15px;
-}
-.popup-text {
-  font-size: 1.1rem;
-  color: #6B7C93;
-  margin-bottom: 30px;
-  line-height: 1.5;
-}
-.popup-text strong {
-  font-size: 1.3rem;
-  display: inline-block;
-  margin-top: 5px;
-}
+.popup-icon { font-size: 4rem; margin-bottom: 10px; }
+.popup-content h3 { font-size: 1.8rem; color: #0A192F; margin-bottom: 15px; }
+.popup-text { font-size: 1.1rem; color: #6B7C93; margin-bottom: 30px; line-height: 1.5; }
+.popup-text strong { font-size: 1.3rem; display: inline-block; margin-top: 5px; }
 
 @media (max-width: 900px) {
   .auth-left { display: none; }
