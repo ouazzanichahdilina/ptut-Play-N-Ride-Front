@@ -7,114 +7,88 @@
           <span class="logo-text">Play <span class="text-cyan">'N</span> Ride</span>
         </div>
         <nav class="sidebar-menu">
-          <a href="#" class="menu-item" :class="{ active: activeTabMain === 'programme' }" @click="activeTabMain = 'programme'">
-            <span class="menu-icon">📋</span> 
-            Mon Programme
-          </a>
           <a href="#" class="menu-item" :class="{ active: activeTabMain === 'bibliotheque' }" @click="activeTabMain = 'bibliotheque'">
-            <span class="menu-icon">🎮</span> 
-            Jeu Libre (Bibliothèque)
+            <span class="menu-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+            </span> 
+            Aventures
           </a>
           <a href="#" class="menu-item" :class="{ active: activeTabMain === 'historique' }" @click="activeTabMain = 'historique'">
-            <span class="menu-icon">📈</span> 
-            Mon Évolution
+            <span class="menu-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </span> 
+            Historique
           </a>
         </nav>
       </div>
       <div class="sidebar-bottom">
         <div class="user-mini-profile">
-          <div class="user-avatar-mini">JD</div>
+          <div class="user-avatar-mini" style="background: white; overflow: hidden; padding: 2px;">
+            <img src="/images/guest-avatar.png" alt="Invité" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+          </div>
           <div class="user-info">
-            <p class="user-name">Jean Dupont</p>
-            <p class="user-status text-cyan">Suivi par Dr. Durand</p>
+            <p class="user-name">Invité</p>
+            <p class="user-status">Mode Découverte</p>
           </div>
         </div>
-        <button class="logout-btn-sidebar" @click="logout">Déconnexion ↪️</button>
+        <button class="logout-btn-sidebar" @click="goHome">
+          Quitter <img src="/images/icon-logout.png" alt="Quitter" class="logout-icon" />
+        </button>
       </div>
     </aside>
 
     <main class="main-content">
       <header class="content-header">
-        <h1>Bonjour <strong>Jean</strong> 👋</h1>
-        <p class="subtitle" v-if="activeTabMain === 'programme'">Voici les exercices prescrits par votre thérapeute.</p>
-        <p class="subtitle" v-if="activeTabMain === 'bibliotheque'">Envie d'une séance supplémentaire ? Choisissez votre évasion.</p>
-        <p class="subtitle" v-if="activeTabMain === 'historique'">Suivez vos progrès jour après jour.</p>
+        <h1>Prêt pour l'évasion ? 🚴</h1>
+        <p class="subtitle">Installez-vous confortablement et choisissez votre prochaine destination.</p>
       </header>
 
       <div class="alert-banner success-banner" v-if="gameFinishedMsg">
         <div class="alert-icon">🏅</div>
         <div class="alert-content">
-          <h4>Séance enregistrée et transmise à votre praticien ! Score : {{ lastScore }} pts</h4>
+          <h4>Séance terminée ! Score : {{ lastScore }} pts</h4>
           <p>{{ gameFinishedMsg }}</p>
         </div>
         <button class="close-alert" @click="gameFinishedMsg = null">&times;</button>
       </div>
 
-      <div v-if="activeTabMain === 'programme'">
-        <div class="doctor-info-card">
-          <div class="doctor-avatar">👩‍⚕️</div>
-          <div>
-            <h4 style="color: #0A192F; font-size: 1.1rem;">Dr. Sophie Durand (Kiné du sport)</h4>
-            <p style="color: #6B7C93; font-size: 0.9rem;">"Bonjour Jean. Continuez sur votre lancée, on se concentre sur l'endurance et l'articulation du genou cette semaine."</p>
-          </div>
-        </div>
-
-        <div class="section-title" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center;">
-          <h2>À faire <span class="text-cyan">cette semaine</span></h2>
-        </div>
-
-        <div class="prescription-list">
-          <div class="activity-card prescribed-card" style="border-left: 6px solid #20C997;">
-            <div class="card-img-wrapper" style="background-color: #E8F8F5; width: 180px; height: 180px;">
-              <img :src="activities[0].image" alt="Aube Douce" class="activity-img" />
-            </div>
-            <div class="card-content">
-              <div style="display: flex; justify-content: space-between;">
-                <h3 class="poetic-title">{{ activities[0].title }}</h3>
-                <span class="deadline-badge urgent">📅 À faire AUJOURD'HUI</span>
-              </div>
-              <span class="medical-badge" style="color: #20C997; background-color: #E8F8F5;">
-                ⚕️ {{ activities[0].medicalObjective }}
-              </span>
-              <p class="activity-desc">Objectif du Dr. Durand : Retrouver de la fluidité dans le mouvement de votre jambe droite sans forcer.</p>
-              
-              <div class="activity-tags">
-                <span class="tag tag-time">⏱️ 15 min</span>
-                <span class="tag tag-intensity" style="color: #20C997; border-color: #20C997;">Très Faible</span>
-              </div>
-            </div>
-            <button class="btn-play-activity" style="background-color: #20C997; width: auto; padding: 0 30px; margin: 20px; border-radius: 12px;" @click="openConfigStudio(activities[0])">
-              DÉMARRER ➔
-            </button>
-          </div>
-
-          <div class="activity-card prescribed-card" style="border-left: 6px solid #00B8D9; margin-top: 20px;">
-            <div class="card-img-wrapper" style="background-color: #E6F7F9; width: 180px; height: 180px;">
-              <img :src="activities[1].image" alt="Forêt" class="activity-img" />
-            </div>
-            <div class="card-content">
-              <div style="display: flex; justify-content: space-between;">
-                <h3 class="poetic-title">{{ activities[1].title }}</h3>
-                <span class="deadline-badge">📅 Avant Vendredi</span>
-              </div>
-              <span class="medical-badge" style="color: #00B8D9; background-color: #E6F7F9;">
-                ⚕️ {{ activities[1].medicalObjective }}
-              </span>
-              <p class="activity-desc">Objectif du Dr. Durand : Maintenir un rythme cardiaque stable pendant 20 minutes.</p>
-              
-              <div class="activity-tags">
-                <span class="tag tag-time">⏱️ 20 min</span>
-                <span class="tag tag-intensity" style="color: #00B8D9; border-color: #00B8D9;">Modérée</span>
-              </div>
-            </div>
-            <button class="btn-play-activity" style="background-color: #00B8D9; width: auto; padding: 0 30px; margin: 20px; border-radius: 12px;" @click="openConfigStudio(activities[1])">
-              DÉMARRER ➔
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div v-if="activeTabMain === 'bibliotheque'">
+        
+        <div class="how-it-works-container">
+          <div class="step-card">
+            <div class="step-icon-clear">
+              <img src="/images/icon-choose.png" alt="Choisissez" />
+            </div>
+            <div class="step-text-centered">
+              <strong>1. Sélectionnez</strong>
+              <span>Un parcours selon vos envies ou objectifs.</span>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-icon-clear">
+              <img src="/images/icon-pedal.png" alt="Pédalez" />
+            </div>
+            <div class="step-text-centered">
+              <strong>2. Pédalez</strong>
+              <span>Commencez votre mouvement pour donner vie au décor.</span>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-icon-clear">
+              <img src="/images/icon-escape.png" alt="Immergez-vous" />
+            </div>
+            <div class="step-text-centered">
+              <strong>3. Immergez-vous</strong>
+              <span>Profitez d'une évasion totale synchronisée à votre effort.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <h2>Parcours & <span class="text-cyan">Évasions</span></h2>
+          <p>Sélectionnez un environnement pour découvrir ses bienfaits sur votre corps.</p>
+        </div>
+        
         <div class="activities-grid">
           <div v-for="(activity, index) in activities" :key="index" class="activity-card" :style="{ borderTopColor: activity.color }">
             <div class="card-img-wrapper" :style="{ backgroundColor: activity.color + '15' }">
@@ -123,12 +97,16 @@
             <div class="card-content">
               <h3 class="poetic-title">{{ activity.title }}</h3>
               <span class="medical-badge" :style="{ color: activity.color, backgroundColor: activity.color + '15' }">
-                ⚕️ {{ activity.medicalObjective }}
+                • {{ activity.medicalObjective }}
               </span>
+              
               <p class="activity-desc">{{ activity.patientPromise }}</p>
+              
               <div class="activity-tags">
                 <span class="tag tag-time">⏱️ {{ activity.duration }}</span>
-                <span class="tag tag-intensity" :style="{ color: activity.color, borderColor: activity.color }">{{ activity.intensityLevel }}</span>
+                <span class="tag tag-intensity" :style="{ color: activity.color, borderColor: activity.color }">
+                  {{ activity.intensityLevel }}
+                </span>
               </div>
             </div>
             <button class="btn-play-activity" :style="{ backgroundColor: activity.color }" @click="openConfigStudio(activity)">
@@ -139,15 +117,16 @@
       </div>
 
       <div v-if="activeTabMain === 'historique'">
+        <div class="section-title">
+          <h2>Votre <span class="text-cyan">Historique</span></h2>
+        </div>
         <div class="table-wrapper">
           <table class="history-table">
-            <thead><tr><th>Date</th><th>Aventure (Objectif)</th><th>Contexte</th><th>Durée</th><th>Score</th></tr></thead>
+            <thead><tr><th>Date</th><th>Aventure (Objectif)</th><th>Matériel</th><th>Durée</th><th>Score</th></tr></thead>
             <tbody>
               <tr v-if="lastScore > 0">
-                <td><strong>Aujourd'hui</strong></td><td>L'Aube Douce</td><td><span class="badge-prescrit">Prescrit</span></td><td>15 min</td><td><strong class="text-green">{{ lastScore }} pts</strong></td>
+                <td><strong>Aujourd'hui</strong></td><td>L'Aube Douce</td><td>Vélo classique</td><td>15 min</td><td><strong class="text-green">{{ lastScore }} pts</strong></td>
               </tr>
-              <tr><td>Hier</td><td>L'Ascension Alpine</td><td><span class="badge-libre">Jeu Libre</span></td><td>25 min</td><td><strong>1200 pts</strong></td></tr>
-              <tr><td>12 Fév 2026</td><td>Souffle Océanique</td><td><span class="badge-prescrit">Prescrit</span></td><td>10 min</td><td><strong>850 pts</strong></td></tr>
             </tbody>
           </table>
         </div>
@@ -159,6 +138,7 @@
         <button class="close-modal" @click="showConfigStudio = false">&times;</button>
         
         <div v-if="selectedActivity" class="modal-inner">
+          
           <div class="clinical-briefing">
             <div class="briefing-header" :style="{ borderBottomColor: selectedActivity.color }">
               <span class="clinical-badge" :style="{ backgroundColor: selectedActivity.color + '20', color: selectedActivity.color }">
@@ -170,14 +150,14 @@
 
             <div class="briefing-body">
               <div class="clinical-target-box">
-                <h4>🎯 Ce que cette séance fait travailler :</h4>
+                <h4> Ce que cette séance fait travailler :</h4>
                 <ul>
                   <li v-for="(target, i) in selectedActivity.targets" :key="i">{{ target }}</li>
                 </ul>
               </div>
 
               <div class="safety-box">
-                <h4>⚠️ Recommandations & Sécurité</h4>
+                <h4> Recommandations & Sécurité</h4>
                 <ul>
                   <li><strong>Préparation :</strong> Réglez bien la hauteur de votre siège ou l'installation de votre pédalier avant de commencer.</li>
                   <li><strong>Confort :</strong> Gardez une bouteille d'eau et une serviette à proximité. Adoptez une respiration régulière calée sur votre coup de pédale.</li>
@@ -191,26 +171,22 @@
             <div class="config-step">
               <p class="instruction">1. Équipement utilisé</p>
               <div class="equip-grid">
-                <div class="equip-card" :class="{ selected: selectedEquip === 'Vélo de course' }" @click="selectedEquip = 'Vélo de course'">
-                  <span class="equip-icon">🚴</span>
+                <div class="equip-card" :class="{ selected: selectedEquip === 'Vélo complet' }" @click="selectedEquip = 'Vélo complet'">
+                  <img src="/images/equip-velo.png" alt="Vélo complet" class="custom-equip-icon" />
                   <p>Vélo complet</p>
                 </div>
                 <div class="equip-card" :class="{ selected: selectedEquip === 'Pédalier (Bras)' }" @click="selectedEquip = 'Pédalier (Bras)'">
-                  <span class="equip-icon">💪</span>
+                  <img src="/images/equip-bras.png" alt="Pédalier Bras" class="custom-equip-icon" />
                   <p>Pédalier (Bras)</p>
                 </div>
-                <div class="equip-card" :class="{ selected: selectedEquip === 'Pédalier (Jambes)' }" @click="selectedEquip = 'Pédalier (Jambes)'">
-                  <span class="equip-icon">🦵</span>
-                  <p>Pédalier (Jambe)</p>
                 </div>
-              </div>
             </div>
 
             <div class="config-step">
               <p class="instruction">2. Avatar de jeu</p>
-              <div class="options-grid-emojis">
-                <button v-for="avatar in avatars" :key="avatar.id" class="option-btn-emoji" :class="{ selected: selectedAvatar === avatar.emoji }" @click="selectedAvatar = avatar.emoji">
-                  <span class="emoji-big">{{ avatar.emoji }}</span>
+              <div class="options-grid-images">
+                <button v-for="avatar in avatars" :key="avatar.id" class="option-btn-image" :class="{ selected: selectedAvatar === avatar.id }" @click="selectedAvatar = avatar.id">
+                  <img :src="avatar.imgSrc" :alt="avatar.id" class="custom-avatar-img" />
                 </button>
               </div>
             </div>
@@ -235,8 +211,7 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-// On démarre par défaut sur l'onglet "programme" car c'est un patient suivi !
-const activeTabMain = ref('programme')
+const activeTabMain = ref('bibliotheque')
 const gameFinishedMsg = ref(null)
 const lastScore = ref(0)
 
@@ -245,19 +220,16 @@ onMounted(() => {
     lastScore.value = parseInt(route.query.score) || 0
     let diff = route.query.diff
     if (diff === 'Facile') {
-      gameFinishedMsg.value = "Excellente séance. Vos données ont été transmises au Dr. Durand. Vous pouvez augmenter légèrement la résistance la prochaine fois."
+      gameFinishedMsg.value = "Excellente séance. Vos paramètres indiquent que vous pouvez augmenter légèrement la résistance la prochaine fois."
     } else if (diff === 'Dur') {
-      gameFinishedMsg.value = "Bel effort ! Veillez à bien vous étirer. Données transmises au Dr. Durand."
+      gameFinishedMsg.value = "Bel effort musculaire et cardio ! Veillez à bien vous étirer. Nous vous recommandons une séance de Récupération Active demain."
     } else {
-      gameFinishedMsg.value = "Performance parfaitement équilibrée dans votre zone cible. Données synchronisées avec succès."
+      gameFinishedMsg.value = "Performance parfaitement équilibrée dans votre zone cible. Continuez sur cette lancée !"
     }
-    // Quand on revient d'une partie, on affiche l'historique
-    activeTabMain.value = 'historique'
-    router.replace('/patient-dashboard')
+    router.replace('/guest-dashboard')
   }
 })
 
-// === DONNÉES CLINIQUES ===
 const activities = [
   { 
     title: "L'Aube Douce", 
@@ -328,18 +300,20 @@ const activities = [
 ]
 
 const avatars = [
-  { id: 'bird', emoji: '🐦' }, { id: 'bee', emoji: '🐝' },
-  { id: 'rocket', emoji: '🚀' }, { id: 'turtle', emoji: '🐢' },
-  { id: 'butterfly', emoji: '🦋' }, { id: 'ufo', emoji: '🛸' }
+  { id: 'avatar1', imgSrc: '/images/avatar-1.png' }, 
+  { id: 'avatar2', imgSrc: '/images/avatar-2.png' },
+  { id: 'avatar3', imgSrc: '/images/avatar-3.png' }, 
+  { id: 'avatar4', imgSrc: '/images/avatar-4.png' },
+  { id: 'avatar5', imgSrc: '/images/avatar-5.png' }, 
+  { id: 'avatar6', imgSrc: '/images/avatar-6.png' }
 ]
 
 const showConfigStudio = ref(false)
 const selectedActivity = ref(null)
-const selectedAvatar = ref('🐦')
-const selectedEquip = ref('Vélo de course')
+const selectedAvatar = ref('avatar1')
+const selectedEquip = ref('Vélo complet')
 
 const goHome = () => router.push('/')
-const logout = () => router.push('/auth')
 
 const openConfigStudio = (activity) => {
   selectedActivity.value = activity
@@ -350,16 +324,13 @@ const startGame = () => {
   showConfigStudio.value = false
   router.push({ 
     path: '/play', 
-    query: { avatar: selectedAvatar.value, theme: selectedActivity.value.theme, equip: selectedEquip.value } 
+    query: { avatar: selectedAvatar.value, theme: selectedActivity.value.theme, equip: selectedEquip.value, from: 'guest' } 
   })
 }
 </script>
 
 <style scoped>
-/* VARIABLES ET LAYOUT */
 .dashboard-layout { display: flex; height: 100vh; background-color: #F4F7FB; font-family: 'Nunito', sans-serif;}
-
-/* SIDEBAR */
 .sidebar { width: 280px; background: white; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 20px; border-right: 1px solid #E2E8F0; }
 .sidebar-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 40px; }
 .sidebar-logo { height: 40px; }
@@ -370,36 +341,95 @@ const startGame = () => {
 .menu-item:hover { background-color: #F1F5F9; color: #0A192F; }
 .menu-item.active { background-color: #E8F8F5; color: #20C997; font-weight: 800;}
 .sidebar-bottom { border-top: 1px solid #E2E8F0; padding-top: 25px; }
+
 .user-mini-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.user-avatar-mini { width: 40px; height: 40px; background: linear-gradient(135deg, #00B8D9, #20C997); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;}
+.user-avatar-mini { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .user-name { font-size: 0.9rem; font-weight: 800; color: #0A192F; margin: 0; line-height: 1.2;}
 .user-status { font-size: 0.75rem; color: #00B8D9; margin: 0; font-weight: bold;}
-.logout-btn-sidebar { background: none; border: none; color: #94A3B8; font-weight: 600; cursor: pointer; padding: 0; transition: color 0.2s;}
-.logout-btn-sidebar:hover { color: #FF4757; }
 
-/* MAIN CONTENT */
+.logout-btn-sidebar { 
+  background: none; 
+  border: none; 
+  color: #94A3B8; 
+  font-weight: 700; 
+  font-size: 1.05rem; 
+  cursor: pointer; 
+  padding: 0; 
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+.logout-btn-sidebar:hover { color: #FF4757; }
+.logout-icon {
+  width: 24px; 
+  height: 24px;
+  object-fit: contain;
+}
+
 .main-content { flex: 1; padding: 40px 50px; overflow-y: auto; }
-.content-header { margin-bottom: 40px; }
+.content-header { margin-bottom: 30px; } 
 .content-header h1 { font-size: 2.2rem; color: #0A192F; font-weight: 800; margin-bottom: 5px;}
 .subtitle { color: #6B7C93; font-size: 1.1rem; }
 
-.section-title { margin-bottom: 30px; }
+.how-it-works-container {
+  display: flex;
+  justify-content: space-between; 
+  gap: 30px; 
+  margin-bottom: 40px; 
+}
+.step-card {
+  flex: 1;
+  background: white;
+  padding: 25px 20px; 
+  border-radius: 20px; 
+  box-shadow: 0 8px 25px rgba(0,0,0,0.03); 
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  text-align: center; 
+  gap: 10px;
+  border-top: 4px solid #00B8D9; 
+  transition: transform 0.2s ease;
+}
+.step-card:hover {
+  transform: translateY(-3px);
+}
+
+.step-icon-clear {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.step-icon-clear img {
+  width: auto; 
+  height: 90px; 
+  max-width: 180px; 
+  object-fit: contain;
+}
+
+.step-text-centered {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; 
+}
+.step-text-centered strong {
+  color: #0A192F; 
+  font-size: 1.15rem; 
+  font-weight: 800;
+}
+.step-text-centered span {
+  color: #6B7C93; 
+  font-size: 0.95rem; 
+  max-width: 250px; 
+  margin: 0 auto; 
+  line-height: 1.4;
+}
+
+.section-title { margin-bottom: 20px; }
 .section-title h2 { font-size: 1.8rem; color: #0A192F; font-weight: 800; margin-bottom: 5px;}
 .section-title p { color: #6B7C93; font-size: 1rem; }
 
-/* SECTION : MON PROGRAMME */
-.doctor-info-card { display: flex; align-items: center; gap: 20px; background: white; padding: 20px 25px; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
-.doctor-avatar { font-size: 2.5rem; background: #E6F7F9; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;}
-
-.prescribed-card { display: flex; flex-direction: row; border-radius: 16px; background: white; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s ease; }
-.prescribed-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
-.prescribed-card .card-img-wrapper { height: auto; padding: 0;}
-.prescribed-card .activity-img { width: 100%; height: 100%; object-fit: cover; }
-.prescribed-card .card-content { flex: 1; padding: 25px; display: flex; flex-direction: column; justify-content: center;}
-.deadline-badge { padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; background: #F1F5F9; color: #6B7C93;}
-.deadline-badge.urgent { background: #FFF5F5; color: #E53E3E; border: 1px solid #FC8181; }
-
-/* GRILLE DES ACTIVITÉS (BIBLIO) */
 .activities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 .activity-card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-top: 5px solid #ccc; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; overflow: hidden;}
 .activity-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.06);}
@@ -416,7 +446,6 @@ const startGame = () => {
 .btn-play-activity { width: 100%; padding: 15px; border: none; color: white; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.2s;}
 .btn-play-activity:hover { opacity: 0.9; }
 
-/* MODALE CLINIQUE */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; backdrop-filter: blur(4px);}
 .modal-overlay.active { opacity: 1; visibility: visible; }
 .clinical-modal { background: white; width: 100%; max-width: 900px; border-radius: 24px; overflow: hidden; position: relative; transform: translateY(30px); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px rgba(0,0,0,0.25);}
@@ -442,39 +471,37 @@ const startGame = () => {
 .config-panel { flex: 2; display: flex; flex-direction: column; background: white;}
 .config-step { padding: 30px 30px 10px; }
 .instruction { color: #0A192F; font-weight: 800; font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
+
+/* CSS Equipements et Avatars */
 .equip-grid { display: flex; flex-direction: column; gap: 10px; }
 .equip-card { display: flex; align-items: center; gap: 15px; padding: 12px 20px; border: 2px solid #F1F5F9; border-radius: 12px; cursor: pointer; transition: 0.2s; background: white;}
 .equip-card:hover { border-color: #CBD5E1; }
 .equip-card.selected { border-color: #0EA5E9; background: #F0F9FF; }
-.equip-icon { font-size: 1.5rem; }
+.custom-equip-icon { width: 30px; height: 30px; object-fit: contain; } 
 .equip-card p { font-weight: 700; color: #0A192F; margin: 0; font-size: 0.95rem;}
-.options-grid-emojis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.option-btn-emoji { padding: 10px; background: white; border: 2px solid #F1F5F9; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
-.option-btn-emoji:hover { border-color: #CBD5E1; }
-.option-btn-emoji.selected { border-color: #0EA5E9; background: #F0F9FF; }
-.emoji-big { font-size: 1.8rem; }
+
+.options-grid-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.option-btn-image { padding: 10px; background: white; border: 2px solid #F1F5F9; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
+.option-btn-image:hover { border-color: #CBD5E1; }
+.option-btn-image.selected { border-color: #0EA5E9; background: #F0F9FF; }
+.custom-avatar-img { width: 45px; height: 45px; object-fit: contain; }
+
 .action-footer { margin-top: auto; padding: 30px; }
 .btn-start-game { width: 100%; padding: 18px; border: none; border-radius: 12px; color: white; font-weight: 900; font-size: 1.05rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;}
 .btn-start-game:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 
 @media (max-width: 900px) {
+  .how-it-works-container { flex-direction: column; gap: 20px; }
   .modal-inner { flex-direction: column; }
   .clinical-briefing { border-right: none; border-bottom: 1px solid #E2E8F0; padding: 30px; }
   .config-panel { flex: none; }
-  .prescribed-card { flex-direction: column; }
-  .prescribed-card .card-img-wrapper { width: 100%; height: 180px; border-radius: 0; }
-  .prescribed-card .btn-play-activity { margin: 20px; width: calc(100% - 40px); }
 }
 
-/* HISTORIQUE TABLE */
 .table-wrapper { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
 .history-table { width: 100%; border-collapse: collapse; }
 .history-table th { text-align: left; padding: 15px; color: #6B7C93; font-weight: 700; border-bottom: 1px solid #F1F5F9; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;}
 .history-table td { padding: 18px 15px; border-bottom: 1px solid #F8FAFC; color: #0A192F; font-size: 0.95rem; }
-.badge-prescrit { background: #E6F7F9; color: #00B8D9; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold;}
-.badge-libre { background: #F1F5F9; color: #6B7C93; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold;}
 
-/* ALERT BANNER */
 .alert-banner { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-radius: 12px; position: relative; margin-bottom: 30px;}
 .success-banner { background: #E8F8F5; border: 1px solid #20C997; color: #0A192F; }
 .success-banner h4 {font-size: 1.1rem; margin-bottom: 5px; color: #047857;}

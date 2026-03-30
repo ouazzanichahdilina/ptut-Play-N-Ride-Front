@@ -2,11 +2,11 @@
   <div class="auth-page">
     <div class="auth-left">
       <div class="auth-logo" @click="goHome">
-        <img src="/Frame 11.png" alt="Logo" class="logo-img">
+        <img src="/images/logo.png" alt="Logo" class="logo-img" />
         <span class="logo-text">Play <span class="text-cyan">'N</span> Ride</span>
       </div>
       <div class="illustration-container">
-        <img src="/auth-illustration.png" alt="Seniors faisant du vélo" class="auth-illustration">
+        <img src="/images/auth-illustration.png" alt="Seniors faisant du vélo" class="auth-illustration" />
       </div>
     </div>
 
@@ -126,7 +126,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const isLogin = ref(true)
 
-// Variables pour lire le mail et gérer la popup
 const loginEmail = ref('')
 const showPopup = ref(false)
 const userRole = ref('')
@@ -137,36 +136,30 @@ const goHome = () => {
 
 const submitForm = () => {
   if (isLogin.value) {
-    // 1. On analyse l'adresse mail en minuscules
     const emailToTest = loginEmail.value.toLowerCase()
     
-    // 2. Conditions pour déterminer le rôle
     if (emailToTest.includes('pro')) {
       userRole.value = 'Professionnel de Santé'
     } else if (emailToTest.includes('patient')) {
       userRole.value = 'Patient'
     } else {
-      userRole.value = 'Patient' // Rôle par défaut
+      userRole.value = 'Patient' 
     }
     
-    // 3. On affiche la Popup
     showPopup.value = true
 
   } else {
     alert("Inscription réussie ! (Simulation)")
-    isLogin.value = true // Ramène à la connexion après inscription
+    isLogin.value = true 
   }
 }
 
-// REDIRECTION MODIFIÉE ICI :
 const goToDashboard = () => {
   showPopup.value = false
-  if (userRole.value === 'Patient') {
-    // Redirige vers le tableau de bord patient
-    router.push('/patient-dashboard')
+  if (userRole.value === 'Professionnel de Santé') {
+    router.push('/pro-dashboard')
   } else {
-    // Le tableau de bord Pro n'existe pas encore, on met une alerte
-    alert("Le tableau de bord Pro sera créé à la prochaine étape !")
+    router.push('/patient-dashboard')
   }
 }
 </script>
@@ -298,10 +291,26 @@ input:focus, select:focus {
 }
 .popup-overlay.active .popup-content { transform: translateY(0); }
 
-.popup-icon { font-size: 4rem; margin-bottom: 10px; }
-.popup-content h3 { font-size: 1.8rem; color: #0A192F; margin-bottom: 15px; }
-.popup-text { font-size: 1.1rem; color: #6B7C93; margin-bottom: 30px; line-height: 1.5; }
-.popup-text strong { font-size: 1.3rem; display: inline-block; margin-top: 5px; }
+.popup-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+.popup-content h3 {
+  font-size: 1.8rem;
+  color: #0A192F;
+  margin-bottom: 15px;
+}
+.popup-text {
+  font-size: 1.1rem;
+  color: #6B7C93;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+.popup-text strong {
+  font-size: 1.3rem;
+  display: inline-block;
+  margin-top: 5px;
+}
 
 @media (max-width: 900px) {
   .auth-left { display: none; }

@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '../views/AuthView.vue'
+// Import des DEUX dashboards (Invité et Patient)
+import GuestDashboardView from '../views/GuestDashboardView.vue'
 import PatientDashboardView from '../views/PatientDashboardView.vue'
+// Import de la vue PRO et du Jeu
+import ProDashboardView from '../views/ProDashboardView.vue'
+import GameView from '../views/GameView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,9 +22,24 @@ const router = createRouter({
       component: AuthView
     },
     {
+      path: '/guest-dashboard',
+      name: 'guest-dashboard',
+      component: GuestDashboardView
+    },
+    {
       path: '/patient-dashboard',
       name: 'patient-dashboard',
       component: PatientDashboardView
+    },
+    {
+      path: '/pro-dashboard',
+      name: 'pro-dashboard',
+      component: ProDashboardView
+    },
+    {
+      path: '/play',
+      name: 'game',
+      component: GameView
     }
   ],
   scrollBehavior() {
