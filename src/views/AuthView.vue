@@ -128,6 +128,7 @@
       <div class="popup-content">
         <div class="popup-icon">
           <span v-if="userRole === 'Professionnel de Santé'">🩺</span>
+          <span v-else-if="userRole === 'Administrateur'">🛡️</span>
           <span v-else>🏠</span>
         </div>
         <h3>Connexion réussie !</h3>
@@ -153,9 +154,8 @@ const loginEmail = ref('')
 const signupEmail = ref('')
 const signupRole = ref('')
 
-// Liste de vos avatars d'après la capture
 const avatarList = ['avatarN.png', 'avatarRousse.png', 'avBlackW.png', 'avBlonde.png', 'azouz.png']
-const signupAvatar = ref(avatarList[3]) // Sélectionne 'avBlonde.png' par défaut
+const signupAvatar = ref(avatarList[3]) 
 
 const showPopup = ref(false)
 const userRole = ref('')
@@ -172,13 +172,14 @@ const goHome = () => {
 
 const submitLogin = () => {
   const emailToTest = loginEmail.value.toLowerCase()
-  if (emailToTest.includes('pro')) {
+  if (emailToTest.includes('admin')) {
+    userRole.value = 'Administrateur'
+  } else if (emailToTest.includes('pro')) {
     userRole.value = 'Professionnel de Santé'
   } else {
     userRole.value = 'Patient' 
   }
   
-  // S'il n'y a pas d'avatar enregistré (cas d'une connexion sans inscription préalable), on en met un par défaut
   if (!localStorage.getItem('playnride_user_avatar')) {
     localStorage.setItem('playnride_user_avatar', '/images/avBlonde.png')
   }
@@ -193,7 +194,6 @@ const submitSignup = () => {
     userRole.value = 'Patient'
   }
   
-  // SAUVEGARDE DE L'AVATAR CHOISI POUR LE DASHBOARD
   localStorage.setItem('playnride_user_avatar', '/images/' + signupAvatar.value)
 
   showPopup.value = true
@@ -201,7 +201,9 @@ const submitSignup = () => {
 
 const goToDashboard = () => {
   showPopup.value = false
-  if (userRole.value === 'Professionnel de Santé') {
+  if (userRole.value === 'Administrateur') {
+    router.push('/admin-dashboard')
+  } else if (userRole.value === 'Professionnel de Santé') {
     router.push('/pro-dashboard')
   } else {
     router.push('/patient-dashboard')

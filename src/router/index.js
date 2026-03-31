@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '../views/AuthView.vue'
-// Import des DEUX dashboards (Invité et Patient)
 import GuestDashboardView from '../views/GuestDashboardView.vue'
 import PatientDashboardView from '../views/PatientDashboardView.vue'
-// Import de la vue PRO et du Jeu
 import ProDashboardView from '../views/ProDashboardView.vue'
+// CORRECTION ICI : on enlève le "View" à la fin du nom du fichier
+import AdminDashboard from '../views/AdminDashboard.vue' 
 import GameView from '../views/GameView.vue'
 
 const router = createRouter({
@@ -35,6 +35,11 @@ const router = createRouter({
       path: '/pro-dashboard',
       name: 'pro-dashboard',
       component: ProDashboardView
+    },
+    {
+      path: '/admin-dashboard',
+      name: 'admin-dashboard',
+      component: AdminDashboard // Et on met à jour la variable ici
     },
     {
       path: '/play',
