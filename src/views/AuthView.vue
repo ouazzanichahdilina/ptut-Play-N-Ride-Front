@@ -27,7 +27,7 @@
               </div>
               <div class="input-group">
                 <label>Mot de passe</label>
-                <input type="password" placeholder="••••••••" required>
+                <input type="password" v-model="loginPassword" placeholder="••••••••" required>
               </div>
 
               <div class="checkbox-group">
@@ -38,7 +38,10 @@
                 </label>
               </div>
 
-              <button type="submit" class="btn-gradient">Se connecter</button>
+              <p v-if="authError" class="error-msg">{{ authError }}</p>
+              <button type="submit" class="btn-gradient" :disabled="loading">
+                {{ loading ? 'Connexion...' : 'Se connecter' }}
+              </button>
             </form>
 
             <p class="toggle-text">
@@ -54,36 +57,41 @@
             <form @submit.prevent="submitSignup">
               <div class="input-group">
                 <label>Nom et Prénom</label>
-                <input type="text" placeholder="Jean Dupont" required>
+                <input type="text" v-model="signupNom" placeholder="Jean Dupont" required>
               </div>
-              
+
               <div class="input-group">
                 <label>Adresse Mail</label>
                 <input type="email" v-model="signupEmail" placeholder="jean.dupont@email.com" required>
               </div>
 
               <div class="input-group">
+                <label>Mot de passe</label>
+                <input type="password" v-model="signupPassword" placeholder="••••••••" required>
+              </div>
+
+              <div class="input-group">
                 <label>Choisissez votre photo de profil</label>
                 <div class="avatar-selection">
-                  <img 
-                    v-for="avatar in avatarList" 
-                    :key="avatar" 
-                    :src="'/images/' + avatar" 
+                  <img
+                    v-for="avatar in avatarList"
+                    :key="avatar"
+                    :src="'/images/' + avatar"
                     :class="['selectable-avatar', { selected: signupAvatar === avatar }]"
                     @click="signupAvatar = avatar"
                     alt="Choix Avatar"
                   />
                 </div>
               </div>
-              
+
               <div class="input-row">
                 <div class="input-group" style="flex: 1;">
                   <label>Âge</label>
-                  <input type="number" min="1" max="120" placeholder="ex: 65" required>
+                  <input type="number" v-model="signupAge" min="1" max="120" placeholder="ex: 65" required>
                 </div>
                 <div class="input-group" style="flex: 2;">
                   <label>Sexe</label>
-                  <select required>
+                  <select v-model="signupSexe" required>
                     <option value="" disabled selected>Sélectionner...</option>
                     <option value="H">Homme</option>
                     <option value="F">Femme</option>
@@ -97,8 +105,9 @@
                 <select v-model="signupRole" required>
                   <option value="" disabled selected>Sélectionner...</option>
                   <option value="patient">Patient à domicile</option>
-                  <option value="pro">Professionnel de santé</option>
-                  <option value="ehpad">Structure (EHPAD, etc.)</option>
+                  <option value="Professionnel">Professionnel de santé</option>
+                  <option value="Professionnel">Structure (EHPAD, etc.)</option>
+                  <option value="Administrateur">Administrateur</option>
                 </select>
               </div>
 
@@ -112,7 +121,10 @@
                 </label>
               </div>
 
-              <button type="submit" class="btn-gradient">S'inscrire et Continuer</button>
+              <p v-if="authError" class="error-msg">{{ authError }}</p>
+              <button type="submit" class="btn-gradient" :disabled="loading">
+                {{ loading ? 'Inscription...' : 'S\'inscrire et Continuer' }}
+              </button>
             </form>
 
             <p class="toggle-text">
@@ -127,8 +139,8 @@
     <div class="popup-overlay" :class="{ active: showPopup }">
       <div class="popup-content">
         <div class="popup-icon">
-          <span v-if="userRole === 'Professionnel de Santé'">🩺</span>
-          <span v-else-if="userRole === 'Administrateur'">🛡️</span>
+          <span v-if="userRole === 'Administrateur'">🛡️</span>
+          <span v-else-if="userRole === 'Professionnel de Santé'">🩺</span>
           <span v-else>🏠</span>
         </div>
         <h3>Connexion réussie !</h3>
@@ -144,66 +156,140 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { API_URL } from '../config.js'
 
 const router = useRouter()
 const route = useRoute()
 
 const isLogin = ref(true)
+const loading = ref(false)
+const authError = ref('')
 
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
 const loginEmail = ref('')
+const loginPassword = ref('')
+
+// ── SIGNUP ────────────────────────────────────────────────────────────────────
+const signupNom = ref('')
 const signupEmail = ref('')
+const signupPassword = ref('')
+const signupAge = ref('')
+const signupSexe = ref('')
 const signupRole = ref('')
 
 const avatarList = ['avatarN.png', 'avatarRousse.png', 'avBlackW.png', 'avBlonde.png', 'azouz.png']
-const signupAvatar = ref(avatarList[3]) 
+const signupAvatar = ref(avatarList[3])
 
+// ── POPUP ─────────────────────────────────────────────────────────────────────
 const showPopup = ref(false)
 const userRole = ref('')
 
 onMounted(() => {
   if (route.query.tab === 'signup') {
-    isLogin.value = false;
+    isLogin.value = false
   }
 })
 
-const goHome = () => {
-  router.push('/')
+const goHome = () => router.push('/')
+
+// ── CONNEXION ─────────────────────────────────────────────────────────────────
+const submitLogin = async () => {
+  authError.value = ''
+  loading.value = true
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: loginEmail.value, motDePasse: loginPassword.value })
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      authError.value = err.message || 'Email ou mot de passe incorrect.'
+      return
+    }
+
+    const data = await res.json()
+
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('nom', data.nom)
+    localStorage.setItem('email', data.email)
+    localStorage.setItem('statut', data.statut)
+    localStorage.setItem('id', data.id)
+
+    if (!localStorage.getItem('playnride_user_avatar')) {
+      localStorage.setItem('playnride_user_avatar', '/images/avBlonde.png')
+    }
+
+    userRole.value = data.statut
+    showPopup.value = true
+
+  } catch {
+    authError.value = 'Impossible de joindre le serveur. Vérifiez votre connexion.'
+  } finally {
+    loading.value = false
+  }
 }
 
-const submitLogin = () => {
-  const emailToTest = loginEmail.value.toLowerCase()
-  if (emailToTest.includes('admin')) {
-    userRole.value = 'Administrateur'
-  } else if (emailToTest.includes('pro')) {
-    userRole.value = 'Professionnel de Santé'
-  } else {
-    userRole.value = 'Patient' 
-  }
-  
-  if (!localStorage.getItem('playnride_user_avatar')) {
-    localStorage.setItem('playnride_user_avatar', '/images/avBlonde.png')
-  }
+// ── INSCRIPTION ───────────────────────────────────────────────────────────────
+const submitSignup = async () => {
+  authError.value = ''
+  loading.value = true
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nom: signupNom.value,
+        email: signupEmail.value,
+        motDePasse: signupPassword.value,
+        sexe: signupSexe.value,
+        statut: signupRole.value
+      })
+    })
 
-  showPopup.value = true
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      authError.value = err.message || 'Erreur lors de l\'inscription.'
+      return
+    }
+
+    // Inscription réussie → connexion automatique
+    const loginRes = await fetch(`${API_URL}/utilisateurs/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: signupEmail.value, motDePasse: signupPassword.value })
+    })
+
+    if (loginRes.ok) {
+      const data = await loginRes.json()
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('nom', data.nom)
+      localStorage.setItem('email', data.email)
+      localStorage.setItem('statut', data.statut)
+      localStorage.setItem('id', data.id)
+      userRole.value = data.statut
+    } else {
+      userRole.value = signupRole.value
+    }
+
+    localStorage.setItem('playnride_user_avatar', '/images/' + signupAvatar.value)
+    showPopup.value = true
+
+  } catch {
+    authError.value = 'Impossible de joindre le serveur. Vérifiez votre connexion.'
+  } finally {
+    loading.value = false
+  }
 }
 
-const submitSignup = () => {
-  if (signupRole.value === 'pro' || signupRole.value === 'ehpad') {
-    userRole.value = 'Professionnel de Santé'
-  } else {
-    userRole.value = 'Patient'
-  }
-  
-  localStorage.setItem('playnride_user_avatar', '/images/' + signupAvatar.value)
-
-  showPopup.value = true
-}
-
+// ── REDIRECTION ───────────────────────────────────────────────────────────────
 const goToDashboard = () => {
   showPopup.value = false
-  if (userRole.value === 'Administrateur') {
+  const statut = localStorage.getItem('statut')
+  if (statut === 'Administrateur') {
     router.push('/admin-dashboard')
-  } else if (userRole.value === 'Professionnel de Santé') {
+  } else if (statut === 'Professionnel') {
     router.push('/pro-dashboard')
   } else {
     router.push('/patient-dashboard')
@@ -253,7 +339,9 @@ input:focus, select:focus { outline: none; border-color: #00B8D9; background-col
 .terms-text a:hover { text-decoration: underline; }
 
 .btn-gradient { width: 100%; padding: 16px; background: linear-gradient(to right, #20C997, #00B8D9); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px; }
-.btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 184, 217, 0.3); }
+.btn-gradient:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 184, 217, 0.3); }
+.btn-gradient:disabled { opacity: 0.6; cursor: not-allowed; }
+.error-msg { color: #FC8181; font-size: 0.9rem; font-weight: 700; margin-bottom: 15px; padding: 10px 14px; background: #FFF5F5; border-radius: 8px; border-left: 3px solid #FC8181; }
 
 .toggle-text { text-align: center; color: #6B7C93; font-size: 0.95rem; }
 .toggle-link { color: #00B8D9; font-weight: 800; cursor: pointer; margin-left: 5px; }
