@@ -28,10 +28,10 @@
 
       <div class="sidebar-bottom">
         <div class="pro-profile">
-          <div class="pro-avatar">D</div>
+          <div class="pro-avatar">{{ nom ? nom.charAt(0).toUpperCase() : 'P' }}</div>
           <div class="pro-info">
-            <p class="pro-name">Dr. Sophie Durand</p>
-            <p class="pro-mail">pro@playnride.fr</p>
+            <p class="pro-name">{{ nom }}</p>
+            <p class="pro-mail">{{ email }}</p>
           </div>
         </div>
         <button class="logout-link" @click="$router.push('/auth')">Déconnexion ↪️</button>
@@ -127,7 +127,7 @@
         </header>
         <div class="settings-card">
           <h3>Informations Professionnelles</h3>
-          <div class="form-group"><label>Nom du Médecin</label><input type="text" value="Dr. Sophie Durand" disabled></div>
+          <div class="form-group"><label>Nom du Médecin</label><input type="text" :value="nom" disabled></div>
           <div class="form-group"><label>Établissement</label><input type="text" value="Cabinet Kiné Sport Santé" disabled></div>
           
           <h3 style="margin-top: 30px;">Notifications</h3>
@@ -173,17 +173,48 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { API_URL } from '../config.js'
+
+const nom = ref(localStorage.getItem('nom') || 'Professionnel de Santé')
+const email = ref(localStorage.getItem('email') || '')
+const statut = ref(localStorage.getItem('statut') || '')
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
 const selectedExo = ref(null)
 
-const patients = ref([
-  { nom: "Jean Dupont", age: 72, statut: "Actif", derniereSeance: "Aujourd'hui", progression: 75, niveau: 5 },
-  { nom: "Marie Martin", age: 68, statut: "Actif", derniereSeance: "Hier", progression: 60, niveau: 4 },
-  { nom: "Pierre Durand", age: 80, statut: "Inactif", derniereSeance: "Il y a 3 jours", progression: 40, niveau: 3 }
-])
+const patients = ref([])
+
+const fetchPatients = async () => {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    patients.value = data
+      .filter(u => u.statut === 'Patient' || u.role === 'Patient')
+      .map(u => ({
+        id: u.id,
+        nom: u.nom || `${u.prenom || ''} ${u.nomFamille || ''}`.trim(),
+        age: u.age || '--',
+        statut: u.actif === false ? 'Inactif' : 'Actif',
+        derniereSeance: '--',
+        progression: 0,
+        niveau: 1
+      }))
+  } catch {
+    patients.value = [
+      { nom: "Jean Dupont", age: 72, statut: "Actif", derniereSeance: "Aujourd'hui", progression: 75, niveau: 5 },
+      { nom: "Marie Martin", age: 68, statut: "Actif", derniereSeance: "Hier", progression: 60, niveau: 4 },
+      { nom: "Pierre Durand", age: 80, statut: "Inactif", derniereSeance: "Il y a 3 jours", progression: 40, niveau: 3 }
+    ]
+  }
+}
+
+onMounted(() => fetchPatients())
 
 const exercises = [
   { id: 1, title: "Flappy Endurance", desc: "Maintenir la cadence constante sur une longue durée.", icon: "🐦" },

@@ -58,20 +58,24 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { API_URL } from '../config.js'
 
 const route = useRoute()
 const router = useRouter()
 
-const playerAvatarId = route.query.avatar || 'avatar1' 
+const playerAvatarId = route.query.avatar || 'avatar1'
 const gameTheme = route.query.theme || 'Classique'
 const equipment = route.query.equip || 'Vélo'
 
 const isGameOver = ref(false)
 const showEndScreen = ref(false)
 const finalScore = ref(0)
-const sessionDuration = ref("0m 30s") 
+const sessionDuration = ref("--")
 const rating = ref(3)
 const difficulty = ref('Moyen')
+
+let sessionStartTime = null
+let sessionEndTime = null
 
 let gameLoopInterval = null
 let handleInput = null
@@ -247,10 +251,18 @@ onMounted(() => {
 
   let loop = () => {
       draw(); update(); frame++
+      if (gameState.current === gameState.play && !sessionStartTime) {
+          sessionStartTime = Date.now()
+      }
       if(gameState.current === gameState.gameOver) {
+          if (!sessionEndTime) {
+              sessionEndTime = Date.now()
+              const elapsed = sessionStartTime ? Math.max(1, Math.round((sessionEndTime - sessionStartTime) / 60000)) : 1
+              sessionDuration.value = elapsed + ' min'
+          }
           isGameOver.value = true;
           finalScore.value = score.current;
-          showEndScreen.value = true; 
+          showEndScreen.value = true;
       } else {
           isGameOver.value = false;
       }
@@ -265,7 +277,7 @@ onMounted(() => {
       if (gameState.current == gameState.getReady) { gameState.current = gameState.play }
       if (gameState.current == gameState.play) { bird.flap(); SFX_FLAP.play().catch(()=>{}); description.style.visibility = "hidden" }
       
-      if (gameState.current == gameState.gameOver) { pipes.reset(); score.reset(); SFX_SWOOSH.play().catch(()=>{}); gameState.current = gameState.getReady; description.innerHTML = "Pédalez fort pour commencer !" }
+      if (gameState.current == gameState.gameOver) { pipes.reset(); score.reset(); SFX_SWOOSH.play().catch(()=>{}); gameState.current = gameState.getReady; description.innerHTML = "Pédalez fort pour commencer !"; sessionStartTime = null; sessionEndTime = null; sessionDuration.value = "--"; }
   }
 
   cvs.addEventListener('click', handleInput)
@@ -277,15 +289,41 @@ const quitGame = () => {
   router.push(returnPath) 
 }
 
-const saveAndReturn = () => {
+const saveAndReturn = async () => {
   const returnPath = route.query.from === 'guest' ? '/guest-dashboard' : '/patient-dashboard'
-  router.push({ 
-    path: returnPath, 
-    query: { 
-      finished: true,
-      score: finalScore.value * 10,
-      diff: difficulty.value
-    } 
+  const patientId = parseInt(localStorage.getItem('id'))
+
+  if (patientId && route.query.from !== 'guest') {
+    const token = localStorage.getItem('token')
+    const now = sessionEndTime ? new Date(sessionEndTime) : new Date()
+    const duree = sessionStartTime ? Math.max(1, Math.round((now - sessionStartTime) / 60000)) : 1
+    const debut = sessionStartTime ? new Date(sessionStartTime) : new Date(now - duree * 60000)
+    const wattsMoy = Math.max(20, finalScore.value * 2)
+
+    try {
+      await fetch(`${API_URL}/seances`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          dateDebut: debut.toISOString(),
+          dateFin: now.toISOString(),
+          dureeMinutes: duree,
+          wattsMin: 10,
+          wattsMoy: wattsMoy,
+          wattsMax: Math.max(wattsMoy + 10, finalScore.value * 3),
+          bpmMin: 65,
+          bpmMoy: Math.min(150, 75 + finalScore.value),
+          bpmMax: Math.min(170, 90 + finalScore.value),
+          mode: route.query.mode || 'LIBRE',
+          patient: { id: patientId }
+        })
+      })
+    } catch { /* on navigue quand même si l'API est inaccessible */ }
+  }
+
+  router.push({
+    path: returnPath,
+    query: { finished: true, score: finalScore.value * 10, diff: difficulty.value }
   })
 }
 

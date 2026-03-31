@@ -7,6 +7,8 @@ import PatientDashboardView from '../views/PatientDashboardView.vue'
 // Import de la vue PRO et du Jeu
 import ProDashboardView from '../views/ProDashboardView.vue'
 import GameView from '../views/GameView.vue'
+// Import de la vue Administrateur
+import AdminDashboardView from '../views/AdminDashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +37,11 @@ const router = createRouter({
       path: '/pro-dashboard',
       name: 'pro-dashboard',
       component: ProDashboardView
+    },
+    {
+      path: '/admin-dashboard',
+      name: 'admin-dashboard',
+      component: AdminDashboardView
     },
     {
       path: '/play',

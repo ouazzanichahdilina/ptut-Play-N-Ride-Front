@@ -40,8 +40,8 @@
             <img :src="userProfileImage" alt="Patient" />
           </div>
           <div class="user-info">
-            <p class="user-name">Jean Dupont</p>
-            <p class="user-status">Suivi par Dr. Lefevre</p>
+            <p class="user-name">{{ nom }}</p>
+            <p class="user-status">{{ statut || 'Patient' }}</p>
           </div>
         </div>
         <button class="logout-btn-sidebar" @click="goHome">
@@ -339,8 +339,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_URL } from '../config.js'
 
 const router = useRouter()
+
+const nom = ref(localStorage.getItem('nom') || 'Utilisateur')
+const email = ref(localStorage.getItem('email') || '')
+const statut = ref(localStorage.getItem('statut') || '')
 const activeTab = ref('programme')
 const showConfigStudio = ref(false)
 const selectedActivity = ref(null)
@@ -356,10 +361,9 @@ const userProfileImage = ref('/images/avBlonde.png') // Fallback
 
 onMounted(() => {
   const savedAvatar = localStorage.getItem('playnride_user_avatar')
-  if (savedAvatar) {
-    userProfileImage.value = savedAvatar
-  }
+  if (savedAvatar) userProfileImage.value = savedAvatar
   generateWeekSchedule()
+  fetchHistory()
 })
 
 // TOUTES LES ACTIVITÉS (Les 6 scénarios)
@@ -415,11 +419,32 @@ const generateWeekSchedule = () => {
 }
 
 // HISTORIQUE DETAILLÉ DU PATIENT
-const historyData = ref([
-  { date: "Hier", type: "prescrit", scenario: "L'Aube Douce", duration: "15 min", score: 450, reviewed: true, avgSpeed: "18.5", avgBpm: 112, rating: 4, difficulty: "Facile" },
-  { date: "Il y a 3 jours", type: "prescrit", scenario: "Souffle Océanique", duration: "10 min", score: 380, reviewed: true, avgSpeed: "16.2", avgBpm: 105, rating: 5, difficulty: "Facile" },
-  { date: "Il y a 5 jours", type: "libre", scenario: "L'Échappée Sylvestre", duration: "20 min", score: 510, reviewed: false, avgSpeed: "21.0", avgBpm: 125, rating: 3, difficulty: "Moyen" }
-])
+const historyData = ref([])
+
+const fetchHistory = async () => {
+  const patientId = localStorage.getItem('id')
+  const token = localStorage.getItem('token')
+  if (!patientId || !token) return
+  try {
+    const res = await fetch(`${API_URL}/seances/patient/${patientId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    historyData.value = data.map(s => ({
+      date: new Date(s.dateDebut).toLocaleDateString('fr-FR'),
+      type: s.mode === 'PRESCRIT' ? 'prescrit' : 'libre',
+      scenario: s.mode || 'Séance',
+      duration: (s.dureeMinutes || '--') + ' min',
+      score: (s.wattsMoy || 0) * (s.dureeMinutes || 1),
+      reviewed: false,
+      avgSpeed: s.wattsMoy ? (s.wattsMoy / 5).toFixed(1) : '--',
+      avgBpm: s.bpmMoy || '--',
+      rating: 0,
+      difficulty: 'Moyen'
+    }))
+  } catch { /* garde les données vides si l'API échoue */ }
+}
 
 const totalTimePlayed = computed(() => historyData.value.reduce((acc, curr) => acc + parseInt(curr.duration), 0))
 
