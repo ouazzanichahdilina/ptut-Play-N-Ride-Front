@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '../views/AuthView.vue'
-// Import des DEUX dashboards (Invité et Patient)
 import GuestDashboardView from '../views/GuestDashboardView.vue'
 import PatientDashboardView from '../views/PatientDashboardView.vue'
-// Import de la vue PRO et du Jeu
 import ProDashboardView from '../views/ProDashboardView.vue'
 import GameView from '../views/GameView.vue'
 // Import de la vue Administrateur
