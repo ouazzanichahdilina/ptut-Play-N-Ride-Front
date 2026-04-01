@@ -49,7 +49,15 @@
           </div>
         </div>
 
-        <button class="btn-save-score" @click="saveAndReturn">ENREGISTRER</button>
+        <button class="btn-save-score" @click="saveAndReturn" :disabled="saving">
+          {{ saving ? 'Enregistrement...' : 'ENREGISTRER' }}
+        </button>
+
+        <transition name="fade">
+          <div v-if="saveMessage" class="save-confirmation" :class="saveMessageType">
+            {{ saveMessage }}
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -73,6 +81,9 @@ const finalScore = ref(0)
 const sessionDuration = ref("--")
 const rating = ref(3)
 const difficulty = ref('Moyen')
+const saving = ref(false)
+const saveMessage = ref('')
+const saveMessageType = ref('success')
 
 let sessionStartTime = null
 let sessionEndTime = null
@@ -291,40 +302,57 @@ const quitGame = () => {
 
 const saveAndReturn = async () => {
   const returnPath = route.query.from === 'guest' ? '/guest-dashboard' : '/patient-dashboard'
+  const token = localStorage.getItem('token')
   const patientId = parseInt(localStorage.getItem('id'))
 
-  if (patientId && route.query.from !== 'guest') {
-    const token = localStorage.getItem('token')
-    const now = sessionEndTime ? new Date(sessionEndTime) : new Date()
-    const duree = sessionStartTime ? Math.max(1, Math.round((now - sessionStartTime) / 60000)) : 1
-    const debut = sessionStartTime ? new Date(sessionStartTime) : new Date(now - duree * 60000)
-    const wattsMoy = Math.max(20, finalScore.value * 2)
+  const now = sessionEndTime ? new Date(sessionEndTime) : new Date()
+  const duree = sessionStartTime ? Math.max(1, Math.round((now - sessionStartTime) / 60000)) : 1
+  const debut = sessionStartTime ? new Date(sessionStartTime) : new Date(now.getTime() - duree * 60000)
 
-    try {
-      await fetch(`${API_URL}/seances`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          dateDebut: debut.toISOString(),
-          dateFin: now.toISOString(),
-          dureeMinutes: duree,
-          wattsMin: 10,
-          wattsMoy: wattsMoy,
-          wattsMax: Math.max(wattsMoy + 10, finalScore.value * 3),
-          bpmMin: 65,
-          bpmMoy: Math.min(150, 75 + finalScore.value),
-          bpmMax: Math.min(170, 90 + finalScore.value),
-          mode: route.query.mode || 'LIBRE',
-          patient: { id: patientId }
-        })
-      })
-    } catch { /* on navigue quand même si l'API est inaccessible */ }
+  const body = {
+    dateDebut: debut.toISOString(),
+    dateFin: now.toISOString(),
+    dureeMinutes: duree,
+    mode: token && patientId ? 'libre' : 'anonyme'
   }
 
-  router.push({
-    path: returnPath,
-    query: { finished: true, score: finalScore.value * 10, diff: difficulty.value }
-  })
+  if (token && patientId) {
+    body.patient = { id: patientId }
+  }
+
+  saving.value = true
+  saveMessage.value = ''
+
+  try {
+    const headers = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    const res = await fetch(`${API_URL}/seances`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    })
+
+    if (res.ok) {
+      saveMessageType.value = 'success'
+      saveMessage.value = 'Séance enregistrée avec succès !'
+    } else {
+      saveMessageType.value = 'error'
+      saveMessage.value = 'Erreur lors de l\'enregistrement.'
+    }
+  } catch {
+    saveMessageType.value = 'error'
+    saveMessage.value = 'Impossible de joindre le serveur.'
+  } finally {
+    saving.value = false
+  }
+
+  setTimeout(() => {
+    router.push({
+      path: returnPath,
+      query: { finished: true, score: finalScore.value * 10, diff: difficulty.value }
+    })
+  }, 1500)
 }
 
 onUnmounted(() => {
@@ -372,6 +400,14 @@ canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; 
 .difficulty-buttons button { flex: 1; padding: 12px 5px; border: 2px solid #E2E8F0; background: white; border-radius: 12px; cursor: pointer; font-weight: 700; color: #6B7C93; transition: 0.2s; }
 .difficulty-buttons button.active { border-color: #FFB800; background: #FFF9E6; color: #FFB800; }
 
-.btn-save-score { width: 100%; padding: 16px; border: none; border-radius: 50px; background-color: #00B8D9; color: white; font-size: 1.1rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 184, 217, 0.3); }
-.btn-save-score:hover { transform: translateY(-2px); }
+.btn-save-score { width: 100%; padding: 16px; border: none; border-radius: 50px; background-color: #00B8D9; color: white; font-size: 1.1rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 184, 217, 0.3); transition: 0.2s; }
+.btn-save-score:hover:not(:disabled) { transform: translateY(-2px); }
+.btn-save-score:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.save-confirmation { margin-top: 15px; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; text-align: center; }
+.save-confirmation.success { background: #E8F8F5; color: #20C997; }
+.save-confirmation.error { background: #FFF5F5; color: #FC8181; }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
