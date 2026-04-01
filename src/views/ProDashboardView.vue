@@ -533,12 +533,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { API_URL } from '../config.js'
 
 const nom = ref(localStorage.getItem('nom') || 'Professionnel de Santé')
 const email = ref(localStorage.getItem('email') || '')
-const statut = ref(localStorage.getItem('statut') || '')
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
@@ -554,7 +553,10 @@ const fetchPatients = async () => {
   const token = localStorage.getItem('token')
   try {
     const res = await fetch(`${API_URL}/utilisateurs`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     })
     if (!res.ok) throw new Error()
     const data = await res.json()
@@ -578,7 +580,12 @@ const fetchPatients = async () => {
   }
 }
 
-onMounted(() => fetchPatients())
+onMounted(async () => {
+  await fetchPatients()
+  if (patients.value.length > 0) {
+    selectedChatUserId.value = patients.value[0].id
+  }
+})
 
 const filteredPatients = computed(() => {
   return patients.value.filter(p => p.nom.toLowerCase().includes(searchQuery.value.toLowerCase()))
@@ -596,7 +603,7 @@ const exercises = [
 // --------------------------------------------------------
 // GESTION DU CHAT DYNAMIQUE ET NOTIFS
 // --------------------------------------------------------
-const selectedChatUserId = ref(patients.value[0].id)
+const selectedChatUserId = ref(null)
 const newMessage = ref('')
 const chatBodyRef = ref(null)
 const unreadMessages = ref(1)
