@@ -54,10 +54,12 @@
 
       <div class="sidebar-bottom">
         <div class="pro-profile">
-          <div class="pro-avatar">{{ nom ? nom.charAt(0).toUpperCase() : 'P' }}</div>
+          <div class="pro-avatar">
+            <img src="/images/proSanté.png" alt="Dr Durand" />
+          </div>
           <div class="pro-info">
-            <p class="pro-name">{{ nom }}</p>
-            <p class="pro-mail">{{ email }}</p>
+            <p class="pro-name">Dr. Sophie Durand</p>
+            <p class="pro-mail">Cabinet Kiné Sport</p>
           </div>
         </div>
         <button class="logout-link" @click="$router.push('/')">
@@ -362,8 +364,8 @@
         </header>
         <div class="settings-card">
           <h3>Informations Professionnelles</h3>
-          <div class="form-group"><label>Nom du Médecin</label><input type="text" :value="nom" disabled></div>
-          <div class="form-group"><label>Établissement</label><input type="text" value="Cabinet Kiné Sport Santé" disabled></div>
+          <div class="form-group"><label>Nom du Praticien</label><input type="text" value="Dr. Sophie Durand"></div>
+          <div class="form-group"><label>Établissement / SIRET</label><input type="text" value="Cabinet Kiné Sport Santé - 12345678900012"></div>
           
           <h3 style="margin-top: 40px;">Règles de Sécurité Globales</h3>
           <label class="toggle-label">
@@ -533,11 +535,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
 
-const nom = ref(localStorage.getItem('nom') || 'Professionnel de Santé')
-const email = ref(localStorage.getItem('email') || '')
+const router = useRouter()
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
@@ -547,45 +549,43 @@ const selectedPatient = ref(null)
 const searchQuery = ref('')
 const isGeneratingPDF = ref(false)
 
-const patients = ref([])
-
-const fetchPatients = async () => {
-  const token = localStorage.getItem('token')
-  try {
-    const res = await fetch(`${API_URL}/utilisateurs`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-    if (!res.ok) throw new Error()
-    const data = await res.json()
-    patients.value = data
-      .filter(u => u.statut === 'Patient' || u.role === 'Patient')
-      .map(u => ({
-        id: u.id,
-        nom: u.nom || `${u.prenom || ''} ${u.nomFamille || ''}`.trim(),
-        age: u.age || '--',
-        statut: u.actif === false ? 'Inactif' : 'Actif',
-        derniereSeance: '--',
-        progression: 0,
-        niveau: 1
-      }))
-  } catch {
-    patients.value = [
-      { nom: "Jean Dupont", age: 72, statut: "Actif", derniereSeance: "Aujourd'hui", progression: 75, niveau: 5 },
-      { nom: "Marie Martin", age: 68, statut: "Actif", derniereSeance: "Hier", progression: 60, niveau: 4 },
-      { nom: "Pierre Durand", age: 80, statut: "Inactif", derniereSeance: "Il y a 3 jours", progression: 40, niveau: 3 }
+// --------------------------------------------------------
+// DONNEES REALISTES DES PATIENTS ET AVATARS UPLOADES
+// --------------------------------------------------------
+const patients = ref([
+  { 
+    id: 1, nom: "Jean Dupont", age: 72, pathologie: "Prothèse Genou Droit", observance: 85, lastRPE: "Difficile", derniereSeance: "Aujourd'hui", avatar: "/images/avBlonde.png",
+    metrics: { fcMax: 130, puissanceMoyenne: 45, materiel: "Pédalier (Bras)" },
+    historique: [
+      { date: "Aujourd'hui", scenario: "Forêt Endurance", duree: "20 min", fcMoy: 112, watts: 48, rpe: "Difficile" },
+      { date: "Il y a 2 jours", scenario: "Réveil Articulaire", duree: "15 min", fcMoy: 98, watts: 35, rpe: "Moyen" }
     ]
+  },
+  { 
+    id: 2, nom: "Marie Martin", age: 68, pathologie: "Rééducation Cardiaque", observance: 95, lastRPE: "Facile", derniereSeance: "Hier", avatar: "/images/avatarRousse.png",
+    metrics: { fcMax: 120, puissanceMoyenne: 30, materiel: "Vélo Complet" },
+    historique: [
+      { date: "Hier", scenario: "Plage Récupération", duree: "10 min", fcMoy: 95, watts: 25, rpe: "Facile" }
+    ]
+  },
+  { 
+    id: 3, nom: "Pierre Durand", age: 80, pathologie: "Post-AVC", observance: 40, lastRPE: "Moyen", derniereSeance: "Il y a 7 jours", avatar: "/images/avBlackW.png",
+    metrics: { fcMax: 115, puissanceMoyenne: 20, materiel: "Pédalier (Jambes)" },
+    historique: [
+      { date: "12 Oct.", scenario: "Jardin des Sens", duree: "12 min", fcMoy: 88, watts: 18, rpe: "Moyen" }
+    ]
+  },
+  { 
+    id: 4, nom: "Nadia Benali", age: 55, pathologie: "Maintien en Forme", observance: 100, lastRPE: "Facile", derniereSeance: "Aujourd'hui", avatar: "/images/azouz.png",
+    metrics: { fcMax: 150, puissanceMoyenne: 70, materiel: "Vélo Complet" },
+    historique: []
+  },
+  { 
+    id: 5, nom: "Lucie Bernard", age: 62, pathologie: "Arthrose Hanche", observance: 60, lastRPE: "Moyen", derniereSeance: "Il y a 3 jours", avatar: "/images/avatarN.png",
+    metrics: { fcMax: 125, puissanceMoyenne: 35, materiel: "Vélo Complet" },
+    historique: []
   }
-}
-
-onMounted(async () => {
-  await fetchPatients()
-  if (patients.value.length > 0) {
-    selectedChatUserId.value = patients.value[0].id
-  }
-})
+])
 
 const filteredPatients = computed(() => {
   return patients.value.filter(p => p.nom.toLowerCase().includes(searchQuery.value.toLowerCase()))
@@ -603,7 +603,7 @@ const exercises = [
 // --------------------------------------------------------
 // GESTION DU CHAT DYNAMIQUE ET NOTIFS
 // --------------------------------------------------------
-const selectedChatUserId = ref(null)
+const selectedChatUserId = ref(patients.value.length > 0 ? patients.value[0].id : null)
 const newMessage = ref('')
 const chatBodyRef = ref(null)
 const unreadMessages = ref(1)
