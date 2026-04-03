@@ -55,11 +55,11 @@
       <div class="sidebar-bottom">
         <div class="pro-profile">
           <div class="pro-avatar">
-            <img src="/images/proSanté.png" alt="Dr Durand" />
+            <img :src="proProfileImage" :alt="proName" />
           </div>
           <div class="pro-info">
-            <p class="pro-name">Dr. Sophie Durand</p>
-            <p class="pro-mail">Cabinet Kiné Sport</p>
+            <p class="pro-name">{{ proName }}</p>
+            <p class="pro-mail">professionnel de santé</p>
           </div>
         </div>
         <button class="logout-link" @click="$router.push('/')">
@@ -540,6 +540,14 @@ import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
 
 const router = useRouter()
+
+const proName = ref(localStorage.getItem('nom') || 'Professionnel de Santé')
+const proProfileImage = ref('/images/avBlonde.png')
+
+onMounted(() => {
+  const savedAvatar = localStorage.getItem('playnride_user_avatar')
+  if (savedAvatar) proProfileImage.value = savedAvatar
+})
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
