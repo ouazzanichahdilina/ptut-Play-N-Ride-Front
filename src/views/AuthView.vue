@@ -106,7 +106,6 @@
                   <option value="" disabled selected>Sélectionner...</option>
                   <option value="patient">Patient à domicile</option>
                   <option value="Professionnel">Professionnel de santé</option>
-                  <option value="Professionnel">Structure (EHPAD, etc.)</option>
                   <option value="Administrateur">Administrateur</option>
                 </select>
               </div>
