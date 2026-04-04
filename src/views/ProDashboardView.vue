@@ -54,12 +54,19 @@
 
       <div class="sidebar-bottom">
         <div class="pro-profile">
+<<<<<<< HEAD
           <div class="pro-avatar">
             <img src="/images/proSanté.png" alt="Dr Durand" />
           </div>
           <div class="pro-info">
             <p class="pro-name">Dr. Sophie Durand</p>
             <p class="pro-mail">Cabinet Kiné Sport</p>
+=======
+          <div class="pro-avatar">{{ nom ? nom.charAt(0).toUpperCase() : 'P' }}</div>
+          <div class="pro-info">
+            <p class="pro-name">{{ nom }}</p>
+            <p class="pro-mail">{{ email }}</p>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
           </div>
         </div>
         <button class="logout-link" @click="$router.push('/')">
@@ -281,7 +288,11 @@
         <header class="content-header">
           <div>
             <h1>Monitoring Temps Réel</h1>
+<<<<<<< HEAD
             <p class="subtitle">Supervisez les constantes de vos patients en cours de séance.</p>
+=======
+            <p class="subtitle">Supervisez les séances en cours et ajustez la charge clinique.</p>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
           </div>
         </header>
 
@@ -304,6 +315,13 @@
                   <span class="equip-badge">{{ session.equipement }} • {{ session.scenario }}</span>
                 </div>
               </div>
+<<<<<<< HEAD
+=======
+              <button class="btn-emergency" @click="emergencyStop(session)" :disabled="session.isStopped">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                ARRÊT MOTEUR
+              </button>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
             </div>
 
             <div class="live-metrics">
@@ -324,6 +342,35 @@
                 <span class="text-xs text-muted">Sur {{ session.timeTotal }}</span>
               </div>
             </div>
+<<<<<<< HEAD
+=======
+
+            <div class="live-controls">
+              <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Ajustement Télé-réadaptation</h4>
+              <div class="control-row">
+                <div class="slider-labels"><label>Niveau de Résistance (Moteur)</label><span>Niv. {{ session.resistance }}</span></div>
+                <input type="range" min="1" max="10" v-model="session.resistance" class="slider custom-slider" :disabled="session.isStopped">
+              </div>
+              
+              <button 
+                class="btn-outline" 
+                style="margin-top: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" 
+                @click="sendAdjustment(session)"
+                :disabled="session.isSending || session.isStopped"
+              >
+                <template v-if="session.isSending">
+                  <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Transmission...
+                </template>
+                <template v-else-if="session.adjustmentSent">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#20C997" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span style="color: #20C997;">Ajustement envoyé</span>
+                </template>
+                <template v-else>
+                  Transmettre l'ajustement
+                </template>
+              </button>
+
+            </div>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
           </div>
         </div>
       </div>
@@ -334,8 +381,13 @@
         </header>
         <div class="settings-card">
           <h3>Informations Professionnelles</h3>
+<<<<<<< HEAD
           <div class="form-group"><label>Nom du Praticien</label><input type="text" value="Dr. Sophie Durand"></div>
           <div class="form-group"><label>Établissement / SIRET</label><input type="text" value="Cabinet Kiné Sport Santé - 12345678900012"></div>
+=======
+          <div class="form-group"><label>Nom du Médecin</label><input type="text" :value="nom" disabled></div>
+          <div class="form-group"><label>Établissement</label><input type="text" value="Cabinet Kiné Sport Santé" disabled></div>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
           
           <h3 style="margin-top: 40px;">Règles de Sécurité Globales</h3>
           <label class="toggle-label">
@@ -505,7 +557,16 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref, computed, onMounted, nextTick } from 'vue'
+=======
+import { ref, onMounted } from 'vue'
+import { API_URL } from '../config.js'
+
+const nom = ref(localStorage.getItem('nom') || 'Professionnel de Santé')
+const email = ref(localStorage.getItem('email') || '')
+const statut = ref(localStorage.getItem('statut') || '')
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
@@ -515,6 +576,7 @@ const selectedPatient = ref(null)
 const searchQuery = ref('')
 const isGeneratingPDF = ref(false)
 
+<<<<<<< HEAD
 const patients = ref([
   { 
     id: 1, nom: "Jean Dupont", age: 72, pathologie: "Prothèse Genou Droit", observance: 85, lastRPE: "Difficile", derniereSeance: "Aujourd'hui", avatar: "/images/avBlonde.png",
@@ -549,11 +611,45 @@ const patients = ref([
     historique: []
   }
 ])
+=======
+const patients = ref([])
+
+const fetchPatients = async () => {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    patients.value = data
+      .filter(u => u.statut === 'Patient' || u.role === 'Patient')
+      .map(u => ({
+        id: u.id,
+        nom: u.nom || `${u.prenom || ''} ${u.nomFamille || ''}`.trim(),
+        age: u.age || '--',
+        statut: u.actif === false ? 'Inactif' : 'Actif',
+        derniereSeance: '--',
+        progression: 0,
+        niveau: 1
+      }))
+  } catch {
+    patients.value = [
+      { nom: "Jean Dupont", age: 72, statut: "Actif", derniereSeance: "Aujourd'hui", progression: 75, niveau: 5 },
+      { nom: "Marie Martin", age: 68, statut: "Actif", derniereSeance: "Hier", progression: 60, niveau: 4 },
+      { nom: "Pierre Durand", age: 80, statut: "Inactif", derniereSeance: "Il y a 3 jours", progression: 40, niveau: 3 }
+    ]
+  }
+}
+
+onMounted(() => fetchPatients())
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 
 const filteredPatients = computed(() => {
   return patients.value.filter(p => p.nom.toLowerCase().includes(searchQuery.value.toLowerCase()))
 })
 
+<<<<<<< HEAD
 // LES 6 SCENARIOS DISPONIBLES A LA PRESCRIPTION
 const exercises = [
   { id: 1, title: "L'Aube Douce", objective: "Échauffement", desc: "Pédalage léger pour réveiller les articulations.", duration: "15 min", intensity: "Faible", image: "/images/scen-matin.png", color: "#20C997" },
@@ -564,6 +660,20 @@ const exercises = [
   { id: 6, title: "Voyage Aérien", objective: "Calme", desc: "Un parcours apaisant dans les nuages pour faire redescendre le cœur.", duration: "20 min", intensity: "Très Faible", image: "/images/scen-ciel.png", color: "#3B82F6" }
 ]
 
+=======
+// --------------------------------------------------------
+// SCENARIOS CLINIQUES
+// --------------------------------------------------------
+const exercises = [
+  { id: 1, title: "L'Aube Douce", objective: "Échauffement", desc: "Pédalage léger pour réveiller les articulations.", duration: "15 min", intensity: "Faible", image: "/images/scen-matin.png", color: "#20C997" },
+  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", desc: "Adaptation de la cadence aux variations du terrain en forêt.", duration: "20 min", intensity: "Modérée", image: "/images/scen-foret.png", color: "#00B8D9" },
+  { id: 3, title: "L'Ascension Alpine", objective: "Cardio", desc: "Défi stimulant en montagne pour faire travailler le cœur.", duration: "25 min", intensity: "Élevée", image: "/images/scen-montagne.png", color: "#0284C7" }
+]
+
+// --------------------------------------------------------
+// GESTION DU CHAT DYNAMIQUE ET NOTIFS
+// --------------------------------------------------------
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 const selectedChatUserId = ref(patients.value[0].id)
 const newMessage = ref('')
 const chatBodyRef = ref(null)
@@ -621,7 +731,11 @@ const scrollToBottom = () => {
 
 const openMessagerie = () => {
   activeTab.value = 'messagerie'
+<<<<<<< HEAD
   unreadMessages.value = 0 
+=======
+  unreadMessages.value = 0 // Enlève la notif au clic !
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
   scrollToBottom()
 }
 
@@ -630,17 +744,57 @@ const openChatWith = (patientId) => {
   openMessagerie()
 }
 
+<<<<<<< HEAD
 const activeSessions = ref([
   { id: 101, patient: patients.value[0], equipement: "Pédalier (Bras)", scenario: "Forêt Endurance", rpm: 45, bpm: 112, timeElapsed: "12:45", timeTotal: "20:00", isStopped: false }
+=======
+// --------------------------------------------------------
+// DONNEES TEMPS REEL SIMULEES & AJUSTEMENT
+// --------------------------------------------------------
+const activeSessions = ref([
+  { id: 101, patient: patients.value[0], equipement: "Pédalier (Bras)", scenario: "Forêt Endurance", rpm: 45, bpm: 112, timeElapsed: "12:45", timeTotal: "20:00", resistance: 4, isSending: false, adjustmentSent: false, isStopped: false }
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 ])
 
 const unreadLiveAlerts = ref(activeSessions.value.length)
 
 const openMonitoring = () => {
   activeTab.value = 'monitoring'
+<<<<<<< HEAD
   unreadLiveAlerts.value = 0 
 }
 
+=======
+  unreadLiveAlerts.value = 0 // Enlève la notif au clic !
+}
+
+// Envoyer l'ajustement moteur au patient (Simulé avec l'API)
+const sendAdjustment = (session) => {
+  session.isSending = true
+  // Simule l'attente du réseau (API Call)
+  setTimeout(() => {
+    session.isSending = false
+    session.adjustmentSent = true
+    
+    // Remet le bouton à son état normal après 3 secondes
+    setTimeout(() => {
+      session.adjustmentSent = false
+    }, 3000)
+  }, 1000)
+}
+
+// Arrêt d'urgence du moteur
+const emergencyStop = (session) => {
+  if(confirm(`⚠️ Êtes-vous sûr de vouloir arrêter la séance de ${session.patient.nom} ? Le moteur du pédalier se coupera immédiatement.`)) {
+    session.isStopped = true
+    session.rpm = 0
+  }
+}
+
+// --------------------------------------------------------
+// ACTIONS DOSSIER PATIENT & PDF
+// --------------------------------------------------------
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 const openPatientDossier = (patient) => {
   selectedPatient.value = patient
   showPatientDossier.value = true
@@ -654,6 +808,12 @@ const generatePDF = (patient) => {
   }, 1500)
 }
 
+<<<<<<< HEAD
+=======
+// --------------------------------------------------------
+// GESTION PRESCRIPTION MODAL
+// --------------------------------------------------------
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 const assignTargetPatient = ref(null)
 const assignDate = ref('')
 
@@ -669,6 +829,12 @@ const confirmAssignment = () => {
   alert(`La séance ${selectedExo.value.title} a été assignée à ${assignTargetPatient.value.nom}.`)
 }
 
+<<<<<<< HEAD
+=======
+// --------------------------------------------------------
+// LOGIQUE DE L'AGENDA MENSUEL PARTAGE & INTERACTIF
+// --------------------------------------------------------
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 const currentMonthOffset = ref(0)
 const calendarDays = ref([])
 const currentMonthName = ref('')
@@ -742,6 +908,10 @@ const openPatientDossierFromAgenda = () => {
 onMounted(() => {
   generateCalendar()
 })
+<<<<<<< HEAD
+=======
+
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 </script>
 
 <style scoped>
@@ -772,7 +942,11 @@ onMounted(() => {
 .pro-avatar img { width: 100%; height: 100%; object-fit: cover;}
 .pro-name { font-size: 0.9rem; font-weight: 800; color: #0A192F; margin: 0 0 2px 0;}
 .pro-mail { font-size: 0.75rem; color: #6B7C93; margin: 0;}
+<<<<<<< HEAD
 .logout-link { background: none; border: none; color: #6B7C93; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px;}
+=======
+.logout-link { background: none; border: none; color: #94A3B8; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px;}
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .logout-link:hover { color: #FC8181; }
 
 .main-content { flex: 1; padding: 40px 50px; overflow-y: auto; position: relative;}
@@ -845,7 +1019,11 @@ onMounted(() => {
 .patient-slide-panel.panel-open { right: 0; }
 .panel-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.3); z-index: 90; backdrop-filter: blur(2px);}
 .panel-header { padding: 30px 25px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; position: relative;}
+<<<<<<< HEAD
 .btn-close-panel { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #6B7C93; cursor: pointer; transition: 0.2s;}
+=======
+.btn-close-panel { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #94A3B8; cursor: pointer; transition: 0.2s;}
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .btn-close-panel:hover { color: #0A192F; }
 .panel-patient-head { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
 .dossier-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); background:#fff;}
@@ -880,7 +1058,11 @@ onMounted(() => {
 .cal-cell { border-right: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; padding: 8px; transition: background 0.2s;}
 .cal-cell:nth-child(7n) { border-right: none; }
 .cal-cell.other-month { background: #F8FAFC; opacity: 0.5;}
+<<<<<<< HEAD
 .cal-cell.is-today { background: #00B8D9; opacity: 0.1;}
+=======
+.cal-cell.is-today { background: #F0F9FF; }
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .cal-cell.is-today .cal-date { background: #00B8D9; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center;}
 .cal-date { font-weight: 800; color: #0A192F; font-size: 0.9rem; margin-bottom: 5px; width: 24px;}
 .cal-events { display: flex; flex-direction: column; gap: 4px; }
@@ -902,7 +1084,11 @@ onMounted(() => {
 .presc-content p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; flex: 1;}
 .presc-metrics { display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.8rem; font-weight: 700; color: #4A5568;}
 
+<<<<<<< HEAD
 /* ONGLET 4 : MONITORING LIVE (SANS CONTROLE MOTEUR) */
+=======
+/* ONGLET 4 : MONITORING LIVE */
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .empty-state { background: white; padding: 50px; border-radius: 16px; text-align: center; border: 1px dashed #CBD5E1; color: #6B7C93;}
 .empty-state h4 { color: #0A192F; font-size: 1.2rem; margin: 15px 0 5px; font-weight: 800;}
 .monitoring-panel { max-width: 900px; }
@@ -913,17 +1099,39 @@ onMounted(() => {
 .live-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #fff;}
 .live-patient-info h3 { margin: 0 0 2px 0; color: #0A192F; font-size: 1.1rem; font-weight: 900;}
 .equip-badge { background: white; color: #4A5568; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #E2E8F0; }
+<<<<<<< HEAD
+=======
+.btn-emergency { display: flex; align-items: center; gap: 8px; background: #E53E3E; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 0.85rem; cursor: pointer; transition: 0.2s;}
+.btn-emergency:hover:not(:disabled) { background: #C53030; transform: scale(1.05);}
+.btn-emergency:disabled { opacity: 0.5; cursor: not-allowed; }
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .live-metrics { display: flex; padding: 25px; gap: 20px; background: white;}
 .metric { flex: 1; background: #F8FAFC; padding: 15px 20px; border-radius: 12px; display: flex; flex-direction: column; border: 1px solid #E2E8F0;}
 .metric span { font-size: 0.8rem; color: #6B7C93; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;}
 .metric strong { font-size: 2rem; font-weight: 900; line-height: 1;}
 .metric-chart { font-family: monospace; letter-spacing: -1px; color: #00B8D9; margin-top: 10px; font-weight: bold; overflow: hidden; white-space: nowrap;}
+<<<<<<< HEAD
+=======
+.live-controls { padding: 25px; background: #FAFCFF; border-top: 1px solid #E2E8F0;}
+.live-controls h4 { display: flex; align-items: center; gap: 10px; color: #0A192F; font-size: 1rem; margin: 0 0 20px 0; font-weight: 900;}
+.control-row { margin-bottom: 20px; }
+.slider-labels { display: flex; justify-content: space-between; margin-bottom: 10px;}
+.slider-labels label { font-weight: 700; color: #4A5568; font-size: 0.9rem;}
+.slider-labels span { font-weight: 900; color: #00B8D9; background: #EAF7F9; padding: 2px 10px; border-radius: 6px; font-size: 0.85rem;}
+.custom-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #E2E8F0; border-radius: 5px; outline: none;}
+.custom-slider:disabled::-webkit-slider-thumb { background: #94A3B8; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #00B8D9; cursor: pointer; border: 4px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 
 /* ONGLET 5 : PARAMETRES */
 .settings-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; max-width: 700px;}
 .settings-card h3 { color: #0A192F; font-size: 1.1rem; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid #F1F5F9; padding-bottom: 10px;}
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+<<<<<<< HEAD
 .form-group label { font-weight: 700; color: #6B7C93; font-size: 0.85rem; }
+=======
+.form-group label { font-weight: 700; color: #4A5568; font-size: 0.85rem; }
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .form-group input, .form-group select { padding: 12px; border: 2px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; font-family: inherit; font-size: 0.95rem; color: #0A192F; transition: 0.2s;}
 .form-group input:focus, .form-group select:focus { border-color: #00B8D9; outline: none; background: white;}
 .toggle-label { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #0A192F; margin-bottom: 15px; cursor: pointer; font-size: 0.95rem;}
@@ -954,7 +1162,11 @@ input:checked + .slider-toggle:before { transform: translateX(20px); }
 .message-bubble { max-width: 65%; padding: 12px 18px; border-radius: 14px; font-size: 0.95rem; line-height: 1.5;}
 .from-pro .message-bubble { background: #00B8D9; color: white; border-bottom-right-radius: 4px;}
 .from-patient .message-bubble { background: white; color: #0A192F; border: 1px solid #E2E8F0; border-bottom-left-radius: 4px;}
+<<<<<<< HEAD
 .message-time { display: block; font-size: 0.7rem; margin-top: 5px; opacity: 0.7; text-align: right; color: #6B7C93; }
+=======
+.message-time { display: block; font-size: 0.7rem; margin-top: 5px; opacity: 0.7; text-align: right; }
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 .chat-input-pro { padding: 20px 25px; border-top: 1px solid #E2E8F0; display: flex; gap: 12px; background: white;}
 .chat-input-pro input { flex: 1; padding: 12px 18px; border: 2px solid #E2E8F0; border-radius: 10px; font-size: 0.95rem; outline: none; transition: 0.2s;}
 .chat-input-pro input:focus { border-color: #00B8D9;}

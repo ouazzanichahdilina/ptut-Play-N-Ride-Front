@@ -8,6 +8,10 @@
           <p class="subtitle">Transformez vos séances d'effort en aventures interactives. Connectez votre équipement et évadez-vous depuis chez vous ou votre centre de soin.</p>
           <div class="hero-actions">
             <button class="btn btn-solid-green btn-large" @click="$router.push('/guest-dashboard')">JOUER LIBREMENT</button>
+<<<<<<< HEAD
+=======
+            <button class="btn btn-outline-blue btn-large">DÉCOUVRIR LES JEUX</button>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
           </div>
           <div class="social-proof">
             <div class="avatars">
@@ -164,12 +168,40 @@ const closeModal = () => {
 }
 
 /* === BOUTONS === */
+<<<<<<< HEAD
 .btn { padding: 12px 24px; border-radius: 50px; font-weight: 800; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; border: none; }
 .btn-large { padding: 16px 32px; font-size: 1.05rem; }
 .btn-outline-blue { border: 2px solid #00B8D9; color: #00B8D9; background: transparent; }
 .btn-outline-blue:hover { background: #F0F9FF; }
 .btn-solid-green { background: #20C997; color: white; box-shadow: 0 4px 15px rgba(32, 201, 151, 0.3); }
 .btn-solid-green:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(32, 201, 151, 0.4); }
+=======
+.btn { 
+  padding: 12px 24px; 
+  border-radius: 50px; 
+  font-weight: 800; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  font-size: 0.95rem; 
+  border: none; 
+}
+.btn-large { padding: 16px 32px; font-size: 1.05rem; }
+.btn-outline-blue { 
+  border: 2px solid #00B8D9; 
+  color: #00B8D9; 
+  background: transparent; 
+}
+.btn-outline-blue:hover { background: #F0F9FF; }
+.btn-solid-green { 
+  background: #20C997; 
+  color: white; 
+  box-shadow: 0 4px 15px rgba(32, 201, 151, 0.3); 
+}
+.btn-solid-green:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 20px rgba(32, 201, 151, 0.4); 
+}
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 
 /* === RESTE DES STYLES EXISTANTS === */
 .logo-inline { color: #0A192F; font-weight: 900; }
