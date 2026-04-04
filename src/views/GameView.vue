@@ -3,11 +3,33 @@
     <div class="game-header">
       <button class="back-btn" @click="quitGame">← Quitter l'exercice</button>
       <h2>Séance en cours : {{ gameTheme }} ({{ equipment }})</h2>
+      <button class="btn-toggle-players" @click="showLivePlayers = !showLivePlayers">
+        👥 Joueurs en ligne ({{ livePlayers.length }})
+      </button>
     </div>
-    
-    <div class="game-wrapper">
-      <canvas id="game" width="300" height="500"></canvas>
-      <p id="description" class="game-description">Pédalez fort pour commencer !</p>
+
+    <div class="game-layout">
+      <div class="game-wrapper">
+        <canvas id="game" width="300" height="500"></canvas>
+        <p id="description" class="game-description">Pédalez fort pour commencer !</p>
+      </div>
+
+      <div class="live-players-sidebar" :class="{ 'is-open': showLivePlayers }">
+        <div class="sidebar-header">
+          <h3><span class="live-dot"></span> En direct</h3>
+          <button class="close-sidebar" @click="showLivePlayers = false">&times;</button>
+        </div>
+        <ul class="players-list">
+          <li v-for="(player, index) in livePlayers" :key="index" :class="{'is-me': player.isMe}">
+            <div class="player-avatar">{{ player.name.charAt(0) }}</div>
+            <div class="player-info">
+              <span class="player-name">{{ player.name }}</span>
+              <span class="player-score">{{ player.score }} pts</span>
+            </div>
+            <span v-if="player.isMe" class="you-badge">Vous</span>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div class="modal-overlay" :class="{ active: showEndScreen }">
@@ -18,10 +40,33 @@
         </div>
         
         <p class="bravo-text">Bravo ! 🎉</p>
-        
-        <div class="score-card">
-          <p>SCORE FINAL</p>
-          <h2>{{ finalScore * 10 }} pts</h2>
+
+        <div class="podium-container">
+          <div class="podium-place place-2" v-if="sortedLeaderboard[1]">
+            <div class="medal">🥈</div>
+            <div class="podium-bar silver">
+              <span class="p-name">{{ sortedLeaderboard[1].name.substring(0, 8) }}</span>
+              <span class="p-score">{{ sortedLeaderboard[1].score }}</span>
+            </div>
+          </div>
+          <div class="podium-place place-1" v-if="sortedLeaderboard[0]">
+            <div class="medal">🥇</div>
+            <div class="podium-bar gold">
+              <span class="p-name">{{ sortedLeaderboard[0].name.substring(0, 8) }}</span>
+              <span class="p-score">{{ sortedLeaderboard[0].score }}</span>
+            </div>
+          </div>
+          <div class="podium-place place-3" v-if="sortedLeaderboard[2]">
+            <div class="medal">🥉</div>
+            <div class="podium-bar bronze">
+              <span class="p-name">{{ sortedLeaderboard[2].name.substring(0, 8) }}</span>
+              <span class="p-score">{{ sortedLeaderboard[2].score }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="my-rank-info">
+          Votre position : <strong>#{{ myRank }}</strong> sur {{ sortedLeaderboard.length }} — Score : <strong>{{ finalScore * 10 }} pts</strong>
         </div>
 
         <div class="stats-row">
@@ -64,7 +109,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
 
@@ -74,6 +119,7 @@ const router = useRouter()
 const playerAvatarId = route.query.avatar || 'avatar1'
 const gameTheme = route.query.theme || 'Classique'
 const equipment = route.query.equip || 'Vélo'
+const isGuest = route.query.from === 'guest'
 
 const isGameOver = ref(false)
 const showEndScreen = ref(false)
@@ -84,6 +130,18 @@ const difficulty = ref('Moyen')
 const saving = ref(false)
 const saveMessage = ref('')
 const saveMessageType = ref('success')
+const showLivePlayers = ref(false)
+
+const livePlayers = ref([
+  { name: 'Marc L.', score: 850, isMe: false },
+  { name: 'Sophie D.', score: 520, isMe: false },
+  { name: 'Invité_842', score: 310, isMe: false },
+  { name: 'Invité_911', score: 120, isMe: false },
+  { name: isGuest ? 'Vous (Invité)' : (localStorage.getItem('nom') || 'Vous'), score: 0, isMe: true }
+])
+
+const sortedLeaderboard = computed(() => [...livePlayers.value].sort((a, b) => b.score - a.score))
+const myRank = computed(() => sortedLeaderboard.value.findIndex(p => p.isMe) + 1)
 
 let sessionStartTime = null
 let sessionEndTime = null
@@ -273,6 +331,8 @@ onMounted(() => {
           }
           isGameOver.value = true;
           finalScore.value = score.current;
+          const me = livePlayers.value.find(p => p.isMe)
+          if (me) me.score = score.current * 10;
           showEndScreen.value = true;
       } else {
           isGameOver.value = false;
@@ -410,4 +470,40 @@ canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; 
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* GAME LAYOUT AVEC SIDEBAR */
+.game-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; max-width: 750px; }
+
+/* BOUTON JOUEURS EN LIGNE */
+.btn-toggle-players { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: 0.2s; }
+.btn-toggle-players:hover { background: rgba(255,255,255,0.2); }
+
+/* SIDEBAR JOUEURS */
+.live-players-sidebar { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; min-width: 180px; display: none; }
+.live-players-sidebar.is-open { display: block; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.sidebar-header h3 { color: white; font-size: 0.9rem; font-weight: 800; display: flex; align-items: center; gap: 8px; margin: 0; }
+.live-dot { width: 8px; height: 8px; background: #20C997; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.close-sidebar { background: none; border: none; color: #94A3B8; font-size: 1.3rem; cursor: pointer; line-height: 1; }
+.players-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.players-list li { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.05); }
+.players-list li.is-me { background: rgba(0,184,217,0.15); border: 1px solid rgba(0,184,217,0.3); }
+.player-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #20C997, #00B8D9); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
+.player-info { flex: 1; display: flex; flex-direction: column; }
+.player-name { color: white; font-weight: 700; font-size: 0.8rem; }
+.player-score { color: #94A3B8; font-size: 0.75rem; }
+.you-badge { background: #00B8D9; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 8px; }
+
+/* PODIUM */
+.podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 15px 0; }
+.podium-place { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.medal { font-size: 1.5rem; }
+.podium-bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 8px 12px; border-radius: 8px 8px 0 0; min-width: 70px; }
+.podium-bar.gold { background: linear-gradient(to top, #FFB800, #FFD700); height: 80px; }
+.podium-bar.silver { background: linear-gradient(to top, #94A3B8, #CBD5E1); height: 60px; }
+.podium-bar.bronze { background: linear-gradient(to top, #CD7F32, #D4956A); height: 45px; }
+.p-name { color: white; font-weight: 800; font-size: 0.75rem; text-align: center; }
+.p-score { color: rgba(255,255,255,0.85); font-size: 0.7rem; font-weight: 700; }
+.my-rank-info { text-align: center; color: #94A3B8; font-size: 0.9rem; margin-bottom: 15px; }
 </style>
