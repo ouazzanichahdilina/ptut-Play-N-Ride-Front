@@ -40,8 +40,13 @@
             <img :src="userProfileImage" alt="Patient" />
           </div>
           <div class="user-info">
+<<<<<<< HEAD
+            <p class="user-name">Jean Dupont</p>
+            <p class="user-status">Suivi par Dr. Lefevre</p>
+=======
             <p class="user-name">{{ nom }}</p>
             <p class="user-status">{{ statut || 'Patient' }}</p>
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
           </div>
         </div>
         <button class="logout-btn-sidebar" @click="goHome">
@@ -339,6 +344,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+<<<<<<< HEAD
+
+const router = useRouter()
+=======
 import { API_URL } from '../config.js'
 
 const router = useRouter()
@@ -346,6 +355,7 @@ const router = useRouter()
 const nom = ref(localStorage.getItem('nom') || 'Utilisateur')
 const email = ref(localStorage.getItem('email') || '')
 const statut = ref(localStorage.getItem('statut') || '')
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 const activeTab = ref('programme')
 const showConfigStudio = ref(false)
 const selectedActivity = ref(null)
@@ -361,9 +371,16 @@ const userProfileImage = ref('/images/avBlonde.png') // Fallback
 
 onMounted(() => {
   const savedAvatar = localStorage.getItem('playnride_user_avatar')
+<<<<<<< HEAD
+  if (savedAvatar) {
+    userProfileImage.value = savedAvatar
+  }
+  generateWeekSchedule()
+=======
   if (savedAvatar) userProfileImage.value = savedAvatar
   generateWeekSchedule()
   fetchHistory()
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 })
 
 // TOUTES LES ACTIVITÉS (Les 6 scénarios)
@@ -419,6 +436,13 @@ const generateWeekSchedule = () => {
 }
 
 // HISTORIQUE DETAILLÉ DU PATIENT
+<<<<<<< HEAD
+const historyData = ref([
+  { date: "Hier", type: "prescrit", scenario: "L'Aube Douce", duration: "15 min", score: 450, reviewed: true, avgSpeed: "18.5", avgBpm: 112, rating: 4, difficulty: "Facile" },
+  { date: "Il y a 3 jours", type: "prescrit", scenario: "Souffle Océanique", duration: "10 min", score: 380, reviewed: true, avgSpeed: "16.2", avgBpm: 105, rating: 5, difficulty: "Facile" },
+  { date: "Il y a 5 jours", type: "libre", scenario: "L'Échappée Sylvestre", duration: "20 min", score: 510, reviewed: false, avgSpeed: "21.0", avgBpm: 125, rating: 3, difficulty: "Moyen" }
+])
+=======
 const historyData = ref([])
 
 const fetchHistory = async () => {
@@ -445,6 +469,7 @@ const fetchHistory = async () => {
     }))
   } catch { /* garde les données vides si l'API échoue */ }
 }
+>>>>>>> fff9410c343426545d481c42704bf636c74d358c
 
 const totalTimePlayed = computed(() => historyData.value.reduce((acc, curr) => acc + parseInt(curr.duration), 0))
 

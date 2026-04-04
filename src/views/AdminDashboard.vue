@@ -1,12 +1,12 @@
 <template>
-  <div class="dashboard-layout admin-theme">
-    <aside class="sidebar bg-slate-900">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
       <div class="sidebar-top">
         <div class="sidebar-brand" @click="goHome">
-          <img src="/images/logo.png" alt="Logo" class="sidebar-logo" style="filter: brightness(0) invert(1);" />
-          <div class="brand-info text-white">
-            <p class="brand-name text-white">Play 'N Ride</p>
-            <p class="brand-tag text-cyan">Super Admin</p>
+          <img src="/images/logo.png" alt="Logo" class="sidebar-logo" />
+          <div class="brand-info">
+            <p class="brand-name">Play 'N Ride</p>
+            <p class="brand-tag">Super Admin</p>
           </div>
         </div>
 
@@ -23,6 +23,14 @@
             </span> 
             Gestion Utilisateurs
           </a>
+          
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'tele-readap' }" @click="activeTab = 'tele-readap'">
+            <span class="menu-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </span> 
+            Télé-réadaptation
+          </a>
+
           <a href="#" class="menu-item" :class="{ active: activeTab === 'scenarios' }" @click="activeTab = 'scenarios'">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
@@ -31,22 +39,22 @@
           </a>
           <a href="#" class="menu-item" :class="{ active: activeTab === 'systeme' }" @click="activeTab = 'systeme'">
             <span class="menu-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             </span> 
             Maintenance Système
           </a>
         </nav>
       </div>
 
-      <div class="sidebar-bottom border-slate-700">
-        <div class="pro-profile bg-slate-800 text-white">
-          <div class="pro-avatar bg-cyan">A</div>
+      <div class="sidebar-bottom">
+        <div class="pro-profile">
+          <div class="pro-avatar">A</div>
           <div class="pro-info">
-            <p class="pro-name text-white">Admin Principal</p>
-            <p class="pro-mail text-slate-400">admin@playnride.fr</p>
+            <p class="pro-name">Admin Principal</p>
+            <p class="pro-mail">admin@playnride.fr</p>
           </div>
         </div>
-        <button class="logout-link text-slate-400 hover-text-white" @click="goAuth">
+        <button class="logout-link" @click="goAuth">
           Déconnexion 
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         </button>
@@ -182,6 +190,44 @@
         </div>
       </div>
 
+      <div v-if="activeTab === 'tele-readap'" class="tab-fade">
+        <header class="content-header">
+          <div>
+            <h1>Ajustement Matériel à Distance</h1>
+            <p class="subtitle">Contrôle technique de sécurité des moteurs des pédaliers connectés en direct.</p>
+          </div>
+        </header>
+
+        <div class="monitoring-panel">
+          <div class="live-patient" v-for="session in activeHardwareSessions" :key="session.id">
+            <div class="live-header-bar">
+              <div>
+                <h3 style="margin:0; color:#0A192F;">Patient : {{ session.nom }}</h3>
+                <span class="text-xs text-muted">ID Appareil : {{ session.deviceId }} ({{ session.equipement }})</span>
+              </div>
+              <button class="btn-emergency" @click="emergencyStop(session)" :disabled="session.isStopped">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                ARRÊT MOTEUR D'URGENCE
+              </button>
+            </div>
+
+            <div class="live-controls">
+              <div class="control-row">
+                <div class="slider-labels">
+                  <label>Niveau de Résistance (Moteur)</label>
+                  <span class="level-badge">Niv. {{ session.resistance }}</span>
+                </div>
+                <input type="range" min="1" max="10" v-model="session.resistance" class="slider custom-slider" :disabled="session.isStopped">
+              </div>
+              
+              <button class="btn-primary" @click="sendAdjustment(session)" :disabled="session.isSending || session.isStopped">
+                {{ session.isSending ? 'Transmission en cours...' : 'Forcer la mise à jour matérielle' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div v-if="activeTab === 'scenarios'" class="tab-fade">
         <header class="content-header">
           <div>
@@ -205,7 +251,7 @@
                   <span class="slider-toggle-small"></span>
                 </label>
               </div>
-              <h3 style="margin-top: 10px;">{{ exo.title }}</h3>
+              <h3 style="margin-top: 10px; color: #0A192F;">{{ exo.title }}</h3>
               <p class="text-muted text-xs">Fichier: {{ exo.fileRef }} • MàJ: {{ exo.lastUpdate }}</p>
               <div style="display: flex; gap:10px; margin-top:15px;">
                 <button class="btn-outline-small" style="flex:1;">Modifier</button>
@@ -239,7 +285,7 @@
           <h3 style="margin-top: 40px;">Mises à jour de l'application</h3>
           <div class="update-box">
             <div class="flex-row">
-              <strong>Version Actuelle : v2.1.4</strong>
+              <strong style="color: #0A192F;">Version Actuelle : v2.1.4</strong>
               <span class="status-badge bg-green-light text-green">À jour</span>
             </div>
             <p class="text-muted text-xs mt-2">Dernier déploiement effectué le 12 Octobre.</p>
@@ -270,7 +316,7 @@
           </div>
           <div class="form-group">
             <label>Fichier Build du Jeu (Unity/WebGL)</label>
-            <input type="file" style="border: 1px dashed #CBD5E1; padding: 20px; background: white;">
+            <input type="file" style="border: 1px dashed #E2E8F0; padding: 20px; background: white; color: #1C2833;">
           </div>
           <button class="btn-primary" style="width: 100%; margin-top: 20px;" @click="showAddScenarioModal = false">Uploader et Sauvegarder</button>
         </div>
@@ -286,7 +332,6 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// Fonctions de navigation sécurisées
 const goHome = () => router.push('/')
 const goAuth = () => router.push('/auth')
 
@@ -318,7 +363,28 @@ const toggleUserStatus = (user) => {
 }
 
 const editUser = (user) => {
-  alert(`Mode édition pour ${user.nom} (à relier au backend)`)
+  alert(`Mode édition pour ${user.nom}`)
+}
+
+// --- GESTION MATÉRIEL A DISTANCE (TELE-READAPTATION) ---
+const activeHardwareSessions = ref([
+  { id: 101, nom: "Jean Dupont", deviceId: "PED-8492A", equipement: "Pédalier (Bras)", resistance: 4, isSending: false, isStopped: false },
+  { id: 102, nom: "Pierre Durand", deviceId: "VEL-112B", equipement: "Vélo Complet", resistance: 2, isSending: false, isStopped: false }
+])
+
+const sendAdjustment = (session) => {
+  session.isSending = true
+  setTimeout(() => { 
+    session.isSending = false; 
+    alert(`La résistance de l'appareil ${session.deviceId} a été mise à jour avec succès au niveau ${session.resistance}.`) 
+  }, 1000)
+}
+
+const emergencyStop = (session) => {
+  if(confirm(`⚠️ Êtes-vous sûr de vouloir couper immédiatement le moteur du patient ${session.nom} ?`)) {
+    session.isStopped = true
+    session.resistance = 1
+  }
 }
 
 // --- GESTION CATALOGUE (SCENARIOS) ---
@@ -331,35 +397,30 @@ const scenarios = ref([
 </script>
 
 <style scoped>
-/* VARIABLES & LAYOUT (Thème Admin Foncé pour la Sidebar) */
+/* VARIABLES & LAYOUT (Thème Clair 100%) */
 .dashboard-layout { display: flex; height: 100vh; background-color: #FAFCFF; font-family: 'Nunito', sans-serif; overflow: hidden;}
-.bg-slate-900 { background-color: #0F172A; }
-.bg-slate-800 { background-color: #1E293B; }
-.border-slate-700 { border-top: 1px solid #334155 !important; }
-.text-white { color: #FFFFFF !important; }
-.text-slate-400 { color: #94A3B8 !important; }
-.hover-text-white:hover { color: #FFFFFF !important; }
 
-.sidebar { width: 280px; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 20px; z-index: 50; flex-shrink: 0;}
+.sidebar { width: 280px; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 20px; z-index: 50; flex-shrink: 0; background: white; border-right: 1px solid #E2E8F0;}
 .sidebar-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 40px; }
 .sidebar-logo { height: 40px; }
-.brand-name { font-weight: 900; font-size: 1.2rem; line-height: 1.1; margin:0;}
-.brand-tag { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin:0;}
+.brand-name { font-weight: 900; font-size: 1.2rem; line-height: 1.1; margin:0; color: #0A192F;}
+.brand-tag { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin:0; color: #00B8D9;}
 
 .sidebar-menu { display: flex; flex-direction: column; gap: 6px; }
-.menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: #94A3B8; font-weight: 700; border-radius: 12px; transition: all 0.2s ease; font-size: 0.95rem;}
-.menu-icon { display: flex; align-items: center; justify-content: center; color: #64748B;}
-.menu-item:hover { background-color: #1E293B; color: #FFFFFF; }
-.menu-item:hover .menu-icon { color: #FFFFFF; }
-.menu-item.active { background-color: #00B8D9; color: #FFFFFF; }
-.menu-item.active .menu-icon { color: #FFFFFF; }
+.menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: #6B7C93; font-weight: 700; border-radius: 12px; transition: all 0.2s ease; font-size: 0.95rem;}
+.menu-icon { display: flex; align-items: center; justify-content: center; color: #6B7C93;}
+.menu-item:hover { background-color: #F8FAFC; color: #0A192F; }
+.menu-item:hover .menu-icon { color: #0A192F; }
+.menu-item.active { background-color: #EAF7F9; color: #00B8D9; }
+.menu-item.active .menu-icon { color: #00B8D9; }
 
-.sidebar-bottom { padding-top: 20px; }
-.pro-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 12px; border-radius: 12px;}
-.pro-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900;}
-.pro-name { font-size: 0.9rem; font-weight: 800; margin: 0 0 2px 0;}
-.pro-mail { font-size: 0.75rem; margin: 0;}
-.logout-link { background: none; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px;}
+.sidebar-bottom { padding-top: 20px; border-top: 1px solid #E2E8F0;}
+.pro-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 12px; border-radius: 12px; background: #F8FAFC;}
+.pro-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; background: #00B8D9; color: white;}
+.pro-name { font-size: 0.9rem; font-weight: 800; margin: 0 0 2px 0; color: #0A192F;}
+.pro-mail { font-size: 0.75rem; margin: 0; color: #6B7C93;}
+.logout-link { background: none; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px; color: #6B7C93;}
+.logout-link:hover { color: #EF4444; }
 
 .main-content { flex: 1; padding: 40px 50px; overflow-y: auto; position: relative;}
 .content-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; flex-shrink: 0;}
@@ -414,13 +475,13 @@ const scenarios = ref([
 
 .table-filters { display: flex; gap: 10px; margin-bottom: 20px;}
 .filter-btn { background: white; border: 1px solid #E2E8F0; color: #6B7C93; padding: 6px 15px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s;}
-.filter-btn:hover { border-color: #CBD5E1; }
+.filter-btn:hover { border-color: #0A192F; }
 .filter-btn.active { background: #0A192F; color: white; border-color: #0A192F;}
 
 .table-wrapper { background: white; border-radius: 16px; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03); border: 1px solid #E2E8F0; overflow: hidden;}
 .admin-table { width: 100%; border-collapse: collapse; }
 .admin-table th { text-align: left; padding: 15px 20px; color: #6B7C93; font-weight: 800; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; text-transform: uppercase;}
-.admin-table td { padding: 12px 20px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; font-size: 0.95rem;}
+.admin-table td { padding: 12px 20px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; font-size: 0.95rem; color: #1C2833;}
 .patient-cell-info { display: flex; align-items: center; gap: 12px; }
 .table-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #F1F5F9;}
 .role-badge, .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
@@ -435,12 +496,28 @@ const scenarios = ref([
 .presc-content { padding: 20px; flex: 1; display: flex; flex-direction: column;}
 .clinical-tag { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; width: fit-content;}
 
+/* TELE-READAPTATION (MOTEUR) */
+.monitoring-panel { max-width: 900px; display: flex; flex-direction: column; gap: 20px;}
+.live-patient { background: white; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+.live-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0;}
+.btn-emergency { display: flex; align-items: center; gap: 8px; background: #EF4444; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 0.85rem; cursor: pointer; transition: 0.2s;}
+.btn-emergency:hover:not(:disabled) { background: #C53030; transform: scale(1.05);}
+.btn-emergency:disabled { opacity: 0.5; cursor: not-allowed; }
+.live-controls { padding: 25px; background: white;}
+.control-row { margin-bottom: 20px; }
+.slider-labels { display: flex; justify-content: space-between; margin-bottom: 10px;}
+.slider-labels label { font-weight: 700; color: #4A5568; font-size: 0.9rem;}
+.level-badge { font-weight: 900; color: #00B8D9; background: #EAF7F9; padding: 2px 10px; border-radius: 6px; font-size: 0.85rem;}
+.custom-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #E2E8F0; border-radius: 5px; outline: none;}
+.custom-slider:disabled::-webkit-slider-thumb { background: #94A3B8; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #00B8D9; cursor: pointer; border: 4px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
+
 /* SERVER STATUS */
 .section-title-small { font-size: 1.1rem; color: #0A192F; font-weight: 900; margin-bottom: 15px;}
 .server-status-container { display: flex; gap: 20px;}
 .server-card { flex: 1; background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px;}
 .server-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #0A192F;}
-.server-bar { width: 100%; height: 8px; background: #F1F5F9; border-radius: 10px; overflow: hidden;}
+.server-bar { width: 100%; height: 8px; background: #F8FAFC; border-radius: 10px; overflow: hidden;}
 .fill { height: 100%; border-radius: 10px;}
 .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block;}
 .mt-2 { margin-top: 10px;}
@@ -449,14 +526,14 @@ const scenarios = ref([
 .settings-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; max-width: 700px;}
 .settings-card h3 { color: #0A192F; font-size: 1.1rem; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid #F1F5F9; padding-bottom: 10px;}
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
-.form-group label { font-weight: 700; color: #4A5568; font-size: 0.85rem; }
+.form-group label { font-weight: 700; color: #6B7C93; font-size: 0.85rem; }
 .form-group input, .form-group select { padding: 12px; border: 2px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; font-family: inherit; font-size: 0.95rem; color: #0A192F; transition: 0.2s;}
 .form-group input:focus { border-color: #00B8D9; outline: none; background: white;}
 .update-box { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px;}
 
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; backdrop-filter: blur(3px);}
 .modal-overlay.active { opacity: 1; visibility: visible; }
-.assign-modal { background: white; width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: translateY(30px); transition: 0.3s;}
+.assign-modal { background: white; width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: translateY(30px); transition: 0.3s; border: 1px solid #E2E8F0;}
 .modal-overlay.active .assign-modal { transform: translateY(0); }
 .modal-header-assign { background: #F8FAFC; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0;}
 .modal-header-assign h3 { color: #0A192F; margin: 0; font-size: 1.2rem; font-weight: 900;}
