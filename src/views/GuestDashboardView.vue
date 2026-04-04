@@ -27,11 +27,7 @@
             <img src="/images/guest-avatar.png" alt="Invité" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
           </div>
           <div class="user-info">
-<<<<<<< HEAD
-            <p class="user-name">Invité</p>
-=======
             <p class="user-name">{{ nom }}</p>
->>>>>>> fff9410c343426545d481c42704bf636c74d358c
             <p class="user-status">Mode Découverte</p>
           </div>
         </div>
@@ -292,11 +288,8 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-<<<<<<< HEAD
-=======
 const nom = ref(localStorage.getItem('nom') || 'Invité')
 
->>>>>>> fff9410c343426545d481c42704bf636c74d358c
 const activeTabMain = ref('bibliotheque')
 const gameFinishedMsg = ref(null)
 const lastScore = ref(0)
