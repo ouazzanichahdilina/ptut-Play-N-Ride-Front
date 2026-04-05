@@ -288,7 +288,7 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const nom = ref(localStorage.getItem('nom') || 'Invité')
+const nom = ref('Invité')
 
 const activeTabMain = ref('bibliotheque')
 const gameFinishedMsg = ref(null)

@@ -35,13 +35,13 @@
         </nav>
       </div>
       <div class="sidebar-bottom">
-        <div class="user-mini-profile">
+        <div class="user-mini-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
           <div class="user-avatar-mini">
             <img :src="userProfileImage" alt="Patient" />
           </div>
           <div class="user-info">
             <p class="user-name">{{ nom }}</p>
-            <p class="user-status">{{ statut || 'Patient' }}</p>
+            <p class="user-status">Patient</p>
           </div>
         </div>
         <button class="logout-btn-sidebar" @click="goHome">
@@ -337,7 +337,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
 
@@ -357,13 +357,23 @@ const selectedDay = ref(0)
 const goHome = () => router.push('/')
 
 // RÉCUPÉRATION DE L'AVATAR DU LOCAL STORAGE
-const userProfileImage = ref('/images/avBlonde.png') // Fallback
+const userProfileImage = ref(localStorage.getItem('playnride_user_avatar') || '/images/avBlonde.png')
+
+const refreshProfile = () => {
+  const saved = localStorage.getItem('playnride_user_avatar')
+  if (saved) userProfileImage.value = saved
+  nom.value = localStorage.getItem('nom') || nom.value
+}
 
 onMounted(() => {
-  const savedAvatar = localStorage.getItem('playnride_user_avatar')
-  if (savedAvatar) userProfileImage.value = savedAvatar
+  refreshProfile()
   generateWeekSchedule()
   fetchHistory()
+  window.addEventListener('focus', refreshProfile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('focus', refreshProfile)
 })
 
 // TOUTES LES ACTIVITÉS (Les 6 scénarios)

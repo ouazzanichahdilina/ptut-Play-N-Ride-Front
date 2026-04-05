@@ -11,39 +11,39 @@
         </div>
 
         <nav class="sidebar-menu">
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'patients' }" @click="activeTab = 'patients'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'patients' }" @click.prevent="activeTab = 'patients'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </span> 
             Mes Patients
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'agenda' }" @click="activeTab = 'agenda'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'agenda' }" @click.prevent="activeTab = 'agenda'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </span> 
             Agenda Cabinet
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'bibliotheque' }" @click="activeTab = 'bibliotheque'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'bibliotheque' }" @click.prevent="activeTab = 'bibliotheque'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             </span> 
             Prescriptions
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'monitoring' }" @click="openMonitoring">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'monitoring' }" @click.prevent="openMonitoring">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             </span> 
             Temps Réel
             <span class="live-pulse-badge" v-if="unreadLiveAlerts > 0">{{ unreadLiveAlerts }}</span>
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'messagerie' }" @click="openMessagerie">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'messagerie' }" @click.prevent="openMessagerie">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             </span> 
             Messagerie
             <span v-if="unreadMessages > 0" class="notification-badge" style="margin-left: auto;">{{ unreadMessages }}</span>
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'parametres' }" @click="activeTab = 'parametres'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'parametres' }" @click.prevent="activeTab = 'parametres'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </span> 
@@ -53,13 +53,13 @@
       </div>
 
       <div class="sidebar-bottom">
-        <div class="pro-profile">
+        <div class="pro-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
           <div class="pro-avatar">
             <img :src="proProfileImage" :alt="proName" />
           </div>
           <div class="pro-info">
             <p class="pro-name">{{ proName }}</p>
-            <p class="pro-mail">professionnel de santé</p>
+            <p class="pro-mail" style="color:#20C997; font-weight:700;">Professionnel de santé</p>
           </div>
         </div>
         <button class="logout-link" @click="$router.push('/')">
@@ -395,10 +395,10 @@
 
         <div class="messages-layout">
           <div class="messages-list">
-            <div 
-              v-for="p in patients" 
-              :key="p.id" 
-              class="msg-contact" 
+            <div
+              v-for="p in messagerieContacts"
+              :key="p.id"
+              class="msg-contact"
               :class="{ active: selectedChatUserId === p.id }"
               @click="selectChat(p.id)"
             >
@@ -535,18 +535,30 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
 
 const router = useRouter()
 
 const proName = ref(localStorage.getItem('nom') || 'Professionnel de Santé')
-const proProfileImage = ref('/images/avBlonde.png')
+const proProfileImage = ref(localStorage.getItem('playnride_user_avatar') || '/images/avBlonde.png')
 
-onMounted(() => {
-  const savedAvatar = localStorage.getItem('playnride_user_avatar')
-  if (savedAvatar) proProfileImage.value = savedAvatar
+const refreshProProfile = () => {
+  const saved = localStorage.getItem('playnride_user_avatar')
+  if (saved) proProfileImage.value = saved
+  proName.value = localStorage.getItem('nom') || proName.value
+}
+
+onMounted(async () => {
+  refreshProProfile()
+  await fetchProPatients()
+  generateCalendar()
+  window.addEventListener('focus', refreshProProfile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('focus', refreshProProfile)
 })
 
 const activeTab = ref('patients')
@@ -558,42 +570,47 @@ const searchQuery = ref('')
 const isGeneratingPDF = ref(false)
 
 // --------------------------------------------------------
-// DONNEES REALISTES DES PATIENTS ET AVATARS UPLOADES
+// PATIENTS DEPUIS L'API
 // --------------------------------------------------------
-const patients = ref([
-  { 
-    id: 1, nom: "Jean Dupont", age: 72, pathologie: "Prothèse Genou Droit", observance: 85, lastRPE: "Difficile", derniereSeance: "Aujourd'hui", avatar: "/images/avBlonde.png",
-    metrics: { fcMax: 130, puissanceMoyenne: 45, materiel: "Pédalier (Bras)" },
-    historique: [
-      { date: "Aujourd'hui", scenario: "Forêt Endurance", duree: "20 min", fcMoy: 112, watts: 48, rpe: "Difficile" },
-      { date: "Il y a 2 jours", scenario: "Réveil Articulaire", duree: "15 min", fcMoy: 98, watts: 35, rpe: "Moyen" }
-    ]
-  },
-  { 
-    id: 2, nom: "Marie Martin", age: 68, pathologie: "Rééducation Cardiaque", observance: 95, lastRPE: "Facile", derniereSeance: "Hier", avatar: "/images/avatarRousse.png",
-    metrics: { fcMax: 120, puissanceMoyenne: 30, materiel: "Vélo Complet" },
-    historique: [
-      { date: "Hier", scenario: "Plage Récupération", duree: "10 min", fcMoy: 95, watts: 25, rpe: "Facile" }
-    ]
-  },
-  { 
-    id: 3, nom: "Pierre Durand", age: 80, pathologie: "Post-AVC", observance: 40, lastRPE: "Moyen", derniereSeance: "Il y a 7 jours", avatar: "/images/avBlackW.png",
-    metrics: { fcMax: 115, puissanceMoyenne: 20, materiel: "Pédalier (Jambes)" },
-    historique: [
-      { date: "12 Oct.", scenario: "Jardin des Sens", duree: "12 min", fcMoy: 88, watts: 18, rpe: "Moyen" }
-    ]
-  },
-  { 
-    id: 4, nom: "Nadia Benali", age: 55, pathologie: "Maintien en Forme", observance: 100, lastRPE: "Facile", derniereSeance: "Aujourd'hui", avatar: "/images/azouz.png",
-    metrics: { fcMax: 150, puissanceMoyenne: 70, materiel: "Vélo Complet" },
-    historique: []
-  },
-  { 
-    id: 5, nom: "Lucie Bernard", age: 62, pathologie: "Arthrose Hanche", observance: 60, lastRPE: "Moyen", derniereSeance: "Il y a 3 jours", avatar: "/images/avatarN.png",
-    metrics: { fcMax: 125, puissanceMoyenne: 35, materiel: "Vélo Complet" },
-    historique: []
-  }
-])
+const avatarList = ['/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png', '/images/azouz.png', '/images/avatarRousse.png']
+const isLoadingPatients = ref(false)
+
+const patients = ref([])
+
+const fetchProPatients = async () => {
+  const token = localStorage.getItem('token')
+  isLoadingPatients.value = true
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      patients.value = data
+        .filter(u => u.statut === 'patient' || (u.statut || '').toLowerCase() === 'patient')
+        .map(u => ({
+          id: u.id,
+          nom: u.nom,
+          age: u.age || '--',
+          pathologie: u.pathologie || 'Données non renseignées',
+          observance: u.observance || 0,
+          lastRPE: u.lastRPE || 'N/A',
+          derniereSeance: u.derniereSeance || 'Inconnue',
+          avatar: avatarList[u.id % avatarList.length],
+          metrics: {
+            fcMax: u.fcMax || '--',
+            puissanceMoyenne: u.puissanceMoyenne || '--',
+            materiel: u.materiel || 'Non prescrit'
+          },
+          historique: []
+        }))
+      if (!selectedChatUserId.value && patients.value.length > 0) {
+        selectedChatUserId.value = patients.value[0].id
+      }
+    }
+  } catch { /* silencieux */ }
+  finally { isLoadingPatients.value = false }
+}
 
 const filteredPatients = computed(() => {
   return patients.value.filter(p => p.nom.toLowerCase().includes(searchQuery.value.toLowerCase()))
@@ -611,7 +628,7 @@ const exercises = [
 // --------------------------------------------------------
 // GESTION DU CHAT DYNAMIQUE ET NOTIFS
 // --------------------------------------------------------
-const selectedChatUserId = ref(patients.value.length > 0 ? patients.value[0].id : null)
+const selectedChatUserId = ref(null)
 const newMessage = ref('')
 const chatBodyRef = ref(null)
 const unreadMessages = ref(1)
@@ -628,7 +645,10 @@ const chatMessages = ref({
   3: [] 
 })
 
-const currentChatPatient = computed(() => patients.value.find(p => p.id === selectedChatUserId.value))
+const currentChatPatient = computed(() => {
+  const list = messagerieContacts.value
+  return list.find(p => p.id === selectedChatUserId.value) || list[0] || { id: null, nom: '...', avatar: '' }
+})
 const currentChatMessages = computed(() => chatMessages.value[selectedChatUserId.value] || [])
 
 const selectChat = (patientId) => {
@@ -666,9 +686,43 @@ const scrollToBottom = () => {
   })
 }
 
+// ── MESSAGERIE : PATIENTS RÉELS DEPUIS L'API ──────────────────────────────────
+const apiPatients = ref([])
+const apiPatientsLoaded = ref(false)
+
+const fetchApiPatients = async () => {
+  if (apiPatientsLoaded.value) return
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      const avatarList = ['/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png', '/images/azouz.png', '/images/avatarRousse.png']
+      apiPatients.value = data
+        .filter(u => u.statut === 'patient' || u.statut?.toLowerCase() === 'patient')
+        .map(u => ({
+          id: u.id,
+          nom: u.nom,
+          avatar: avatarList[u.id % avatarList.length]
+        }))
+      apiPatientsLoaded.value = true
+      if (!selectedChatUserId.value && apiPatients.value.length > 0) {
+        selectedChatUserId.value = apiPatients.value[0].id
+      }
+    }
+  } catch { /* silencieux */ }
+}
+
+const messagerieContacts = computed(() => {
+  return apiPatients.value.length > 0 ? apiPatients.value : patients.value
+})
+
 const openMessagerie = () => {
   activeTab.value = 'messagerie'
   unreadMessages.value = 0 // Enlève la notif au clic !
+  fetchApiPatients()
   scrollToBottom()
 }
 
@@ -678,17 +732,61 @@ const openChatWith = (patientId) => {
 }
 
 // --------------------------------------------------------
-// DONNEES TEMPS REEL SIMULEES & AJUSTEMENT
+// DONNEES TEMPS REEL - PATIENTS REELS + SIMULATION
 // --------------------------------------------------------
-const activeSessions = ref([
-  { id: 101, patient: patients.value[0], equipement: "Pédalier (Bras)", scenario: "Forêt Endurance", rpm: 45, bpm: 112, timeElapsed: "12:45", timeTotal: "20:00", resistance: 4, isSending: false, adjustmentSent: false, isStopped: false }
-])
+const activeSessions = ref([])
+const unreadLiveAlerts = ref(0)
 
-const unreadLiveAlerts = ref(activeSessions.value.length)
+const equipements = ["Pédalier (Bras)", "Vélo Complet", "Pédalier (Jambes)"]
+const scenarios = ["Forêt Endurance", "Réveil Articulaire", "Plage Récupération", "L'Ascension Alpine"]
+
+const fetchActiveSessions = async () => {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      const avatarList = ['/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png', '/images/azouz.png', '/images/avatarRousse.png']
+      const realPatients = data
+        .filter(u => u.statut === 'patient' || (u.statut || '').toLowerCase() === 'patient')
+        .slice(0, 3)
+      if (realPatients.length > 0) {
+        activeSessions.value = realPatients.map((u, i) => ({
+          id: 100 + u.id,
+          patient: {
+            id: u.id,
+            nom: u.nom,
+            avatar: avatarList[u.id % avatarList.length]
+          },
+          equipement: equipements[i % equipements.length],
+          scenario: scenarios[i % scenarios.length],
+          rpm: 30 + Math.floor(Math.random() * 30),
+          bpm: 90 + Math.floor(Math.random() * 40),
+          timeElapsed: `${8 + i}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}`,
+          timeTotal: "20:00",
+          resistance: 3 + (i % 4),
+          isSending: false,
+          adjustmentSent: false,
+          isStopped: false
+        }))
+        unreadLiveAlerts.value = activeSessions.value.length
+        return
+      }
+    }
+  } catch { /* silencieux */ }
+  // Fallback : patients de démo
+  activeSessions.value = [
+    { id: 101, patient: patients.value[0], equipement: "Pédalier (Bras)", scenario: "Forêt Endurance", rpm: 45, bpm: 112, timeElapsed: "12:45", timeTotal: "20:00", resistance: 4, isSending: false, adjustmentSent: false, isStopped: false }
+  ]
+  unreadLiveAlerts.value = activeSessions.value.length
+}
 
 const openMonitoring = () => {
   activeTab.value = 'monitoring'
-  unreadLiveAlerts.value = 0 // Enlève la notif au clic !
+  unreadLiveAlerts.value = 0
+  fetchActiveSessions()
 }
 
 // Envoyer l'ajustement moteur au patient (Simulé avec l'API)
@@ -790,13 +888,13 @@ const generateCalendar = () => {
     const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear())
     
     let dayEvents = []
-    if (i % 3 === 0 && i < 28) {
+    if (i % 3 === 0 && i < 28 && patients.value[0]) {
       dayEvents.push({ patient: patients.value[0], time: "10:00", color: "#00B8D9", scenario: "L'Échappée Sylvestre", duration: "20 min" })
     }
-    if (i % 5 === 0) {
+    if (i % 5 === 0 && patients.value[1]) {
       dayEvents.push({ patient: patients.value[1], time: "14:30", color: "#20C997", scenario: "Souffle Océanique", duration: "10 min" })
     }
-    if (i === 12) {
+    if (i === 12 && patients.value[2]) {
       dayEvents.push({ patient: patients.value[2], time: "09:00", color: "#0284C7", scenario: "L'Ascension Alpine", duration: "25 min" })
     }
 
@@ -821,9 +919,6 @@ const openPatientDossierFromAgenda = () => {
   openPatientDossier(selectedAgendaEvent.value.patient)
 }
 
-onMounted(() => {
-  generateCalendar()
-})
 
 </script>
 

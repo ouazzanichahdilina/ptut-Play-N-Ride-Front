@@ -7,6 +7,7 @@ import ProDashboardView from '../views/ProDashboardView.vue'
 import GameView from '../views/GameView.vue'
 // Import de la vue Administrateur
 import AdminDashboardView from '../views/AdminDashboardView.vue'
+import ProfileView from '../views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,11 @@ const router = createRouter({
       path: '/play',
       name: 'game',
       component: GameView
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView
     }
   ],
   scrollBehavior() {

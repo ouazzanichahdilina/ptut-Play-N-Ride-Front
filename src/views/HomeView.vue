@@ -8,7 +8,6 @@
           <p class="subtitle">Transformez vos séances d'effort en aventures interactives. Connectez votre équipement et évadez-vous depuis chez vous ou votre centre de soin.</p>
           <div class="hero-actions">
             <button class="btn btn-solid-green btn-large" @click="$router.push('/guest-dashboard')">JOUER LIBREMENT</button>
-            <button class="btn btn-outline-blue btn-large">DÉCOUVRIR LES JEUX</button>
           </div>
           <div class="social-proof">
             <div class="avatars">

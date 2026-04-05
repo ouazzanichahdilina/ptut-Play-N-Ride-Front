@@ -2,395 +2,376 @@
   <div class="dashboard-layout">
     <aside class="sidebar">
       <div class="sidebar-top">
-        <div class="sidebar-brand" @click="$router.push('/')">
+        <div class="sidebar-brand" @click="goHome">
           <img src="/images/logo.png" alt="Logo" class="sidebar-logo" />
-          <div>
-            <span class="logo-text">Play <span class="text-cyan">'N</span> Ride</span>
-            <p class="brand-tag">Administration</p>
+          <div class="brand-info">
+            <p class="brand-name">Play 'N Ride</p>
+            <p class="brand-tag">Super Admin</p>
           </div>
         </div>
 
         <nav class="sidebar-menu">
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'dashboard' }" @click.prevent="activeTab = 'dashboard'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'vue-ensemble' }" @click.prevent="activeTab = 'vue-ensemble'">
             <span class="menu-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             </span>
-            Tableau de bord
+            Vue d'ensemble
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'comptes' }" @click.prevent="activeTab = 'comptes'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'utilisateurs' }" @click.prevent="activeTab = 'utilisateurs'">
             <span class="menu-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </span>
-            Gestion des comptes
+            Gestion Utilisateurs
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'activites' }" @click.prevent="activeTab = 'activites'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'tele-readap' }" @click.prevent="activeTab = 'tele-readap'">
             <span class="menu-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </span>
-            Bibliothèque d'activités
+            Télé-réadaptation
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'parametres' }" @click.prevent="activeTab = 'parametres'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'scenarios' }" @click.prevent="activeTab = 'scenarios'">
             <span class="menu-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
             </span>
-            Paramètres système
+            Catalogue Scénarios
+          </a>
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'systeme' }" @click.prevent="activeTab = 'systeme'">
+            <span class="menu-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </span>
+            Maintenance Système
           </a>
         </nav>
       </div>
 
       <div class="sidebar-bottom">
-        <div class="user-mini-profile">
-          <div class="user-avatar-mini">
-            <img :src="adminProfileImage" alt="Administrateur" />
+        <div class="pro-profile" @click="$router.push('/profile')" style="cursor:pointer;">
+          <div class="pro-avatar-img">
+            <img :src="adminAvatar" alt="Admin" />
           </div>
-          <div class="user-info">
-            <p class="user-name">{{ adminName || 'Administrateur' }}</p>
-            <p class="user-status">administrateur</p>
+          <div class="pro-info">
+            <p class="pro-name">{{ adminName }}</p>
+            <p class="pro-role">Administrateur</p>
           </div>
         </div>
-        <button class="logout-btn-sidebar" @click="logout">
-          Quitter
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <button class="logout-link" @click="logout">
+          Déconnexion
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         </button>
       </div>
     </aside>
 
     <main class="main-content">
 
-      <!-- ===================== TABLEAU DE BORD ===================== -->
-      <div v-if="activeTab === 'dashboard'">
+      <!-- ========================= VUE D'ENSEMBLE ========================= -->
+      <div v-if="activeTab === 'vue-ensemble'" class="tab-fade">
         <header class="content-header">
           <div>
-            <h1>Console d'Administration</h1>
-            <p class="subtitle">Vue d'ensemble de la plateforme Play 'N Ride</p>
+            <h1>Tableau de Bord Administrateur</h1>
+            <p class="subtitle">Vue globale des performances de la plateforme.</p>
           </div>
-          <div class="header-date">{{ todayDate }}</div>
+          <button class="btn-outline" @click="generateReport">Générer Rapport Global</button>
         </header>
 
-        <div class="stats-grid">
-          <div class="stat-card cyan">
-            <div class="stat-icon">👤</div>
-            <div class="stat-info">
-              <p class="stat-label">Total utilisateurs</p>
-              <p class="stat-value">{{ stats.totalUsers }}</p>
-              <p class="stat-sub">Comptes actifs</p>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-cyan-light text-cyan">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="kpi-info">
+              <p>Total Utilisateurs</p>
+              <h3>{{ isLoadingUsers ? '...' : allUsers.length }}</h3>
+              <span class="trend positive">↑ actifs sur la plateforme</span>
             </div>
           </div>
-          <div class="stat-card green">
-            <div class="stat-icon">🏠</div>
-            <div class="stat-info">
-              <p class="stat-label">Patients</p>
-              <p class="stat-value">{{ stats.patients }}</p>
-              <p class="stat-sub">En rééducation</p>
+          <div class="kpi-card">
+            <div class="kpi-icon bg-green-light text-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="kpi-info">
+              <p>Séances Terminées</p>
+              <h3>{{ totalSeances !== null ? totalSeances : '...' }}</h3>
+              <span class="trend positive">↑ depuis le lancement</span>
             </div>
           </div>
-          <div class="stat-card blue">
-            <div class="stat-icon">🩺</div>
-            <div class="stat-info">
-              <p class="stat-label">Professionnels</p>
-              <p class="stat-value">{{ stats.professionnels }}</p>
-              <p class="stat-sub">De santé</p>
+          <div class="kpi-card">
+            <div class="kpi-icon bg-purple-light text-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <div class="kpi-info">
+              <p>Professionnels</p>
+              <h3>{{ proCount }}</h3>
+              <span class="trend neutral">→ Stable</span>
             </div>
           </div>
-          <div class="stat-card orange">
-            <div class="stat-icon">🚴</div>
-            <div class="stat-info">
-              <p class="stat-label">Séances</p>
-              <p class="stat-value">{{ stats.seances }}</p>
-              <p class="stat-sub">Ce mois-ci</p>
+          <div class="kpi-card">
+            <div class="kpi-icon bg-red-light text-red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div class="kpi-info">
+              <p>Tickets &amp; Bugs</p>
+              <h3>12</h3>
+              <span class="trend negative">↓ -2 résolus hier</span>
             </div>
           </div>
         </div>
 
-        <div class="two-col-layout">
-          <div class="info-card">
-            <h3 class="card-title">Activité récente</h3>
-            <ul class="activity-list">
-              <li v-for="item in recentActivity" :key="item.id" class="activity-item">
-                <span class="activity-dot" :class="item.type"></span>
-                <div class="activity-text">
-                  <p class="activity-msg">{{ item.message }}</p>
-                  <p class="activity-time">{{ item.time }}</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="info-card">
-            <h3 class="card-title">État du système</h3>
-            <div class="system-status">
-              <div class="status-row">
-                <span class="status-label">API Backend</span>
-                <span class="status-badge online">En ligne</span>
-              </div>
-              <div class="status-row">
-                <span class="status-label">Base de données</span>
-                <span class="status-badge online">Connectée</span>
-              </div>
-              <div class="status-row">
-                <span class="status-label">Serveur de jeu</span>
-                <span class="status-badge online">Opérationnel</span>
-              </div>
-              <div class="status-row">
-                <span class="status-label">Authentification JWT</span>
-                <span class="status-badge online">Active</span>
-              </div>
+        <h3 class="section-title-small" style="margin-top: 40px;">Serveurs &amp; Systèmes Temps Réel</h3>
+        <div class="server-status-container">
+          <div class="server-card">
+            <div class="server-head">
+              <strong>Base de données Patients</strong>
+              <span class="status-dot bg-green"></span>
             </div>
+            <div class="server-bar"><div class="fill bg-green" style="width: 45%;"></div></div>
+            <p class="text-xs text-muted mt-2">Charge: 45% • Latence: 12ms</p>
+          </div>
+          <div class="server-card">
+            <div class="server-head">
+              <strong>Serveur WebSocket (Jeu en direct)</strong>
+              <span class="status-dot bg-warning"></span>
+            </div>
+            <div class="server-bar"><div class="fill bg-warning" style="width: 78%;"></div></div>
+            <p class="text-xs text-muted mt-2">Charge: 78% • 1,200 connexions actives</p>
           </div>
         </div>
       </div>
 
-      <!-- ===================== GESTION DES COMPTES ===================== -->
-      <div v-if="activeTab === 'comptes'">
+      <!-- ========================= GESTION UTILISATEURS ========================= -->
+      <div v-if="activeTab === 'utilisateurs'" class="tab-fade">
         <header class="content-header">
           <div>
-            <h1>Gestion des comptes</h1>
-            <p class="subtitle">Créer, modifier ou suspendre des comptes utilisateurs</p>
+            <h1>Gestion des Utilisateurs</h1>
+            <p class="subtitle">Bannissez, modifiez ou vérifiez les comptes de la plateforme.</p>
           </div>
-          <button class="btn-primary" @click="openCreateModal">+ Nouveau compte</button>
+          <div class="search-box">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" v-model="userSearchQuery" placeholder="Email ou Nom..." />
+          </div>
         </header>
 
-        <div class="filters-row">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" v-model="searchQuery" placeholder="Rechercher un utilisateur..." />
-          </div>
-          <select v-model="filterRole" class="filter-select">
-            <option value="">Tous les rôles</option>
-            <option value="Patient">Patients</option>
-            <option value="Professionnel de Santé">Professionnels</option>
-            <option value="Administrateur">Administrateurs</option>
-          </select>
-          <select v-model="filterStatut" class="filter-select">
-            <option value="">Tous les statuts</option>
-            <option value="Actif">Actifs</option>
-            <option value="Suspendu">Suspendus</option>
-          </select>
+        <p v-if="usersError" style="color:#EF4444; font-weight:700; margin-bottom:15px;">{{ usersError }}</p>
+        <p v-if="isLoadingUsers" style="color:#6B7C93; font-weight:700; margin-bottom:15px;">Chargement des utilisateurs...</p>
+
+        <div class="table-filters">
+          <button class="filter-btn" :class="{ active: filterRole === 'Tous' }" @click="filterRole = 'Tous'">Tous</button>
+          <button class="filter-btn" :class="{ active: filterRole === 'Patient' }" @click="filterRole = 'Patient'">Patients</button>
+          <button class="filter-btn" :class="{ active: filterRole === 'Pro' }" @click="filterRole = 'Pro'">Professionnels</button>
         </div>
 
         <div class="table-wrapper">
-          <div v-if="loadingUsers" class="loading-state">
-            <p>Chargement des utilisateurs...</p>
-          </div>
-          <div v-else-if="apiError" class="error-state">
-            <p>{{ apiError }}</p>
-            <p class="text-muted" style="font-size: 0.9rem;">Affichage des données de démonstration</p>
-          </div>
-          <table class="users-table">
+          <table class="admin-table">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Email</th>
+                <th>Utilisateur</th>
                 <th>Rôle</th>
                 <th>Statut</th>
-                <th>Date d'inscription</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
+              <tr v-if="filteredUsers.length === 0 && !isLoadingUsers">
+                <td colspan="4" style="text-align:center; padding:30px; color:#94A3B8; font-style:italic;">Aucun utilisateur trouvé</td>
+              </tr>
               <tr v-for="user in filteredUsers" :key="user.id">
                 <td>
-                  <div class="user-cell">
-                    <div class="user-initials">{{ getInitials(user.nom) }}</div>
-                    <span class="font-bold">{{ user.nom }}</span>
+                  <div class="patient-cell-info">
+                    <img :src="user.avatar" alt="Avatar" class="table-avatar" />
+                    <div>
+                      <span class="font-bold">{{ user.nom }}</span>
+                      <span class="text-xs text-muted block">{{ user.email }}</span>
+                    </div>
                   </div>
                 </td>
-                <td class="text-muted">{{ user.email }}</td>
                 <td>
-                  <span :class="['role-pill', getRoleClass(user.role)]">{{ user.role }}</span>
-                </td>
-                <td>
-                  <span :class="['status-pill', user.statut === 'Actif' ? 'active' : 'inactive']">
-                    {{ user.statut }}
+                  <span :class="['role-badge', user.role === 'Pro' ? 'bg-purple-light text-purple' : 'bg-cyan-light text-cyan']">
+                    {{ user.role === 'Pro' ? 'Praticien' : 'Patient' }}
                   </span>
                 </td>
-                <td class="text-muted">{{ user.dateInscription }}</td>
                 <td>
-                  <div class="action-buttons">
-                    <button class="btn-action edit" @click="openEditModal(user)" title="Modifier">✏️ Modifier</button>
-                    <button
-                      class="btn-action"
-                      :class="user.statut === 'Actif' ? 'suspend' : 'activate'"
-                      @click="toggleSuspend(user)"
-                      :title="user.statut === 'Actif' ? 'Suspendre' : 'Réactiver'"
-                    >
-                      {{ user.statut === 'Actif' ? '🔒 Suspendre' : '🔓 Réactiver' }}
-                    </button>
-                  </div>
+                  <span v-if="user.actif" class="status-badge bg-green-light text-green">Actif</span>
+                  <span v-else class="status-badge bg-red-light text-red">Suspendu</span>
                 </td>
-              </tr>
-              <tr v-if="filteredUsers.length === 0">
-                <td colspan="6" class="empty-state">Aucun utilisateur trouvé</td>
+                <td>
+                  <button class="btn-icon" title="Bannir/Activer" @click="toggleUserStatus(user)">
+                    {{ user.actif ? '🚫' : '✅' }}
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <!-- Créer un utilisateur -->
+        <div style="margin-top: 35px;">
+          <h3 style="font-size:1.1rem; font-weight:900; color:#0A192F; margin-bottom:20px;">Créer un compte utilisateur</h3>
+          <div class="settings-card" style="max-width:600px;">
+            <div class="form-group">
+              <label>Nom complet</label>
+              <input type="text" v-model="newUser.nom" placeholder="Ex: Jean Dupont" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" v-model="newUser.email" placeholder="jean@example.com" />
+            </div>
+            <div class="form-group">
+              <label>Mot de passe</label>
+              <input type="password" v-model="newUser.motDePasse" placeholder="Minimum 6 caractères" />
+            </div>
+            <div class="form-group">
+              <label>Rôle</label>
+              <select v-model="newUser.statut">
+                <option value="patient">Patient</option>
+                <option value="pro">Professionnel de santé</option>
+                <option value="admin">Administrateur</option>
+              </select>
+            </div>
+            <button class="btn-primary" :disabled="isSavingUser" @click="saveUser">
+              {{ isSavingUser ? 'Création...' : 'Créer le compte' }}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- ===================== BIBLIOTHÈQUE D'ACTIVITÉS ===================== -->
-      <div v-if="activeTab === 'activites'">
+      <!-- ========================= TÉLÉ-RÉADAPTATION ========================= -->
+      <div v-if="activeTab === 'tele-readap'" class="tab-fade">
         <header class="content-header">
           <div>
-            <h1>Bibliothèque d'activités</h1>
-            <p class="subtitle">Gérer les scénarios de jeu disponibles sur la plateforme</p>
+            <h1>Ajustement Matériel à Distance</h1>
+            <p class="subtitle">Contrôle technique de sécurité des moteurs des pédaliers connectés en direct.</p>
           </div>
-          <button class="btn-primary" @click="openActivityModal(null)">+ Nouvelle activité</button>
         </header>
 
-        <div class="activities-grid">
-          <div v-for="activity in activities" :key="activity.id" class="activity-card">
-            <div class="activity-top" :style="{ background: activity.color }">
-              <span class="activity-icon">{{ activity.icon }}</span>
-              <span :class="['activity-status', activity.active ? 'active' : 'inactive']">
-                {{ activity.active ? 'Actif' : 'Inactif' }}
-              </span>
+        <div class="monitoring-panel">
+          <div class="live-patient" v-for="session in activeHardwareSessions" :key="session.id">
+            <div class="live-header-bar">
+              <div>
+                <h3 style="margin:0; color:#0A192F;">Patient : {{ session.nom }}</h3>
+                <span class="text-xs text-muted">ID Appareil : {{ session.deviceId }} ({{ session.equipement }})</span>
+              </div>
+              <button class="btn-emergency" @click="emergencyStop(session)" :disabled="session.isStopped">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                ARRÊT MOTEUR D'URGENCE
+              </button>
             </div>
-            <div class="activity-body">
-              <h3 class="activity-title">{{ activity.title }}</h3>
-              <p class="text-muted activity-desc">{{ activity.description }}</p>
-              <div class="activity-meta">
-                <span class="meta-tag">{{ activity.difficulty }}</span>
-                <span class="meta-tag">{{ activity.duration }}</span>
-              </div>
-              <div class="activity-stats">
-                <div class="activity-stat">
-                  <span class="stat-num">{{ activity.sessions }}</span>
-                  <span class="stat-lbl">séances</span>
+            <div class="live-controls">
+              <div class="control-row">
+                <div class="slider-labels">
+                  <label>Niveau de Résistance (Moteur)</label>
+                  <span class="level-badge">Niv. {{ session.resistance }}</span>
                 </div>
-                <div class="activity-stat">
-                  <span class="stat-num">{{ activity.rating }}⭐</span>
-                  <span class="stat-lbl">note moy.</span>
-                </div>
+                <input type="range" min="1" max="10" v-model="session.resistance" class="custom-slider" :disabled="session.isStopped" />
               </div>
-              <div class="activity-actions">
-                <button class="btn-action edit" @click="openActivityModal(activity)">✏️ Modifier</button>
-                <button class="btn-action" :class="activity.active ? 'suspend' : 'activate'" @click="toggleActivity(activity)">
-                  {{ activity.active ? '⏸ Désactiver' : '▶ Activer' }}
-                </button>
+              <button class="btn-primary" @click="sendAdjustment(session)" :disabled="session.isSending || session.isStopped">
+                {{ session.isSending ? 'Transmission en cours...' : 'Forcer la mise à jour matérielle' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= CATALOGUE SCÉNARIOS ========================= -->
+      <div v-if="activeTab === 'scenarios'" class="tab-fade">
+        <header class="content-header">
+          <div>
+            <h1>Catalogue des Scénarios</h1>
+            <p class="subtitle">Ajoutez ou désactivez les jeux disponibles pour les utilisateurs.</p>
+          </div>
+          <button class="btn-primary" @click="showAddScenarioModal = true">+ Ajouter un scénario</button>
+        </header>
+
+        <div class="grid-layout">
+          <div v-for="exo in scenarios" :key="exo.id" class="prescription-card" :class="{ 'disabled-card': !exo.actif }">
+            <div class="presc-img-wrapper" :style="{ backgroundColor: exo.color + '15' }">
+              <img :src="exo.image" :alt="exo.title" class="presc-img" :style="{ filter: exo.actif ? 'none' : 'grayscale(100%)' }" />
+              <div v-if="!exo.actif" class="disabled-overlay">DÉSACTIVÉ</div>
+            </div>
+            <div class="presc-content">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <span class="clinical-tag" :style="{ color: exo.color, backgroundColor: exo.color + '15' }">{{ exo.objective }}</span>
+                <label class="toggle-switch-small">
+                  <input type="checkbox" v-model="exo.actif">
+                  <span class="slider-toggle-small"></span>
+                </label>
+              </div>
+              <h3 style="margin-top:10px; color:#0A192F;">{{ exo.title }}</h3>
+              <p class="text-muted text-xs">Fichier: {{ exo.fileRef }} • MàJ: {{ exo.lastUpdate }}</p>
+              <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-outline-small" style="flex:1;">Modifier</button>
+                <button class="btn-outline-small text-red border-red" style="flex:1;">Supprimer</button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ===================== PARAMÈTRES SYSTÈME ===================== -->
-      <div v-if="activeTab === 'parametres'">
+      <!-- ========================= MAINTENANCE SYSTÈME ========================= -->
+      <div v-if="activeTab === 'systeme'" class="tab-fade">
         <header class="content-header">
-          <h1>Paramètres système</h1>
+          <div>
+            <h1>Maintenance Système</h1>
+            <p class="subtitle">Configuration globale de l'application Play 'N Ride.</p>
+          </div>
         </header>
+
         <div class="settings-card">
-          <h3>Configuration générale</h3>
+          <h3>Base de données &amp; API (Backend)</h3>
           <div class="form-group">
-            <label>Nom de la plateforme</label>
-            <input type="text" value="Play 'N Ride" />
+            <label>URL de l'API de Production</label>
+            <input type="text" :value="apiUrl" readonly />
           </div>
           <div class="form-group">
-            <label>Email de contact</label>
-            <input type="email" value="contact@playnride.fr" />
+            <label>Clé secrète Web Socket (Monitoring Temps Réel)</label>
+            <input type="password" value="************************" />
           </div>
-          <div class="form-group">
-            <label>URL de l'API</label>
-            <input type="text" value="http://localhost:8080/api" />
+          <button class="btn-outline mt-2">Purger le cache système</button>
+
+          <h3 style="margin-top: 40px;">Mises à jour de l'application</h3>
+          <div class="update-box">
+            <div class="flex-row">
+              <strong style="color: #0A192F;">Version Actuelle : v2.1.4</strong>
+              <span class="status-badge bg-green-light text-green">À jour</span>
+            </div>
+            <p class="text-muted text-xs mt-2">Dernier déploiement effectué le 12 Octobre.</p>
           </div>
-
-          <h3 style="margin-top: 30px;">Sécurité & Accès</h3>
-          <label class="toggle-label"><input type="checkbox" checked> Activer l'authentification JWT</label>
-          <label class="toggle-label"><input type="checkbox" checked> Forcer HTTPS en production</label>
-          <label class="toggle-label"><input type="checkbox"> Autoriser l'accès invité</label>
-
-          <h3 style="margin-top: 30px;">Notifications système</h3>
-          <label class="toggle-label"><input type="checkbox" checked> Alertes de connexion suspecte</label>
-          <label class="toggle-label"><input type="checkbox" checked> Rapport hebdomadaire d'activité</label>
-
-          <button class="btn-primary" style="margin-top: 25px; width: auto; padding: 12px 30px;">Enregistrer les modifications</button>
         </div>
       </div>
 
     </main>
 
-    <!-- ===================== MODAL CRÉER / MODIFIER UN COMPTE ===================== -->
-    <div class="modal-overlay" :class="{ active: showUserModal }">
+    <!-- ========================= MODAL SCÉNARIO ========================= -->
+    <div class="modal-overlay" :class="{ active: showAddScenarioModal }" @click.self="showAddScenarioModal = false">
       <div class="assign-modal">
         <div class="modal-header-assign">
-          <h3>{{ editingUser ? 'Modifier le compte' : 'Créer un nouveau compte' }}</h3>
-          <button class="close-modal" @click="showUserModal = false">&times;</button>
+          <h3>Ajouter un nouveau jeu</h3>
+          <button class="close-modal" @click="showAddScenarioModal = false">&times;</button>
         </div>
         <div class="modal-body-assign">
           <div class="form-group">
-            <label>Nom complet</label>
-            <input type="text" v-model="userForm.nom" placeholder="Jean Dupont" />
+            <label>Nom du Scénario</label>
+            <input type="text" placeholder="Ex: Course Spatiale">
           </div>
           <div class="form-group">
-            <label>Adresse email</label>
-            <input type="email" v-model="userForm.email" placeholder="jean@email.com" />
+            <label>Objectif Clinique Principal</label>
+            <select><option>Échauffement</option><option>Cardio</option><option>Coordination</option><option>Récupération</option></select>
           </div>
           <div class="form-group">
-            <label>Rôle</label>
-            <select v-model="userForm.role">
-              <option value="Patient">Patient</option>
-              <option value="Professionnel de Santé">Professionnel de Santé</option>
-              <option value="Administrateur">Administrateur</option>
-            </select>
-          </div>
-          <div class="form-group" v-if="!editingUser">
-            <label>Mot de passe temporaire</label>
-            <input type="password" v-model="userForm.password" placeholder="••••••••" />
+            <label>Lien vers l'image de couverture (URL)</label>
+            <input type="text" placeholder="/images/nouveau-jeu.png">
           </div>
           <div class="form-group">
-            <label>Statut</label>
-            <select v-model="userForm.statut">
-              <option value="Actif">Actif</option>
-              <option value="Suspendu">Suspendu</option>
-            </select>
+            <label>Fichier Build du Jeu (Unity/WebGL)</label>
+            <input type="file" style="border:1px dashed #E2E8F0; padding:20px; background:white; color:#1C2833;">
           </div>
-          <button class="btn-primary" style="width: 100%; margin-top: 10px;" @click="saveUser">
-            {{ editingUser ? 'Enregistrer les modifications' : 'Créer le compte' }}
-          </button>
+          <button class="btn-primary" style="width:100%; margin-top:20px;" @click="showAddScenarioModal = false">Uploader et Sauvegarder</button>
         </div>
       </div>
     </div>
 
-    <!-- ===================== MODAL ACTIVITÉ ===================== -->
-    <div class="modal-overlay" :class="{ active: showActivityModal }">
-      <div class="assign-modal">
-        <div class="modal-header-assign">
-          <h3>{{ editingActivity ? 'Modifier l\'activité' : 'Nouvelle activité' }}</h3>
-          <button class="close-modal" @click="showActivityModal = false">&times;</button>
-        </div>
-        <div class="modal-body-assign">
-          <div class="form-group">
-            <label>Titre de l'activité</label>
-            <input type="text" v-model="activityForm.title" placeholder="Ex: Flappy Endurance" />
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <input type="text" v-model="activityForm.description" placeholder="Description courte..." />
-          </div>
-          <div class="form-group">
-            <label>Difficulté</label>
-            <select v-model="activityForm.difficulty">
-              <option>Facile</option>
-              <option>Moyen</option>
-              <option>Difficile</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Durée recommandée</label>
-            <input type="text" v-model="activityForm.duration" placeholder="Ex: 15 min" />
-          </div>
-          <button class="btn-primary" style="width: 100%; margin-top: 10px;" @click="saveActivity">
-            {{ editingActivity ? 'Enregistrer' : 'Ajouter à la bibliothèque' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===================== TOAST NOTIFICATION ===================== -->
-    <transition name="toast">
-      <div v-if="toast.show" class="toast" :class="toast.type">
-        {{ toast.message }}
-      </div>
-    </transition>
+    <!-- ========================= TOAST ========================= -->
+    <Transition name="toast">
+      <div v-if="toast.show" :class="['toast', toast.type]">{{ toast.message }}</div>
+    </Transition>
 
   </div>
 </template>
@@ -401,403 +382,364 @@ import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
 
 const router = useRouter()
+const goHome = () => router.push('/')
 
-const activeTab = ref('dashboard')
-const adminName = ref(localStorage.getItem('nom') || 'Administrateur')
-const adminProfileImage = ref('/images/avBlonde.png')
+// ── PROFIL ADMIN DYNAMIQUE ─────────────────────────────────────────────────────
+const adminName = ref(localStorage.getItem('nom') || 'Admin Principal')
+const adminEmail = ref(localStorage.getItem('email') || 'admin@playnride.fr')
+const adminAvatar = ref(localStorage.getItem('playnride_user_avatar') || '/images/avatar-1.png')
+const apiUrl = API_URL
 
-onMounted(() => {
-  const savedAvatar = localStorage.getItem('playnride_user_avatar')
-  if (savedAvatar) adminProfileImage.value = savedAvatar
-  fetchUsers()
-})
+const activeTab = ref('vue-ensemble')
+const showAddScenarioModal = ref(false)
 
-// ── DATE ──────────────────────────────────────────────────────────────────────
-const todayDate = new Date().toLocaleDateString('fr-FR', {
-  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-})
+// ── STATS ──────────────────────────────────────────────────────────────────────
+const totalSeances = ref(null)
+const proCount = computed(() => allUsers.value.filter(u => u.role === 'Pro').length)
 
-// ── STATISTIQUES ──────────────────────────────────────────────────────────────
-const stats = ref({ totalUsers: 0, patients: 0, professionnels: 0, seances: 124 })
+// ── GESTION UTILISATEURS ───────────────────────────────────────────────────────
+const userSearchQuery = ref('')
+const filterRole = ref('Tous')
+const isLoadingUsers = ref(false)
+const isSavingUser = ref(false)
+const usersError = ref('')
+const allUsers = ref([])
 
-// ── ACTIVITÉ RÉCENTE (données de démo) ───────────────────────────────────────
-const recentActivity = ref([
-  { id: 1, type: 'green', message: 'Nouveau patient inscrit : Marie Martin', time: 'Il y a 5 min' },
-  { id: 2, type: 'cyan', message: 'Séance terminée : Jean Dupont (45 min)', time: 'Il y a 12 min' },
-  { id: 3, type: 'green', message: 'Nouveau professionnel : Dr. Lefebvre', time: 'Il y a 1h' },
-  { id: 4, type: 'orange', message: 'Compte suspendu : user@test.com', time: 'Il y a 2h' },
-  { id: 5, type: 'cyan', message: 'Activité ajoutée : Sprint Côtier', time: 'Hier' },
-])
+const avatars = ['/images/avatar-1.png', '/images/avatar-2.png', '/images/avatar-3.png', '/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png']
+const proAvatars = ['/images/proSanté.png']
 
-// ── UTILISATEURS ──────────────────────────────────────────────────────────────
-const users = ref([])
-const loadingUsers = ref(false)
-const apiError = ref('')
-const searchQuery = ref('')
-const filterRole = ref('')
-const filterStatut = ref('')
+const fetchUsers = async () => {
+  const token = localStorage.getItem('token')
+  isLoadingUsers.value = true
+  usersError.value = ''
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error('Erreur ' + res.status)
+    const data = await res.json()
+    allUsers.value = data
+      .filter(u => {
+        const s = (u.statut || '').toLowerCase()
+        return s !== 'admin' && s !== 'administrateur'
+      })
+      .map(u => {
+        const isPro = u.statut === 'pro' || u.statut === 'Professionnel'
+        const list = isPro ? proAvatars : avatars
+        return {
+          id: u.id,
+          nom: u.nom,
+          email: u.email,
+          role: isPro ? 'Pro' : 'Patient',
+          actif: true,
+          avatar: list[u.id % list.length]
+        }
+      })
+  } catch (e) {
+    usersError.value = 'Impossible de charger les utilisateurs. Vérifiez votre connexion.'
+  } finally {
+    isLoadingUsers.value = false
+  }
+}
 
-const demoUsers = [
-  { id: 1, nom: 'Jean Dupont', email: 'jean.dupont@email.com', role: 'Patient', statut: 'Actif', dateInscription: '12/01/2025' },
-  { id: 2, nom: 'Marie Martin', email: 'marie.martin@email.com', role: 'Patient', statut: 'Actif', dateInscription: '15/01/2025' },
-  { id: 3, nom: 'Pierre Durand', email: 'pierre.durand@email.com', role: 'Patient', statut: 'Suspendu', dateInscription: '20/01/2025' },
-  { id: 4, nom: 'Dr. Sophie Durand', email: 'pro@playnride.fr', role: 'Professionnel de Santé', statut: 'Actif', dateInscription: '05/01/2025' },
-  { id: 5, nom: 'Dr. Marc Lefebvre', email: 'lefebvre@kine.fr', role: 'Professionnel de Santé', statut: 'Actif', dateInscription: '08/01/2025' },
-  { id: 6, nom: 'Admin Système', email: 'admin@playnride.fr', role: 'Administrateur', statut: 'Actif', dateInscription: '01/01/2025' },
-]
+const fetchSeances = async () => {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API_URL}/seances`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      totalSeances.value = data.length
+    }
+  } catch { /* silencieux */ }
+}
 
 const filteredUsers = computed(() => {
-  return users.value.filter(u => {
-    const matchSearch = !searchQuery.value ||
-      u.nom.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.value.toLowerCase())
-    const matchRole = !filterRole.value || u.role === filterRole.value
-    const matchStatut = !filterStatut.value || u.statut === filterStatut.value
-    return matchSearch && matchRole && matchStatut
+  const q = userSearchQuery.value.toLowerCase()
+  return allUsers.value.filter(u => {
+    const matchQuery = u.nom.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+    const matchRole = filterRole.value === 'Tous' || u.role === filterRole.value
+    return matchQuery && matchRole
   })
 })
 
-const fetchUsers = async () => {
-  loadingUsers.value = true
-  apiError.value = ''
-  const token = localStorage.getItem('token')
-  try {
-    const res = await fetch(`${API_URL}/utilisateurs`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    if (!res.ok) throw new Error(`Erreur ${res.status}`)
-    const data = await res.json()
-    users.value = data.map(u => ({
-      id: u.id,
-      nom: u.nom || u.name || `${u.prenom || ''} ${u.nomFamille || ''}`.trim(),
-      email: u.email,
-      role: u.role || u.statut || 'Patient',
-      statut: u.actif === false ? 'Suspendu' : 'Actif',
-      dateInscription: u.dateInscription
-        ? new Date(u.dateInscription).toLocaleDateString('fr-FR')
-        : '-'
-    }))
-    updateStats()
-  } catch {
-    apiError.value = 'Impossible de joindre l\'API.'
-    users.value = demoUsers
-    updateStats()
-  } finally {
-    loadingUsers.value = false
-  }
+const toggleUserStatus = (user) => {
+  user.actif = !user.actif
+  showToast(`"${user.nom}" ${user.actif ? 'réactivé' : 'suspendu'}`, 'info')
 }
 
-const updateStats = () => {
-  stats.value.totalUsers = users.value.length
-  stats.value.patients = users.value.filter(u => u.role === 'Patient').length
-  stats.value.professionnels = users.value.filter(u => u.role === 'Professionnel de Santé').length
-}
-
-const toggleSuspend = async (user) => {
-  const newStatut = user.statut === 'Actif' ? 'Suspendu' : 'Actif'
-  const token = localStorage.getItem('token')
-  try {
-    await fetch(`${API_URL}/utilisateurs/${user.id}/statut`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ statut: newStatut })
-    })
-  } catch { /* mise à jour locale uniquement */ }
-  user.statut = newStatut
-  showToast(newStatut === 'Suspendu' ? `Compte de ${user.nom} suspendu` : `Compte de ${user.nom} réactivé`, 'info')
-}
-
-// ── MODAL UTILISATEUR ─────────────────────────────────────────────────────────
-const showUserModal = ref(false)
-const editingUser = ref(null)
-const userForm = ref({ nom: '', email: '', role: 'Patient', statut: 'Actif', password: '' })
-
-const openCreateModal = () => {
-  editingUser.value = null
-  userForm.value = { nom: '', email: '', role: 'Patient', statut: 'Actif', password: '' }
-  showUserModal.value = true
-}
-
-const openEditModal = (user) => {
-  editingUser.value = user
-  userForm.value = { nom: user.nom, email: user.email, role: user.role, statut: user.statut, password: '' }
-  showUserModal.value = true
-}
+// ── CRÉER UTILISATEUR ──────────────────────────────────────────────────────────
+const newUser = ref({ nom: '', email: '', motDePasse: '', statut: 'patient' })
 
 const saveUser = async () => {
-  const token = localStorage.getItem('token')
-  if (editingUser.value) {
-    try {
-      await fetch(`${API_URL}/utilisateurs/${editingUser.value.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(userForm.value)
-      })
-    } catch { /* mise à jour locale */ }
-    Object.assign(editingUser.value, userForm.value)
-    showToast('Compte mis à jour avec succès', 'success')
-  } else {
-    try {
-      const res = await fetch(`${API_URL}/utilisateurs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          nom: userForm.value.nom,
-          email: userForm.value.email,
-          motDePasse: userForm.value.password,
-          statut: userForm.value.role
-        })
-      })
-      if (res.ok) {
-        const created = await res.json()
-        users.value.push({ id: created.id, ...userForm.value, dateInscription: new Date().toLocaleDateString('fr-FR') })
-      } else {
-        const newUser = { id: Date.now(), ...userForm.value, dateInscription: new Date().toLocaleDateString('fr-FR') }
-        users.value.push(newUser)
-      }
-    } catch {
-      const newUser = { id: Date.now(), ...userForm.value, dateInscription: new Date().toLocaleDateString('fr-FR') }
-      users.value.push(newUser)
-    }
-    updateStats()
-    showToast('Nouveau compte créé avec succès', 'success')
+  if (!newUser.value.nom || !newUser.value.email || !newUser.value.motDePasse) {
+    showToast('Remplissez tous les champs', 'error')
+    return
   }
-  showUserModal.value = false
+  const token = localStorage.getItem('token')
+  isSavingUser.value = true
+  try {
+    const res = await fetch(`${API_URL}/utilisateurs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(newUser.value)
+    })
+    if (!res.ok) throw new Error('Erreur ' + res.status)
+    showToast('Compte créé avec succès !', 'success')
+    newUser.value = { nom: '', email: '', motDePasse: '', statut: 'patient' }
+    await fetchUsers()
+  } catch (e) {
+    showToast('Erreur lors de la création : ' + e.message, 'error')
+  } finally {
+    isSavingUser.value = false
+  }
 }
 
-// ── ACTIVITÉS ─────────────────────────────────────────────────────────────────
-const activities = ref([
-  { id: 1, title: 'Flappy Endurance', description: 'Maintenir une cadence constante sur la durée.', icon: '🐦', color: 'linear-gradient(135deg, #20C997, #00B8D9)', difficulty: 'Moyen', duration: '20 min', sessions: 342, rating: 4.7, active: true },
-  { id: 2, title: 'Sprint Montagne', description: 'Pics de résistance courts mais intenses.', icon: '⛰️', color: 'linear-gradient(135deg, #0A192F, #00B8D9)', difficulty: 'Difficile', duration: '15 min', sessions: 198, rating: 4.5, active: true },
-  { id: 3, title: 'Réveil Articulaire', description: 'Mouvements doux, idéal pour le matin.', icon: '🌅', color: 'linear-gradient(135deg, #FFB800, #FF7043)', difficulty: 'Facile', duration: '10 min', sessions: 510, rating: 4.9, active: true },
-  { id: 4, title: 'Balade Côtière', description: 'Paysage marin apaisants, effort modéré.', icon: '🏖️', color: 'linear-gradient(135deg, #0EA5E9, #38BDF8)', difficulty: 'Facile', duration: '25 min', sessions: 267, rating: 4.6, active: true },
-  { id: 5, title: 'Forêt Mystère', description: 'Parcours en forêt avec variations de rythme.', icon: '🌲', color: 'linear-gradient(135deg, #16A34A, #20C997)', difficulty: 'Moyen', duration: '20 min', sessions: 143, rating: 4.3, active: false },
-  { id: 6, title: 'Défi Vitesse', description: 'Sprints répétés pour améliorer la puissance.', icon: '⚡', color: 'linear-gradient(135deg, #7C3AED, #00B8D9)', difficulty: 'Difficile', duration: '12 min', sessions: 89, rating: 4.4, active: false },
+// ── TÉLÉ-RÉADAPTATION ──────────────────────────────────────────────────────────
+const activeHardwareSessions = ref([
+  { id: 101, nom: "Jean Dupont", deviceId: "PED-8492A", equipement: "Pédalier (Bras)", resistance: 4, isSending: false, isStopped: false },
+  { id: 102, nom: "Pierre Durand", deviceId: "VEL-112B", equipement: "Vélo Complet", resistance: 2, isSending: false, isStopped: false }
 ])
 
-const showActivityModal = ref(false)
-const editingActivity = ref(null)
-const activityForm = ref({ title: '', description: '', difficulty: 'Moyen', duration: '' })
-
-const openActivityModal = (activity) => {
-  editingActivity.value = activity
-  activityForm.value = activity
-    ? { title: activity.title, description: activity.description, difficulty: activity.difficulty, duration: activity.duration }
-    : { title: '', description: '', difficulty: 'Moyen', duration: '' }
-  showActivityModal.value = true
+const sendAdjustment = (session) => {
+  session.isSending = true
+  setTimeout(() => {
+    session.isSending = false
+    showToast(`Résistance de ${session.deviceId} mise à jour au niveau ${session.resistance}`, 'success')
+  }, 1000)
 }
 
-const toggleActivity = (activity) => {
-  activity.active = !activity.active
-  showToast(`Activité "${activity.title}" ${activity.active ? 'activée' : 'désactivée'}`, 'info')
-}
-
-const saveActivity = () => {
-  if (editingActivity.value) {
-    Object.assign(editingActivity.value, activityForm.value)
-    showToast('Activité mise à jour', 'success')
-  } else {
-    activities.value.push({
-      id: Date.now(),
-      ...activityForm.value,
-      icon: '🎮',
-      color: 'linear-gradient(135deg, #20C997, #00B8D9)',
-      sessions: 0,
-      rating: 0,
-      active: true
-    })
-    showToast('Activité ajoutée à la bibliothèque', 'success')
+const emergencyStop = (session) => {
+  if (confirm(`⚠️ Êtes-vous sûr de vouloir couper immédiatement le moteur du patient ${session.nom} ?`)) {
+    session.isStopped = true
+    session.resistance = 1
+    showToast(`ARRÊT D'URGENCE : ${session.deviceId}`, 'error')
   }
-  showActivityModal.value = false
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-const getInitials = (nom) => nom ? nom.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?'
+// ── CATALOGUE SCÉNARIOS ────────────────────────────────────────────────────────
+const scenarios = ref([
+  { id: 1, title: "L'Aube Douce", objective: "Échauffement", fileRef: "build_aube_v2.1.zip", lastUpdate: "10/10/2023", image: "/images/scen-matin.png", color: "#20C997", actif: true },
+  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", fileRef: "build_foret_v1.0.zip", lastUpdate: "15/09/2023", image: "/images/scen-foret.png", color: "#00B8D9", actif: true },
+  { id: 3, title: "L'Ascension Alpine", objective: "Cardio", fileRef: "build_montagne_v3.zip", lastUpdate: "01/11/2023", image: "/images/scen-montagne.png", color: "#0284C7", actif: true },
+  { id: 4, title: "Course Flappy", objective: "Test Réflexes", fileRef: "build_flappy_v0.9.beta.zip", lastUpdate: "20/08/2023", image: "/images/scen-ciel.png", color: "#6B7C93", actif: false }
+])
 
-const getRoleClass = (role) => {
-  if (role === 'Patient') return 'role-patient'
-  if (role === 'Professionnel de Santé') return 'role-pro'
-  return 'role-admin'
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
+// ── TOAST ──────────────────────────────────────────────────────────────────────
 const toast = ref({ show: false, message: '', type: 'success' })
 const showToast = (message, type = 'success') => {
   toast.value = { show: true, message, type }
   setTimeout(() => { toast.value.show = false }, 3000)
 }
 
-// ── DÉCONNEXION ───────────────────────────────────────────────────────────────
+// ── RAPPORT GLOBAL ────────────────────────────────────────────────────────────
+const generateReport = () => {
+  const date = new Date().toLocaleDateString('fr-FR')
+  const lines = [
+    `RAPPORT GLOBAL PLAY 'N RIDE`,
+    `Généré le : ${date}`,
+    ``,
+    `=== STATISTIQUES PLATEFORME ===`,
+    `Total utilisateurs : ${allUsers.value.length}`,
+    `Professionnels de santé : ${proCount.value}`,
+    `Patients : ${allUsers.value.filter(u => u.role !== 'Pro').length}`,
+    `Séances terminées : ${totalSeances.value ?? 'N/A'}`,
+    ``,
+    `=== LISTE DES UTILISATEURS ===`,
+    ...allUsers.value.map(u => `- [${u.role}] ${u.nom} <${u.email}> — ${u.actif ? 'Actif' : 'Suspendu'}`),
+    ``,
+    `=== FIN DU RAPPORT ===`
+  ]
+  const content = lines.join('\n')
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `rapport-playnride-${date.replace(/\//g, '-')}.txt`
+  a.click()
+  URL.revokeObjectURL(url)
+  showToast('Rapport téléchargé !', 'success')
+}
+
+// ── DÉCONNEXION ────────────────────────────────────────────────────────────────
 const logout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('nom')
+  localStorage.removeItem('email')
   localStorage.removeItem('id')
   localStorage.removeItem('statut')
   router.push('/auth')
 }
 
+// ── INIT ───────────────────────────────────────────────────────────────────────
+onMounted(() => {
+  fetchUsers()
+  fetchSeances()
+})
 </script>
 
 <style scoped>
-/* ── LAYOUT ─────────────────────────────────────────────────────────────────── */
-.dashboard-layout { display: flex; height: 100vh; background-color: #FAFCFF; font-family: 'Nunito', sans-serif; }
-.sidebar { width: 280px; background: white; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 20px; border-right: 1px solid #E2E8F0; flex-shrink: 0; z-index: 10; }
-.sidebar-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 50px; }
+/* LAYOUT */
+.dashboard-layout { display: flex; height: 100vh; background-color: #FAFCFF; font-family: 'Nunito', sans-serif; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar { width: 280px; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 20px; z-index: 50; flex-shrink: 0; background: white; border-right: 1px solid #E2E8F0; }
+.sidebar-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 40px; }
 .sidebar-logo { height: 40px; }
-.logo-text { font-weight: 900; color: #0A192F; font-size: 1.2rem; }
-.text-cyan { color: #00B8D9; }
-.brand-tag { font-size: 0.75rem; color: #6B7C93; margin: 2px 0 0; }
-.sidebar-menu { display: flex; flex-direction: column; gap: 10px; }
-.menu-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; text-decoration: none; color: #6B7C93; font-weight: 700; border-radius: 12px; transition: all 0.2s ease; font-size: 1rem; position: relative; }
-.menu-icon { display: flex; align-items: center; justify-content: center; margin-right: 15px; }
+.brand-name { font-weight: 900; font-size: 1.2rem; line-height: 1.1; margin: 0; color: #0A192F; }
+.brand-tag { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; color: #00B8D9; }
+.sidebar-menu { display: flex; flex-direction: column; gap: 6px; }
+.menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: #6B7C93; font-weight: 700; border-radius: 12px; transition: all 0.2s ease; font-size: 0.95rem; }
+.menu-icon { display: flex; align-items: center; justify-content: center; color: #6B7C93; }
 .menu-item:hover { background-color: #F8FAFC; color: #0A192F; }
+.menu-item:hover .menu-icon { color: #0A192F; }
 .menu-item.active { background-color: #EAF7F9; color: #00B8D9; }
-.sidebar-bottom { border-top: 1px solid #E2E8F0; padding-top: 25px; }
+.menu-item.active .menu-icon { color: #00B8D9; }
+.sidebar-bottom { padding-top: 20px; border-top: 1px solid #E2E8F0; }
+.pro-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 12px; border-radius: 12px; background: #F8FAFC; }
+.pro-avatar-img { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); flex-shrink: 0; background: #EAF7F9; }
+.pro-avatar-img img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
+.pro-name { font-size: 0.9rem; font-weight: 800; margin: 0 0 2px 0; color: #0A192F; }
+.pro-mail { font-size: 0.75rem; margin: 0; color: #6B7C93; }
+.pro-role { font-size: 0.75rem; margin: 0; color: #20C997; font-weight: 700; }
+.logout-link { background: none; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px; color: #6B7C93; font-family: inherit; }
+.logout-link:hover { color: #EF4444; }
 
-.user-mini-profile { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; background: #F8FAFC; padding: 15px; border-radius: 12px; }
-.user-avatar-mini { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: white; flex-shrink: 0; }
-.user-avatar-mini img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
-.user-name { font-size: 0.95rem; font-weight: 800; color: #0A192F; margin: 0 0 3px 0; line-height: 1.2; }
-.user-status { font-size: 0.8rem; color: #20C997; margin: 0; font-weight: 700; }
+/* MAIN */
+.main-content { flex: 1; padding: 40px 50px; overflow-y: auto; position: relative; }
+.content-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+.content-header h1 { font-size: 2rem; color: #0A192F; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -0.5px; }
+.subtitle { color: #6B7C93; font-size: 1.05rem; margin: 0; }
 
-.logout-btn-sidebar { background: none; border: none; color: #94A3B8; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.2s; width: 100%; justify-content: flex-start; }
-.logout-btn-sidebar:hover { color: #FC8181; }
+/* UTILITAIRES */
+.text-cyan { color: #00B8D9; } .bg-cyan-light { background-color: #EAF7F9; }
+.text-green { color: #20C997; } .bg-green { background-color: #20C997; } .bg-green-light { background-color: #E8F8F5; }
+.text-purple { color: #8B5CF6; } .bg-purple-light { background-color: #F3E8FF; }
+.text-red { color: #EF4444; } .bg-red-light { background-color: #FEE2E2; }
+.text-warning { color: #F59E0B; } .bg-warning { background-color: #F59E0B; }
+.border-red { border-color: #EF4444 !important; }
+.font-bold { font-weight: 800; color: #0A192F; } .text-muted { color: #6B7C93; }
+.text-xs { font-size: 0.8rem; } .block { display: block; }
+.flex-row { display: flex; justify-content: space-between; align-items: center; } .mt-2 { margin-top: 10px; }
 
-/* ── MAIN ────────────────────────────────────────────────────────────────────── */
-.main-content { flex: 1; padding: 40px; overflow-y: auto; }
-.content-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
-.content-header h1 { font-size: 2rem; color: #0A192F; font-weight: 800; margin: 0; }
-.subtitle { color: #6B7C93; font-size: 1rem; margin-top: 6px; }
-.header-date { font-size: 0.9rem; color: #6B7C93; font-weight: 600; text-transform: capitalize; padding-top: 6px; }
+/* BOUTONS */
+.btn-primary { background: #00B8D9; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; font-family: inherit; font-size: 0.95rem; }
+.btn-primary:hover:not(:disabled) { filter: brightness(0.9); transform: translateY(-2px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-outline { background: transparent; border: 2px solid #00B8D9; color: #00B8D9; font-weight: 800; padding: 12px 18px; border-radius: 10px; cursor: pointer; transition: 0.2s; font-family: inherit; }
+.btn-outline:hover { background: #EAF7F9; }
+.btn-outline-small { background: transparent; border: 1px solid #CBD5E1; color: #4A5568; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; font-family: inherit; }
+.btn-outline-small:hover { border-color: #0A192F; color: #0A192F; }
+.btn-icon { background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.2s; filter: grayscale(1); opacity: 0.7; }
+.btn-icon:hover { filter: grayscale(0); opacity: 1; transform: scale(1.1); }
 
-/* ── STATS ────────────────────────────────────────────────────────────────────── */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-.stat-card { background: white; border-radius: 16px; padding: 24px; display: flex; align-items: center; gap: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border-left: 4px solid transparent; }
-.stat-card.cyan { border-left-color: #00B8D9; }
-.stat-card.green { border-left-color: #20C997; }
-.stat-card.blue { border-left-color: #3B82F6; }
-.stat-card.orange { border-left-color: #FFB800; }
-.stat-icon { font-size: 2rem; }
-.stat-label { font-size: 0.8rem; font-weight: 700; color: #6B7C93; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
-.stat-value { font-size: 2.2rem; font-weight: 900; color: #0A192F; line-height: 1.1; margin: 2px 0; }
-.stat-sub { font-size: 0.78rem; color: #94A3B8; margin: 0; }
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.kpi-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 2px 15px rgba(0,0,0,0.02); border: 1px solid #E2E8F0; display: flex; align-items: center; gap: 15px; }
+.kpi-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.kpi-info p { margin: 0 0 5px 0; font-size: 0.85rem; color: #6B7C93; font-weight: 700; text-transform: uppercase; }
+.kpi-info h3 { margin: 0 0 5px 0; font-size: 1.6rem; color: #0A192F; font-weight: 900; line-height: 1; }
+.trend { font-size: 0.75rem; font-weight: 800; }
+.trend.positive { color: #20C997; } .trend.negative { color: #EF4444; } .trend.neutral { color: #94A3B8; }
 
-/* ── TWO-COL ────────────────────────────────────────────────────────────────── */
-.two-col-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.info-card { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-.card-title { font-size: 1.1rem; font-weight: 800; color: #0A192F; margin: 0 0 20px; }
+/* SERVEURS */
+.section-title-small { font-size: 1.1rem; color: #0A192F; font-weight: 900; margin-bottom: 15px; }
+.server-status-container { display: flex; gap: 20px; flex-wrap: wrap; }
+.server-card { flex: 1; min-width: 200px; background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; }
+.server-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #0A192F; }
+.server-bar { width: 100%; height: 8px; background: #F8FAFC; border-radius: 10px; overflow: hidden; }
+.fill { height: 100%; border-radius: 10px; }
+.status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 
-/* ── ACTIVITY FEED ──────────────────────────────────────────────────────────── */
-.activity-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
-.activity-item { display: flex; align-items: flex-start; gap: 12px; }
-.activity-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-.activity-dot.green { background: #20C997; }
-.activity-dot.cyan { background: #00B8D9; }
-.activity-dot.orange { background: #FFB800; }
-.activity-msg { font-size: 0.9rem; font-weight: 600; color: #0A192F; margin: 0; }
-.activity-time { font-size: 0.8rem; color: #94A3B8; margin: 2px 0 0; }
+/* TABLEAU */
+.search-box { display: flex; align-items: center; background: white; border: 2px solid #E2E8F0; border-radius: 10px; padding: 8px 15px; width: 300px; transition: 0.2s; }
+.search-box:focus-within { border-color: #00B8D9; box-shadow: 0 0 0 3px rgba(0,184,217,0.1); }
+.search-icon { color: #94A3B8; margin-right: 10px; flex-shrink: 0; }
+.search-box input { border: none; outline: none; width: 100%; font-family: inherit; font-size: 0.95rem; color: #0A192F; }
+.table-filters { display: flex; gap: 10px; margin-bottom: 20px; }
+.filter-btn { background: white; border: 1px solid #E2E8F0; color: #6B7C93; padding: 6px 15px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-family: inherit; }
+.filter-btn:hover { border-color: #0A192F; }
+.filter-btn.active { background: #0A192F; color: white; border-color: #0A192F; }
+.table-wrapper { background: white; border-radius: 16px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; overflow: hidden; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { text-align: left; padding: 15px 20px; color: #6B7C93; font-weight: 800; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; text-transform: uppercase; }
+.admin-table td { padding: 12px 20px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; font-size: 0.95rem; color: #1C2833; }
+.patient-cell-info { display: flex; align-items: center; gap: 12px; }
+.table-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #F1F5F9; }
+.role-badge, .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
 
-/* ── SYSTEM STATUS ──────────────────────────────────────────────────────────── */
-.system-status { display: flex; flex-direction: column; gap: 14px; }
-.status-row { display: flex; justify-content: space-between; align-items: center; }
-.status-label { font-size: 0.9rem; font-weight: 600; color: #0A192F; }
-.status-badge { font-size: 0.78rem; font-weight: 700; padding: 4px 12px; border-radius: 50px; }
-.status-badge.online { background: #E8F8F5; color: #20C997; }
-.status-badge.offline { background: #FFE4E4; color: #FC8181; }
+/* CATALOGUE SCÉNARIOS */
+.grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+.prescription-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; display: flex; flex-direction: column; transition: 0.2s; }
+.prescription-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+.disabled-card { opacity: 0.8; background: #F8FAFC; }
+.presc-img-wrapper { height: 140px; width: 100%; position: relative; overflow: hidden; }
+.presc-img { height: 100%; width: 100%; object-fit: cover; transition: 0.3s; }
+.disabled-overlay { position: absolute; inset: 0; background: rgba(15,23,42,0.6); color: white; display: flex; justify-content: center; align-items: center; font-weight: 900; letter-spacing: 2px; z-index: 10; }
+.presc-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.clinical-tag { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; width: fit-content; }
 
-/* ── FILTERS ────────────────────────────────────────────────────────────────── */
-.filters-row { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; flex-wrap: wrap; }
-.search-box { display: flex; align-items: center; gap: 10px; background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px 16px; flex: 1; min-width: 200px; }
-.search-box input { border: none; outline: none; font-family: inherit; font-size: 0.95rem; color: #0A192F; width: 100%; background: transparent; }
-.search-icon { font-size: 0.9rem; }
-.filter-select { padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 12px; font-family: inherit; font-size: 0.9rem; color: #0A192F; background: white; cursor: pointer; }
-.filter-select:focus { outline: none; border-color: #00B8D9; }
+/* TÉLÉ-RÉADAPTATION */
+.monitoring-panel { max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
+.live-patient { background: white; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+.live-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; flex-wrap: wrap; gap: 10px; }
+.btn-emergency { display: flex; align-items: center; gap: 8px; background: #EF4444; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-family: inherit; }
+.btn-emergency:hover:not(:disabled) { background: #C53030; transform: scale(1.05); }
+.btn-emergency:disabled { opacity: 0.5; cursor: not-allowed; }
+.live-controls { padding: 25px; background: white; }
+.control-row { margin-bottom: 20px; }
+.slider-labels { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.slider-labels label { font-weight: 700; color: #4A5568; font-size: 0.9rem; }
+.level-badge { font-weight: 900; color: #00B8D9; background: #EAF7F9; padding: 2px 10px; border-radius: 6px; font-size: 0.85rem; }
+.custom-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #E2E8F0; border-radius: 5px; outline: none; cursor: pointer; }
+.custom-slider:disabled { opacity: 0.4; cursor: not-allowed; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #00B8D9; cursor: pointer; border: 4px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
-/* ── TABLE ──────────────────────────────────────────────────────────────────── */
-.table-wrapper { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-.users-table { width: 100%; border-collapse: collapse; }
-.users-table th { text-align: left; padding: 15px; color: #6B7C93; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; }
-.users-table td { padding: 16px 15px; border-bottom: 1px solid #F8FAFC; vertical-align: middle; }
-.font-bold { font-weight: 700; color: #0A192F; }
-.text-muted { color: #6B7C93; font-size: 0.9rem; }
-.user-cell { display: flex; align-items: center; gap: 12px; }
-.user-initials { width: 36px; height: 36px; background: linear-gradient(135deg, #00B8D9, #20C997); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0; }
-.status-pill { padding: 5px 12px; border-radius: 50px; font-size: 0.78rem; font-weight: 700; }
-.status-pill.active { background: #E8F8F5; color: #20C997; }
-.status-pill.inactive { background: #F1F5F9; color: #94A3B8; }
-.role-pill { padding: 5px 12px; border-radius: 50px; font-size: 0.78rem; font-weight: 700; }
-.role-pill.role-patient { background: #EAF7F9; color: #00B8D9; }
-.role-pill.role-pro { background: #E8F8F5; color: #20C997; }
-.role-pill.role-admin { background: #EEF2FF; color: #6366F1; }
-.action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn-action { padding: 7px 13px; border-radius: 8px; border: none; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-.btn-action.edit { background: #EAF7F9; color: #00B8D9; }
-.btn-action.edit:hover { background: #00B8D9; color: white; }
-.btn-action.suspend { background: #FFF3E0; color: #FF8C00; }
-.btn-action.suspend:hover { background: #FF8C00; color: white; }
-.btn-action.activate { background: #E8F8F5; color: #20C997; }
-.btn-action.activate:hover { background: #20C997; color: white; }
-.empty-state { text-align: center; color: #94A3B8; padding: 40px; font-style: italic; }
-.loading-state, .error-state { text-align: center; padding: 15px; color: #6B7C93; font-weight: 600; margin-bottom: 15px; }
+/* FORMULAIRES */
+.settings-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; max-width: 700px; }
+.settings-card h3 { color: #0A192F; font-size: 1.1rem; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid #F1F5F9; padding-bottom: 10px; margin-top: 0; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.form-group label { font-weight: 700; color: #6B7C93; font-size: 0.85rem; }
+.form-group input, .form-group select { padding: 12px; border: 2px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; font-family: inherit; font-size: 0.95rem; color: #0A192F; transition: 0.2s; }
+.form-group input:focus, .form-group select:focus { border-color: #00B8D9; outline: none; background: white; }
+.update-box { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; }
 
-/* ── ACTIVITIES GRID ────────────────────────────────────────────────────────── */
-.activities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-.activity-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); transition: transform 0.2s, box-shadow 0.2s; }
-.activity-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-.activity-top { padding: 24px; display: flex; justify-content: space-between; align-items: center; }
-.activity-icon { font-size: 2.5rem; }
-.activity-status { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 50px; }
-.activity-status.active { background: rgba(255,255,255,0.25); color: white; }
-.activity-status.inactive { background: rgba(0,0,0,0.15); color: rgba(255,255,255,0.7); }
-.activity-body { padding: 20px; }
-.activity-title { font-size: 1.1rem; font-weight: 800; color: #0A192F; margin: 0 0 6px; }
-.activity-desc { font-size: 0.88rem; margin: 0 0 14px; }
-.activity-meta { display: flex; gap: 8px; margin-bottom: 14px; }
-.meta-tag { background: #F1F5F9; color: #6B7C93; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
-.activity-stats { display: flex; gap: 20px; margin-bottom: 16px; padding: 12px; background: #F8FAFC; border-radius: 10px; }
-.activity-stat { display: flex; flex-direction: column; align-items: center; }
-.stat-num { font-size: 1.1rem; font-weight: 900; color: #0A192F; }
-.stat-lbl { font-size: 0.72rem; color: #94A3B8; }
-.activity-actions { display: flex; gap: 8px; }
-
-/* ── SETTINGS ───────────────────────────────────────────────────────────────── */
-.settings-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-.settings-card h3 { font-size: 1.1rem; font-weight: 800; color: #0A192F; margin: 0 0 20px; }
-.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-.form-group label { font-weight: 700; color: #0A192F; font-size: 0.9rem; }
-.form-group input, .form-group select { padding: 12px 14px; border: 1px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s; }
-.form-group input:focus, .form-group select:focus { outline: none; border-color: #00B8D9; background: white; }
-.toggle-label { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #6B7C93; margin-bottom: 15px; cursor: pointer; }
-
-/* ── BUTTONS ────────────────────────────────────────────────────────────────── */
-.btn-primary { background: linear-gradient(to right, #20C997, #00B8D9); color: white; border: none; padding: 12px 22px; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: inherit; transition: transform 0.2s, box-shadow 0.2s; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,184,217,0.3); }
-
-/* ── MODAL ──────────────────────────────────────────────────────────────────── */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; }
+/* MODAL */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; backdrop-filter: blur(3px); }
 .modal-overlay.active { opacity: 1; visibility: visible; }
-.assign-modal { background: white; width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: translateY(30px); transition: 0.3s; }
+.assign-modal { background: white; width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: translateY(30px); transition: 0.3s; border: 1px solid #E2E8F0; }
 .modal-overlay.active .assign-modal { transform: translateY(0); }
-.modal-header-assign { background: #EAF7F9; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
-.modal-header-assign h3 { color: #0A192F; margin: 0; font-weight: 800; }
-.close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6B7C93; }
-.modal-body-assign { padding: 30px; }
+.modal-header-assign { background: #F8FAFC; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; }
+.modal-header-assign h3 { color: #0A192F; margin: 0; font-size: 1.2rem; font-weight: 900; }
+.close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #64748B; line-height: 1; transition: 0.2s; }
+.close-modal:hover { color: #0A192F; }
+.modal-body-assign { padding: 25px; }
 
-/* ── TOAST ──────────────────────────────────────────────────────────────────── */
+/* TOGGLE SWITCH */
+.toggle-switch-small { position: relative; width: 36px; height: 20px; display: inline-block; }
+.toggle-switch-small input { opacity: 0; width: 0; height: 0; }
+.slider-toggle-small { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .3s; border-radius: 34px; }
+.slider-toggle-small:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .slider-toggle-small { background-color: #20C997; }
+input:checked + .slider-toggle-small:before { transform: translateX(16px); }
+
+/* TOAST */
 .toast { position: fixed; bottom: 30px; right: 30px; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; color: white; z-index: 2000; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
 .toast.success { background: linear-gradient(to right, #20C997, #00B8D9); }
 .toast.info { background: #0A192F; }
+.toast.error { background: #EF4444; }
 .toast-enter-active, .toast-leave-active { transition: all 0.3s ease; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(20px); }
 
-/* ── RESPONSIVE ─────────────────────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .two-col-layout { grid-template-columns: 1fr; }
-}
-@media (max-width: 768px) {
-  .sidebar { display: none; }
-  .main-content { padding: 20px; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-}
+/* ANIMATION */
+.tab-fade { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .sidebar { display: none; } .main-content { padding: 20px; } .search-box { width: 100%; } }
 </style>

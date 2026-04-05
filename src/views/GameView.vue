@@ -3,7 +3,7 @@
     <div class="game-header">
       <button class="back-btn" @click="quitGame">← Quitter l'exercice</button>
       <h2>Séance en cours : {{ gameTheme }} ({{ equipment }})</h2>
-      <button class="btn-toggle-players" @click="showLivePlayers = !showLivePlayers">
+      <button class="btn-toggle-players" @click="showLivePlayers = true">
         👥 Joueurs en ligne ({{ livePlayers.length }})
       </button>
     </div>
@@ -132,13 +132,48 @@ const saveMessage = ref('')
 const saveMessageType = ref('success')
 const showLivePlayers = ref(false)
 
+const myName = isGuest ? 'Vous (Invité)' : (localStorage.getItem('nom') || 'Vous')
+const myId = parseInt(localStorage.getItem('id'))
+
 const livePlayers = ref([
-  { name: 'Marc L.', score: 850, isMe: false },
-  { name: 'Sophie D.', score: 520, isMe: false },
-  { name: 'Invité_842', score: 310, isMe: false },
-  { name: 'Invité_911', score: 120, isMe: false },
-  { name: isGuest ? 'Vous (Invité)' : (localStorage.getItem('nom') || 'Vous'), score: 0, isMe: true }
+  { name: myName, score: 0, isMe: true }
 ])
+
+const fetchLeaderboard = async () => {
+  const token = localStorage.getItem('token')
+  try {
+    const headers = {}
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const res = await fetch(`${API_URL}/seances`, { headers })
+    if (!res.ok) throw new Error()
+    const seances = await res.json()
+
+    const playerMap = {}
+    for (const s of seances) {
+      const name = s.patient?.nom || null
+      if (!name) continue
+      if (s.patient?.id === myId) continue
+      const pts = s.score != null ? s.score : (s.dureeMinutes ? s.dureeMinutes * 8 : 0)
+      if (!playerMap[name] || pts > playerMap[name]) playerMap[name] = pts
+    }
+
+    const others = Object.entries(playerMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([name, score]) => ({ name, score, isMe: false }))
+
+    livePlayers.value = [...others, { name: myName, score: 0, isMe: true }]
+  } catch {
+    // API unavailable – keep single "me" entry, add placeholder rivals
+    livePlayers.value = [
+      { name: 'Joueur A', score: 640, isMe: false },
+      { name: 'Joueur B', score: 390, isMe: false },
+      { name: myName, score: 0, isMe: true }
+    ]
+  }
+}
+
+fetchLeaderboard()
 
 const sortedLeaderboard = computed(() => [...livePlayers.value].sort((a, b) => b.score - a.score))
 const myRank = computed(() => sortedLeaderboard.value.findIndex(p => p.isMe) + 1)
@@ -323,6 +358,11 @@ onMounted(() => {
       if (gameState.current === gameState.play && !sessionStartTime) {
           sessionStartTime = Date.now()
       }
+      // Update my score live in the sidebar every frame
+      if (gameState.current === gameState.play) {
+          const me = livePlayers.value.find(p => p.isMe)
+          if (me) me.score = score.current * 10
+      }
       if(gameState.current === gameState.gameOver) {
           if (!sessionEndTime) {
               sessionEndTime = Date.now()
@@ -373,6 +413,7 @@ const saveAndReturn = async () => {
     dateDebut: debut.toISOString(),
     dateFin: now.toISOString(),
     dureeMinutes: duree,
+    score: finalScore.value * 10,
     mode: token && patientId ? 'libre' : 'anonyme'
   }
 

@@ -32,7 +32,7 @@
 
               <div class="checkbox-group">
                 <label class="custom-checkbox">
-                  <input type="checkbox">
+                  <input type="checkbox" v-model="rememberMe">
                   <span class="checkmark"></span>
                   Se souvenir de moi
                 </label>
@@ -167,6 +167,7 @@ const authError = ref('')
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
 const loginEmail = ref('')
 const loginPassword = ref('')
+const rememberMe = ref(false)
 
 // ── SIGNUP ────────────────────────────────────────────────────────────────────
 const signupNom = ref('')
@@ -186,6 +187,11 @@ const userRole = ref('')
 onMounted(() => {
   if (route.query.tab === 'signup') {
     isLogin.value = false
+  }
+  const savedEmail = localStorage.getItem('remember_email')
+  if (savedEmail) {
+    loginEmail.value = savedEmail
+    rememberMe.value = true
   }
 })
 
@@ -215,6 +221,12 @@ const submitLogin = async () => {
     localStorage.setItem('email', data.email)
     localStorage.setItem('statut', data.statut)
     localStorage.setItem('id', data.id)
+
+    if (rememberMe.value) {
+      localStorage.setItem('remember_email', loginEmail.value)
+    } else {
+      localStorage.removeItem('remember_email')
+    }
 
     if (!localStorage.getItem('playnride_user_avatar')) {
       localStorage.setItem('playnride_user_avatar', '/images/avBlonde.png')
