@@ -1,0 +1,38 @@
+{
+  "L'Aube Douce": {
+    "dureeMinutes": 15,
+    "vitesseDefilement": 3.0,
+    "obstaclesManager": "y1 y1 y1 y1 x1 x1 x1 x1 y1 y1",
+    "distanceManager": "70 70 70 120 70 70 70 120 70 70"
+  },
+  "Voyage Aérien": {
+    "dureeMinutes": 20,
+    "vitesseDefilement": 2.5,
+    "obstaclesManager": "y1 x1 y1 x1",
+    "distanceManager": "150 150 150 150"
+  },
+  "Le Jardin des Sens": {
+    "dureeMinutes": 12,
+    "vitesseDefilement": 4.5,
+    "obstaclesManager": "y1 x1 x1 y1 x1 y1 y1 x1 y1 x1",
+    "distanceManager": "80 30 80 40 40 80 30 50 20 60"
+  },
+  "Souffle Océanique": {
+    "dureeMinutes": 10,
+    "vitesseDefilement": 6.0,
+    "obstaclesManager": "y1 y1 x1 x1 y1 y1 x1 x1",
+    "distanceManager": "25 140 25 140 25 140 25 140"
+  },
+  "L'Échappée Sylvestre": {
+    "dureeMinutes": 20,
+    "vitesseDefilement": 7.0,
+    "obstaclesManager": "y1 x1 y2 x1 y1 x2 y1 x1 y2 x2",
+    "distanceManager": "45 20 60 30 50 25 70 20 50 30"
+  },
+  "L'Ascension Alpine": {
+    "dureeMinutes": 25,
+    "vitesseDefilement": 9.5,
+    "obstaclesManager": "y2 y2 x1 y2 y2 x2 y2 y2 y2 x2",
+    "distanceManager": "20 40 30 20 20 50 30 20 40 60"
+  }
+}

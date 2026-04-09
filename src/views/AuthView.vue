@@ -100,15 +100,7 @@
                 </div>
               </div>
 
-              <div class="input-group">
-                <label>Statut</label>
-                <select v-model="signupRole" required>
-                  <option value="" disabled selected>Sélectionner...</option>
-                  <option value="patient">Patient à domicile</option>
-                  <option value="Professionnel">Professionnel de santé</option>
-                  <option value="Administrateur">Administrateur</option>
-                </select>
-              </div>
+              <!-- Le rôle "patient" est automatiquement assigné par le serveur -->
 
               <div class="checkbox-group" style="margin-top: 15px;">
                 <label class="custom-checkbox align-start">
@@ -175,7 +167,6 @@ const signupEmail = ref('')
 const signupPassword = ref('')
 const signupAge = ref('')
 const signupSexe = ref('')
-const signupRole = ref('')
 
 const avatarList = ['avatarN.png', 'avatarRousse.png', 'avBlackW.png', 'avBlonde.png', 'azouz.png']
 const signupAvatar = ref(avatarList[3])
@@ -255,7 +246,7 @@ const submitSignup = async () => {
         email: signupEmail.value,
         motDePasse: signupPassword.value,
         sexe: signupSexe.value,
-        statut: signupRole.value
+        statut: 'patient'
       })
     })
 

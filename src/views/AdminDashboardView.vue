@@ -116,7 +116,9 @@
           </div>
         </div>
 
-        <h3 class="section-title-small" style="margin-top: 40px;">Serveurs &amp; Systèmes Temps Réel</h3>
+        <AdminStatsCharts :users="rawUsers" style="margin: 30px 0;" />
+
+        <h3 class="section-title-small" style="margin-top: 10px;">Serveurs &amp; Systèmes Temps Réel</h3>
         <div class="server-status-container">
           <div class="server-card">
             <div class="server-head">
@@ -163,17 +165,20 @@
           <table class="admin-table">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Utilisateur</th>
                 <th>Rôle</th>
+                <th>Pro lié</th>
                 <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="filteredUsers.length === 0 && !isLoadingUsers">
-                <td colspan="4" style="text-align:center; padding:30px; color:#94A3B8; font-style:italic;">Aucun utilisateur trouvé</td>
+                <td colspan="6" style="text-align:center; padding:30px; color:#94A3B8; font-style:italic;">Aucun utilisateur trouvé</td>
               </tr>
               <tr v-for="user in filteredUsers" :key="user.id">
+                <td><span class="text-xs text-muted font-bold">#{{ user.id }}</span></td>
                 <td>
                   <div class="patient-cell-info">
                     <img :src="user.avatar" alt="Avatar" class="table-avatar" />
@@ -187,6 +192,10 @@
                   <span :class="['role-badge', user.role === 'Pro' ? 'bg-purple-light text-purple' : 'bg-cyan-light text-cyan']">
                     {{ user.role === 'Pro' ? 'Praticien' : 'Patient' }}
                   </span>
+                </td>
+                <td>
+                  <span v-if="user.proNom" class="text-xs" style="color:#20C997; font-weight:700;">{{ user.proNom }}</span>
+                  <span v-else class="text-xs text-muted">—</span>
                 </td>
                 <td>
                   <span v-if="user.actif" class="status-badge bg-green-light text-green">Actif</span>
@@ -222,12 +231,36 @@
               <label>Rôle</label>
               <select v-model="newUser.statut">
                 <option value="patient">Patient</option>
-                <option value="pro">Professionnel de santé</option>
-                <option value="admin">Administrateur</option>
+                <option value="Professionnel">Professionnel de santé</option>
+                <option value="Administrateur">Administrateur</option>
               </select>
             </div>
             <button class="btn-primary" :disabled="isSavingUser" @click="saveUser">
               {{ isSavingUser ? 'Création...' : 'Créer le compte' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Associer un patient à un professionnel -->
+        <div style="margin-top: 35px;">
+          <h3 style="font-size:1.1rem; font-weight:900; color:#0A192F; margin-bottom:20px;">Associer un patient à un professionnel</h3>
+          <div class="settings-card" style="max-width:600px;">
+            <div class="form-group">
+              <label>Patient</label>
+              <select v-model="linkPatientId">
+                <option value="" disabled>Sélectionner un patient...</option>
+                <option v-for="p in patientList" :key="p.id" :value="p.id">{{ p.nom }} ({{ p.email }})</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Professionnel de santé</label>
+              <select v-model="linkProId">
+                <option value="" disabled>Sélectionner un professionnel...</option>
+                <option v-for="p in proList" :key="p.id" :value="p.id">{{ p.nom }} ({{ p.email }})</option>
+              </select>
+            </div>
+            <button class="btn-primary" :disabled="isLinking || !linkPatientId || !linkProId" @click="assignProToPatient">
+              {{ isLinking ? 'Association...' : 'Associer' }}
             </button>
           </div>
         </div>
@@ -275,9 +308,9 @@
         <header class="content-header">
           <div>
             <h1>Catalogue des Scénarios</h1>
-            <p class="subtitle">Ajoutez ou désactivez les jeux disponibles pour les utilisateurs.</p>
+            <p class="subtitle">Créez, modifiez ou supprimez les scénarios disponibles.</p>
           </div>
-          <button class="btn-primary" @click="showAddScenarioModal = true">+ Ajouter un scénario</button>
+          <button class="btn-primary" @click="openScenarioModal(null)">+ Ajouter un scénario</button>
         </header>
 
         <div class="grid-layout">
@@ -290,15 +323,19 @@
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <span class="clinical-tag" :style="{ color: exo.color, backgroundColor: exo.color + '15' }">{{ exo.objective }}</span>
                 <label class="toggle-switch-small">
-                  <input type="checkbox" v-model="exo.actif">
+                  <input type="checkbox" v-model="exo.actif" @change="saveScenarios">
                   <span class="slider-toggle-small"></span>
                 </label>
               </div>
               <h3 style="margin-top:10px; color:#0A192F;">{{ exo.title }}</h3>
-              <p class="text-muted text-xs">Fichier: {{ exo.fileRef }} • MàJ: {{ exo.lastUpdate }}</p>
-              <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="btn-outline-small" style="flex:1;">Modifier</button>
-                <button class="btn-outline-small text-red border-red" style="flex:1;">Supprimer</button>
+              <p class="text-muted text-xs">
+                Obstacles: {{ exo.obstaclesManager || '—' }}<br/>
+                Distances: {{ exo.distanceManager || '—' }}<br/>
+                <span>{{ exo.dureeMinutes || '--' }} min • v{{ exo.vitesse || '--' }}</span>
+              </p>
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <button class="btn-outline-small" style="flex:1;" @click="openScenarioModal(exo)">✏️ Modifier</button>
+                <button class="btn-outline-small text-red border-red" style="flex:1;" @click="deleteScenario(exo.id)">🗑️ Supprimer</button>
               </div>
             </div>
           </div>
@@ -339,31 +376,55 @@
 
     </main>
 
-    <!-- ========================= MODAL SCÉNARIO ========================= -->
+    <!-- ========================= MODAL SCÉNARIO CRUD ========================= -->
     <div class="modal-overlay" :class="{ active: showAddScenarioModal }" @click.self="showAddScenarioModal = false">
-      <div class="assign-modal">
+      <div class="assign-modal" style="max-width:560px;">
         <div class="modal-header-assign">
-          <h3>Ajouter un nouveau jeu</h3>
+          <h3>{{ editingScenario.id ? 'Modifier le scénario' : 'Nouveau scénario' }}</h3>
           <button class="close-modal" @click="showAddScenarioModal = false">&times;</button>
         </div>
         <div class="modal-body-assign">
           <div class="form-group">
-            <label>Nom du Scénario</label>
-            <input type="text" placeholder="Ex: Course Spatiale">
+            <label>Nom du scénario</label>
+            <input type="text" v-model="editingScenario.title" placeholder="Ex: Course Spatiale" />
           </div>
           <div class="form-group">
-            <label>Objectif Clinique Principal</label>
-            <select><option>Échauffement</option><option>Cardio</option><option>Coordination</option><option>Récupération</option></select>
+            <label>Objectif clinique</label>
+            <select v-model="editingScenario.objective">
+              <option>Échauffement</option><option>Cardio</option><option>Coordination</option><option>Récupération</option>
+            </select>
+          </div>
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label>Durée (min)</label>
+              <input type="number" v-model="editingScenario.dureeMinutes" min="1" placeholder="15" />
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Vitesse défilement</label>
+              <input type="number" step="0.5" v-model="editingScenario.vitesse" placeholder="3.0" />
+            </div>
           </div>
           <div class="form-group">
-            <label>Lien vers l'image de couverture (URL)</label>
-            <input type="text" placeholder="/images/nouveau-jeu.png">
+            <label>Obstacles (ex: y1 x1 y2 x2)</label>
+            <input type="text" v-model="editingScenario.obstaclesManager" placeholder="y1 x1 y1 x1" />
           </div>
           <div class="form-group">
-            <label>Fichier Build du Jeu (Unity/WebGL)</label>
-            <input type="file" style="border:1px dashed #E2E8F0; padding:20px; background:white; color:#1C2833;">
+            <label>Distances (ex: 70 120 70 120)</label>
+            <input type="text" v-model="editingScenario.distanceManager" placeholder="70 70 120 70" />
           </div>
-          <button class="btn-primary" style="width:100%; margin-top:20px;" @click="showAddScenarioModal = false">Uploader et Sauvegarder</button>
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label>Image (/images/...)</label>
+              <input type="text" v-model="editingScenario.image" placeholder="/images/scen-matin.png" />
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Couleur (hex)</label>
+              <input type="color" v-model="editingScenario.color" />
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:20px;" @click="saveScenario">
+            {{ editingScenario.id ? 'Enregistrer les modifications' : 'Créer le scénario' }}
+          </button>
         </div>
       </div>
     </div>
@@ -380,6 +441,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
+import AdminStatsCharts from '../components/AdminStatsCharts.vue'
 
 const router = useRouter()
 const goHome = () => router.push('/')
@@ -404,6 +466,7 @@ const isLoadingUsers = ref(false)
 const isSavingUser = ref(false)
 const usersError = ref('')
 const allUsers = ref([])
+const rawUsers = ref([])  // données brutes pour AdminStatsCharts
 
 const avatars = ['/images/avatar-1.png', '/images/avatar-2.png', '/images/avatar-3.png', '/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png']
 const proAvatars = ['/images/proSanté.png']
@@ -418,6 +481,7 @@ const fetchUsers = async () => {
     })
     if (!res.ok) throw new Error('Erreur ' + res.status)
     const data = await res.json()
+    rawUsers.value = data  // conserver les données brutes pour les graphiques
     allUsers.value = data
       .filter(u => {
         const s = (u.statut || '').toLowerCase()
@@ -432,7 +496,8 @@ const fetchUsers = async () => {
           email: u.email,
           role: isPro ? 'Pro' : 'Patient',
           actif: true,
-          avatar: list[u.id % list.length]
+          avatar: list[u.id % list.length],
+          proNom: u.professionnelDeSante ? u.professionnelDeSante.nom : null
         }
       })
   } catch (e) {
@@ -480,7 +545,7 @@ const saveUser = async () => {
   const token = localStorage.getItem('token')
   isSavingUser.value = true
   try {
-    const res = await fetch(`${API_URL}/utilisateurs`, {
+    const res = await fetch(`${API_URL}/utilisateurs/admin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -488,7 +553,10 @@ const saveUser = async () => {
       },
       body: JSON.stringify(newUser.value)
     })
-    if (!res.ok) throw new Error('Erreur ' + res.status)
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.message || 'Erreur ' + res.status)
+    }
     showToast('Compte créé avec succès !', 'success')
     newUser.value = { nom: '', email: '', motDePasse: '', statut: 'patient' }
     await fetchUsers()
@@ -496,6 +564,39 @@ const saveUser = async () => {
     showToast('Erreur lors de la création : ' + e.message, 'error')
   } finally {
     isSavingUser.value = false
+  }
+}
+
+// ── LIER PATIENT ↔ PROFESSIONNEL ───────────────────────────────────────────────
+const linkPatientId = ref('')
+const linkProId = ref('')
+const isLinking = ref(false)
+
+const patientList = computed(() => allUsers.value.filter(u => u.role === 'Patient'))
+const proList = computed(() => allUsers.value.filter(u => u.role === 'Pro'))
+
+const assignProToPatient = async () => {
+  if (!linkPatientId.value || !linkProId.value) return
+  const token = localStorage.getItem('token')
+  isLinking.value = true
+  try {
+    const res = await fetch(
+      `${API_URL}/utilisateurs/patients/${linkPatientId.value}/assign-pro/${linkProId.value}`,
+      { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.message || 'Erreur ' + res.status)
+    }
+    const patient = patientList.value.find(p => p.id === linkPatientId.value)
+    const pro = proList.value.find(p => p.id === linkProId.value)
+    showToast(`"${patient?.nom}" associé à "${pro?.nom}" ✓`, 'success')
+    linkPatientId.value = ''
+    linkProId.value = ''
+  } catch (e) {
+    showToast('Erreur : ' + e.message, 'error')
+  } finally {
+    isLinking.value = false
   }
 }
 
@@ -521,13 +622,64 @@ const emergencyStop = (session) => {
   }
 }
 
-// ── CATALOGUE SCÉNARIOS ────────────────────────────────────────────────────────
-const scenarios = ref([
-  { id: 1, title: "L'Aube Douce", objective: "Échauffement", fileRef: "build_aube_v2.1.zip", lastUpdate: "10/10/2023", image: "/images/scen-matin.png", color: "#20C997", actif: true },
-  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", fileRef: "build_foret_v1.0.zip", lastUpdate: "15/09/2023", image: "/images/scen-foret.png", color: "#00B8D9", actif: true },
-  { id: 3, title: "L'Ascension Alpine", objective: "Cardio", fileRef: "build_montagne_v3.zip", lastUpdate: "01/11/2023", image: "/images/scen-montagne.png", color: "#0284C7", actif: true },
-  { id: 4, title: "Course Flappy", objective: "Test Réflexes", fileRef: "build_flappy_v0.9.beta.zip", lastUpdate: "20/08/2023", image: "/images/scen-ciel.png", color: "#6B7C93", actif: false }
-])
+// ── CATALOGUE SCÉNARIOS (CRUD) ─────────────────────────────────────────────────
+const SCENARIOS_KEY = 'playnride_scenarios'
+
+const defaultScenarios = [
+  { id: 1, title: "L'Aube Douce",        objective: "Échauffement", dureeMinutes: 15, vitesse: 3.0,  obstaclesManager: "y1 y1 y1 y1 x1 x1 x1 x1 y1 y1", distanceManager: "70 70 70 120 70 70 70 120 70 70", image: "/images/scen-matin.png",    color: "#20C997", actif: true },
+  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", dureeMinutes: 20, vitesse: 7.0,  obstaclesManager: "y1 x1 y2 x1 y1 x2 y1 x1 y2 x2", distanceManager: "45 20 60 30 50 25 70 20 50 30",  image: "/images/scen-foret.png",    color: "#00B8D9", actif: true },
+  { id: 3, title: "L'Ascension Alpine",   objective: "Cardio",       dureeMinutes: 25, vitesse: 9.5,  obstaclesManager: "y2 y2 x1 y2 y2 x2 y2 y2 y2 x2", distanceManager: "20 40 30 20 20 50 30 20 40 60",  image: "/images/scen-montagne.png", color: "#0284C7", actif: true },
+  { id: 4, title: "Souffle Océanique",    objective: "Récupération", dureeMinutes: 10, vitesse: 6.0,  obstaclesManager: "y1 y1 x1 x1 y1 y1 x1 x1",       distanceManager: "25 140 25 140 25 140 25 140",    image: "/images/scen-ciel.png",     color: "#6B7C93", actif: true }
+]
+
+const loadScenarios = () => {
+  try {
+    const saved = localStorage.getItem(SCENARIOS_KEY)
+    return saved ? JSON.parse(saved) : defaultScenarios
+  } catch { return defaultScenarios }
+}
+
+const scenarios = ref(loadScenarios())
+
+const saveScenarios = () => {
+  localStorage.setItem(SCENARIOS_KEY, JSON.stringify(scenarios.value))
+}
+
+const editingScenario = ref({ id: null, title: '', objective: 'Échauffement', dureeMinutes: 15, vitesse: 3.0, obstaclesManager: '', distanceManager: '', image: '', color: '#20C997', actif: true })
+
+const openScenarioModal = (exo) => {
+  if (exo) {
+    editingScenario.value = { ...exo }
+  } else {
+    editingScenario.value = { id: null, title: '', objective: 'Échauffement', dureeMinutes: 15, vitesse: 3.0, obstaclesManager: '', distanceManager: '', image: '/images/scen-matin.png', color: '#20C997', actif: true }
+  }
+  showAddScenarioModal.value = true
+}
+
+const saveScenario = () => {
+  if (!editingScenario.value.title.trim()) {
+    showToast('Le nom du scénario est requis', 'error')
+    return
+  }
+  if (editingScenario.value.id) {
+    const idx = scenarios.value.findIndex(s => s.id === editingScenario.value.id)
+    if (idx !== -1) scenarios.value[idx] = { ...editingScenario.value }
+    showToast('Scénario modifié !', 'success')
+  } else {
+    const newId = Math.max(0, ...scenarios.value.map(s => s.id)) + 1
+    scenarios.value.push({ ...editingScenario.value, id: newId })
+    showToast('Scénario créé !', 'success')
+  }
+  saveScenarios()
+  showAddScenarioModal.value = false
+}
+
+const deleteScenario = (id) => {
+  if (!confirm('Supprimer définitivement ce scénario ?')) return
+  scenarios.value = scenarios.value.filter(s => s.id !== id)
+  saveScenarios()
+  showToast('Scénario supprimé', 'info')
+}
 
 // ── TOAST ──────────────────────────────────────────────────────────────────────
 const toast = ref({ show: false, message: '', type: 'success' })

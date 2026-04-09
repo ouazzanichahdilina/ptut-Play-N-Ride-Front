@@ -77,11 +77,16 @@
             <h1>File Active des Patients</h1>
             <p class="subtitle">Vue globale et indicateurs cliniques.</p>
           </div>
-          <div class="search-box">
-            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" v-model="searchQuery" placeholder="Rechercher un patient..." />
+          <div style="display:flex; align-items:center; gap:15px;">
+            <div class="search-box">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" v-model="searchQuery" placeholder="Rechercher un patient..." />
+            </div>
+            <button class="btn-primary" @click="showAddPatientModal = true">+ Nouveau Patient</button>
           </div>
         </header>
+
+        <ProActivityChart :sessions="allSessions" style="margin-bottom: 30px;" />
 
         <div class="alerts-container">
           <div class="alert-card alert-warning">
@@ -160,6 +165,7 @@
             </div>
           </div>
           <div class="panel-actions">
+            <button class="btn-primary-small" @click="openRecommandModal(selectedPatient)">⭐ Recommander</button>
             <button class="btn-primary-small" @click="activeTab='bibliotheque'; showPatientDossier=false">Prescrire</button>
             <button class="btn-secondary-small" @click="openChatWith(selectedPatient.id); showPatientDossier=false">Message</button>
           </div>
@@ -181,6 +187,32 @@
               <p class="text-xs text-muted text-center">Séances complétées vs prescrites</p>
             </div>
           </div>
+
+          <!-- Graphique effort théorique vs réel -->
+          <h3 class="section-title-small" style="margin-top:20px;">Analyse d'Effort — Profil théorique vs Réel</h3>
+          <div v-if="selectedPatient.historique && selectedPatient.historique.length > 0" class="effort-chart-wrapper">
+            <svg viewBox="0 0 400 120" style="width:100%; height:120px; border-radius:12px; background:#F8FAFC;">
+              <!-- Axe -->
+              <line x1="30" y1="10" x2="30" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <line x1="30" y1="100" x2="390" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <!-- Profil théorique (obstacles normalisés) -->
+              <polyline
+                :points="theoreticalPoints(selectedPatient)"
+                fill="none" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"
+              />
+              <!-- Effort réel (durée normalisée) -->
+              <polyline
+                :points="realEffortPoints(selectedPatient)"
+                fill="none" stroke="#20C997" stroke-width="2"
+              />
+              <!-- Légende -->
+              <line x1="40" y1="112" x2="60" y2="112" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"/>
+              <text x="65" y="116" font-size="8" fill="#6B7C93">Profil théorique</text>
+              <line x1="160" y1="112" x2="180" y2="112" stroke="#20C997" stroke-width="2"/>
+              <text x="185" y="116" font-size="8" fill="#6B7C93">Effort réel</text>
+            </svg>
+          </div>
+          <div v-else class="empty-effort-chart">Aucune séance pour générer le graphique.</div>
 
           <h3 class="section-title-small">Dernières Séances & Analyse</h3>
           <div class="history-mini-list">
@@ -271,7 +303,10 @@
                 <span>⏱️ {{ exo.duration }}</span>
                 <span>📈 Int. {{ exo.intensity }}</span>
               </div>
-              <button class="btn-primary" :style="{ backgroundColor: exo.color }" @click="openAssignModal(exo)">Prescrire ce protocole</button>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn-primary" :style="{ backgroundColor: exo.color, flex:2 }" @click="openAssignModal(exo)">Prescrire</button>
+                <button v-if="exo.isOwn" class="btn-outline-small" style="flex:1;" @click="openObstacleEditor(exo)" title="Modifier les obstacles">✏️ Obstacles</button>
+              </div>
             </div>
           </div>
         </div>
@@ -495,6 +530,90 @@
       </div>
     </div>
 
+    <div class="modal-overlay" :class="{ active: showAddPatientModal }" @click.self="showAddPatientModal = false">
+      <div class="assign-modal">
+        <div class="modal-header-assign">
+          <h3>Ajouter un nouveau patient</h3>
+          <button class="close-modal" @click="showAddPatientModal = false">&times;</button>
+        </div>
+        <div class="modal-body-assign">
+          <p class="text-sm text-muted" style="margin-bottom: 20px;">Générez un code de liaison unique. Le patient l'utilisera lors de son inscription sur la plateforme pour que son compte soit relié automatiquement à votre cabinet.</p>
+
+          <div class="form-group">
+            <label>Nom complet</label>
+            <input type="text" v-model="newPatientNom" placeholder="Ex: Jean Dupont">
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label>Âge</label>
+              <input type="number" v-model="newPatientAge" placeholder="Ex: 65">
+            </div>
+            <div class="form-group" style="flex: 2;">
+              <label>Pathologie / Motif</label>
+              <input type="text" v-model="newPatientPathologie" placeholder="Ex: Rééducation post-opératoire">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Code de liaison généré (à transmettre au patient)</label>
+            <input type="text" :value="generatedCode" readonly style="font-weight: bold; color: #00B8D9; text-align: center; letter-spacing: 2px;">
+          </div>
+
+          <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;" @click="createNewPatient">Créer le dossier patient</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODAL RECOMMANDER SCÉNARIO ========================= -->
+    <div class="modal-overlay" :class="{ active: showRecommandModal }" @click.self="showRecommandModal = false">
+      <div class="assign-modal" style="max-width:480px;">
+        <div class="modal-header-assign">
+          <h3>Recommander un scénario</h3>
+          <button class="close-modal" @click="showRecommandModal = false">&times;</button>
+        </div>
+        <div class="modal-body-assign" v-if="recommandTarget">
+          <p class="text-sm text-muted" style="margin-bottom:16px;">Patient : <strong>{{ recommandTarget.nom }}</strong></p>
+          <div class="form-group">
+            <label>Choisir le scénario</label>
+            <select v-model="recommandScenario">
+              <option v-for="exo in exercises" :key="exo.id" :value="exo.title">{{ exo.title }} — {{ exo.objective }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Consigne clinique (optionnelle)</label>
+            <input type="text" v-model="recommandNote" placeholder="Ex: Maintenir FC < 110 BPM" />
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:16px;" @click="confirmRecommandation">Envoyer la recommandation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODAL ÉDITEUR OBSTACLES ========================= -->
+    <div class="modal-overlay" :class="{ active: showObstacleEditor }" @click.self="showObstacleEditor = false">
+      <div class="assign-modal" style="max-width:520px;">
+        <div class="modal-header-assign">
+          <h3>Modifier les obstacles — {{ editingExo?.title }}</h3>
+          <button class="close-modal" @click="showObstacleEditor = false">&times;</button>
+        </div>
+        <div class="modal-body-assign" v-if="editingExo">
+          <p class="text-xs text-muted" style="margin-bottom:12px;">Format obstacles : séquence de <code>y1</code>, <code>x1</code>, <code>y2</code>, <code>x2</code> séparés par des espaces (y = Haut, x = Bas, 1 = normal, 2 = difficile).</p>
+          <div class="form-group">
+            <label>Séquence Obstacles (Haut/Bas)</label>
+            <input type="text" v-model="editingExo.obstaclesManager" placeholder="y1 x1 y2 x1 y1 x2" />
+          </div>
+          <div class="form-group">
+            <label>Distances entre obstacles (px)</label>
+            <input type="text" v-model="editingExo.distanceManager" placeholder="70 50 80 60 45 30" />
+          </div>
+          <div class="form-group">
+            <label>Durée (min)</label>
+            <input type="number" v-model="editingExo.dureeMinutes" min="1" />
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:16px;" @click="saveObstacles">Enregistrer les modifications</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-overlay" :class="{ active: showAgendaEventModal }" @click.self="showAgendaEventModal = false">
       <div class="assign-modal" style="max-width: 400px;">
         <div class="modal-header-assign" style="background: white; border-bottom: 1px solid #E2E8F0;">
@@ -531,6 +650,10 @@
       </div>
     </div>
 
+  <!-- Toast Pro -->
+  <Transition name="toast">
+    <div v-if="proToast.show" :class="['toast', proToast.type]">{{ proToast.message }}</div>
+  </Transition>
   </div>
 </template>
 
@@ -538,6 +661,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
+import ProActivityChart from '../components/ProActivityChart.vue'
 
 const router = useRouter()
 
@@ -550,9 +674,21 @@ const refreshProProfile = () => {
   proName.value = localStorage.getItem('nom') || proName.value
 }
 
+const allSessions = ref([])
+
+const fetchAllSessions = async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  try {
+    const res = await fetch(`${API_URL}/seances`, { headers: { Authorization: `Bearer ${token}` } })
+    if (res.ok) allSessions.value = await res.json()
+  } catch { /* silencieux si endpoint indisponible */ }
+}
+
 onMounted(async () => {
   refreshProProfile()
   await fetchProPatients()
+  fetchAllSessions()
   generateCalendar()
   window.addEventListener('focus', refreshProProfile)
 })
@@ -563,6 +699,18 @@ onUnmounted(() => {
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
+const showAddPatientModal = ref(false)
+const newPatientNom = ref('')
+const newPatientAge = ref('')
+const newPatientPathologie = ref('')
+const generatedCode = computed(() => {
+  if (!newPatientNom.value) return 'CODE-LIAISON-XXXX'
+  const nom = newPatientNom.value.split(' ')[0].toUpperCase().slice(0, 6)
+  const year = new Date().getFullYear()
+  const rand = Math.floor(Math.random() * 9000 + 1000)
+  return `${nom}-${year}-${rand}`
+})
+const createNewPatient = () => { showAddPatientModal.value = false; newPatientNom.value = ''; newPatientAge.value = ''; newPatientPathologie.value = '' }
 const showPatientDossier = ref(false)
 const selectedExo = ref(null)
 const selectedPatient = ref(null)
@@ -581,32 +729,29 @@ const fetchProPatients = async () => {
   const token = localStorage.getItem('token')
   isLoadingPatients.value = true
   try {
-    const res = await fetch(`${API_URL}/utilisateurs`, {
+    // Tente d'abord /mes-patients (ne retourne que les patients assignés au pro connecté)
+    const res = await fetch(`${API_URL}/utilisateurs/mes-patients`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    if (res.ok) {
-      const data = await res.json()
-      patients.value = data
-        .filter(u => u.statut === 'patient' || (u.statut || '').toLowerCase() === 'patient')
-        .map(u => ({
-          id: u.id,
-          nom: u.nom,
-          age: u.age || '--',
-          pathologie: u.pathologie || 'Données non renseignées',
-          observance: u.observance || 0,
-          lastRPE: u.lastRPE || 'N/A',
-          derniereSeance: u.derniereSeance || 'Inconnue',
-          avatar: avatarList[u.id % avatarList.length],
-          metrics: {
-            fcMax: u.fcMax || '--',
-            puissanceMoyenne: u.puissanceMoyenne || '--',
-            materiel: u.materiel || 'Non prescrit'
-          },
-          historique: []
-        }))
-      if (!selectedChatUserId.value && patients.value.length > 0) {
-        selectedChatUserId.value = patients.value[0].id
-      }
+    const data = res.ok ? await res.json() : []
+    patients.value = data.map(u => ({
+      id: u.id,
+      nom: u.nom,
+      age: u.age || '--',
+      pathologie: u.pathologie || 'Données non renseignées',
+      observance: u.observance || 0,
+      lastRPE: u.lastRPE || 'N/A',
+      derniereSeance: u.derniereSeance || 'Inconnue',
+      avatar: avatarList[u.id % avatarList.length],
+      metrics: {
+        fcMax: u.fcMax || '--',
+        puissanceMoyenne: u.puissanceMoyenne || '--',
+        materiel: u.materiel || 'Non prescrit'
+      },
+      historique: []
+    }))
+    if (!selectedChatUserId.value && patients.value.length > 0) {
+      selectedChatUserId.value = patients.value[0].id
     }
   } catch { /* silencieux */ }
   finally { isLoadingPatients.value = false }
@@ -619,11 +764,113 @@ const filteredPatients = computed(() => {
 // --------------------------------------------------------
 // SCENARIOS CLINIQUES
 // --------------------------------------------------------
-const exercises = [
-  { id: 1, title: "L'Aube Douce", objective: "Échauffement", desc: "Pédalage léger pour réveiller les articulations.", duration: "15 min", intensity: "Faible", image: "/images/scen-matin.png", color: "#20C997" },
-  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", desc: "Adaptation de la cadence aux variations du terrain en forêt.", duration: "20 min", intensity: "Modérée", image: "/images/scen-foret.png", color: "#00B8D9" },
-  { id: 3, title: "L'Ascension Alpine", objective: "Cardio", desc: "Défi stimulant en montagne pour faire travailler le cœur.", duration: "25 min", intensity: "Élevée", image: "/images/scen-montagne.png", color: "#0284C7" }
+const PRO_SCENARIOS_KEY = 'playnride_scenarios'
+const baseExercises = [
+  { id: 1, title: "L'Aube Douce",        objective: "Échauffement", desc: "Pédalage léger pour réveiller les articulations.",            duration: "15 min", intensity: "Faible",   image: "/images/scen-matin.png",    color: "#20C997", obstaclesManager: "y1 y1 y1 y1 x1 x1 x1 x1 y1 y1", distanceManager: "70 70 70 120 70 70 70 120 70 70", dureeMinutes: 15, isOwn: false },
+  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", desc: "Adaptation de la cadence aux variations du terrain en forêt.", duration: "20 min", intensity: "Modérée", image: "/images/scen-foret.png",    color: "#00B8D9", obstaclesManager: "y1 x1 y2 x1 y1 x2 y1 x1 y2 x2", distanceManager: "45 20 60 30 50 25 70 20 50 30",  dureeMinutes: 20, isOwn: false },
+  { id: 3, title: "L'Ascension Alpine",   objective: "Cardio",       desc: "Défi stimulant en montagne pour faire travailler le cœur.",  duration: "25 min", intensity: "Élevée",  image: "/images/scen-montagne.png", color: "#0284C7", obstaclesManager: "y2 y2 x1 y2 y2 x2 y2 y2 y2 x2", distanceManager: "20 40 30 20 20 50 30 20 40 60",  dureeMinutes: 25, isOwn: false }
 ]
+
+// Fusionne avec les scénarios créés par l'admin (stockés en localStorage)
+const loadExercises = () => {
+  try {
+    const saved = localStorage.getItem(PRO_SCENARIOS_KEY)
+    if (!saved) return baseExercises
+    const adminScenarios = JSON.parse(saved)
+    return adminScenarios.filter(s => s.actif !== false).map(s => ({
+      ...s,
+      duration: `${s.dureeMinutes || 15} min`,
+      intensity: s.objective === 'Cardio' ? 'Élevée' : s.objective === 'Échauffement' ? 'Faible' : 'Modérée',
+      desc: s.desc || s.objective,
+      isOwn: false
+    }))
+  } catch { return baseExercises }
+}
+
+const exercises = ref(loadExercises())
+
+// ── Recommandations ──────────────────────────────────────────────────────────
+const RECOMMANDATIONS_KEY = 'playnride_recommandations'
+const showRecommandModal = ref(false)
+const recommandTarget = ref(null)
+const recommandScenario = ref('')
+const recommandNote = ref('')
+
+const openRecommandModal = (patient) => {
+  recommandTarget.value = patient
+  recommandScenario.value = exercises.value[0]?.title || ''
+  recommandNote.value = ''
+  showRecommandModal.value = true
+}
+
+const confirmRecommandation = () => {
+  if (!recommandTarget.value || !recommandScenario.value) return
+  const stored = JSON.parse(localStorage.getItem(RECOMMANDATIONS_KEY) || '{}')
+  if (!stored[recommandTarget.value.id]) stored[recommandTarget.value.id] = []
+  stored[recommandTarget.value.id].unshift({ scenario: recommandScenario.value, note: recommandNote.value, date: new Date().toLocaleDateString('fr-FR') })
+  localStorage.setItem(RECOMMANDATIONS_KEY, JSON.stringify(stored))
+  showRecommandModal.value = false
+  showToastPro(`Recommandation envoyée à ${recommandTarget.value.nom}`, 'success')
+}
+
+// ── Éditeur obstacles ────────────────────────────────────────────────────────
+const showObstacleEditor = ref(false)
+const editingExo = ref(null)
+
+const openObstacleEditor = (exo) => {
+  editingExo.value = { ...exo }
+  showObstacleEditor.value = true
+}
+
+const saveObstacles = () => {
+  const idx = exercises.value.findIndex(e => e.id === editingExo.value.id)
+  if (idx !== -1) {
+    exercises.value[idx] = { ...editingExo.value }
+    // Persistance via localStorage scénarios
+    const stored = JSON.parse(localStorage.getItem(PRO_SCENARIOS_KEY) || '[]')
+    const sIdx = stored.findIndex(s => s.id === editingExo.value.id)
+    if (sIdx !== -1) {
+      stored[sIdx] = { ...stored[sIdx], obstaclesManager: editingExo.value.obstaclesManager, distanceManager: editingExo.value.distanceManager, dureeMinutes: editingExo.value.dureeMinutes }
+      localStorage.setItem(PRO_SCENARIOS_KEY, JSON.stringify(stored))
+    }
+  }
+  showObstacleEditor.value = false
+  showToastPro('Obstacles mis à jour !', 'success')
+}
+
+// ── Graphique effort théorique vs réel ──────────────────────────────────────
+const theoreticalPoints = (patient) => {
+  const seances = patient.historique || []
+  if (!seances.length) return ''
+  const w = 360, h = 80, margin = 30
+  return seances.slice(0, 10).map((s, i) => {
+    const x = margin + (i / (seances.length - 1 || 1)) * w
+    // Profil théorique basé sur le RPE prescrit (Facile=20%, Moyen=50%, Dur=80%)
+    const rpeMap = { 'Facile': 0.2, 'Moyen': 0.5, 'Dur': 0.8, 'N/A': 0.4 }
+    const y = 100 - ((rpeMap[s.rpe] || 0.4) * h)
+    return `${x},${y}`
+  }).join(' ')
+}
+
+const realEffortPoints = (patient) => {
+  const seances = patient.historique || []
+  if (!seances.length) return ''
+  const w = 360, h = 80, margin = 30
+  const maxDuree = Math.max(...seances.map(s => parseInt(s.duree) || 1), 1)
+  return seances.slice(0, 10).map((s, i) => {
+    const x = margin + (i / (seances.length - 1 || 1)) * w
+    const duree = parseInt(s.duree) || 0
+    const y = 100 - ((duree / maxDuree) * h)
+    return `${x},${y}`
+  }).join(' ')
+}
+
+// ── Toast local Pro ──────────────────────────────────────────────────────────
+const proToast = ref({ show: false, message: '', type: 'success' })
+const showToastPro = (message, type = 'success') => {
+  proToast.value = { show: true, message, type }
+  setTimeout(() => { proToast.value.show = false }, 3000)
+}
 
 // --------------------------------------------------------
 // GESTION DU CHAT DYNAMIQUE ET NOTIFS
@@ -1177,4 +1424,12 @@ input:checked + .slider-toggle:before { transform: translateX(20px); }
 /* ANIMATION */
 .tab-fade { animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.effort-chart-wrapper { margin: 12px 0 20px 0; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; }
+.empty-effort-chart { padding:16px; text-align:center; color:#94A3B8; font-size:0.85rem; font-style:italic; }
+.toast { position:fixed; bottom:30px; right:30px; padding:14px 22px; border-radius:12px; font-weight:800; font-size:0.95rem; z-index:9999; color:white; box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+.toast.success { background:#20C997; }
+.toast.error   { background:#EF4444; }
+.toast.info    { background:#00B8D9; }
+.toast-enter-active, .toast-leave-active { transition: all 0.4s ease; }
+.toast-enter-from, .toast-leave-to { opacity:0; transform:translateY(20px); }
 </style>
