@@ -165,24 +165,27 @@
           </div>
 
           <div v-if="showInscriptionForm" class="inscription-form-body">
+            <!-- Sélecteur de rôle visuel -->
             <div class="role-selector-group" style="margin-bottom:18px;">
               <button
                 type="button"
-                :class="['role-selector-btn', newUser.statut === 'patient' ? 'active-patient' : '']"
-                @click="newUser.statut = 'patient'"
+                :class="['role-selector-btn', newUser.statut === 'PATIENT' ? 'active-patient' : '']"
+                @click="newUser.statut = 'PATIENT'"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Nouveau Patient
               </button>
               <button
                 type="button"
-                :class="['role-selector-btn', newUser.statut === 'Professionnel' ? 'active-pro' : '']"
-                @click="newUser.statut = 'Professionnel'"
+                :class="['role-selector-btn', newUser.statut === 'PROFESSIONNEL' ? 'active-pro' : '']"
+                @click="newUser.statut = 'PROFESSIONNEL'"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Nouveau Professionnel de santé
               </button>
             </div>
+
+            <!-- Nom + Email -->
             <div class="form-row-2">
               <div class="form-group">
                 <label>Nom complet <span style="color:#EF4444;">*</span></label>
@@ -193,18 +196,37 @@
                 <input type="email" v-model="newUser.email" placeholder="jean@example.com" />
               </div>
             </div>
-            <div class="form-group">
-              <label>Mot de passe provisoire <span style="color:#EF4444;">*</span></label>
-              <input type="password" v-model="newUser.motDePasse" placeholder="Minimum 6 caractères" />
+
+            <!-- Sexe + Date de naissance -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Sexe <span style="color:#EF4444;">*</span></label>
+                <select v-model="newUser.sexe">
+                  <option value="" disabled>Sélectionner...</option>
+                  <option value="M">Masculin</option>
+                  <option value="F">Féminin</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Date de naissance <span style="color:#EF4444;">*</span></label>
+                <input type="date" v-model="newUser.dateNaissance" />
+              </div>
             </div>
+
+            <!-- Info mot de passe auto -->
+            <div class="default-pwd-info">
+              🔑 Mot de passe provisoire attribué automatiquement : <strong>PlayNRide2024!</strong>
+              <br/><span style="color:#94A3B8; font-size:0.78rem;">Communiquez-le à l'utilisateur qui pourra le modifier dans son profil.</span>
+            </div>
+
             <button
               class="btn-primary"
-              :disabled="isSavingUser || !newUser.nom || !newUser.email || !newUser.motDePasse"
+              :disabled="isSavingUser || !newUser.nom || !newUser.email || !newUser.sexe || !newUser.dateNaissance"
               @click="saveUser"
-              :style="newUser.statut === 'Professionnel' ? 'background:#8B5CF6;' : ''"
+              :style="newUser.statut === 'PROFESSIONNEL' ? 'background:#8B5CF6;' : ''"
             >
               <svg v-if="!isSavingUser" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px;vertical-align:-2px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              {{ isSavingUser ? 'Création...' : `Créer le compte ${newUser.statut === 'Professionnel' ? 'Professionnel' : 'Patient'}` }}
+              {{ isSavingUser ? 'Création...' : `Créer le compte ${newUser.statut === 'PROFESSIONNEL' ? 'Professionnel' : 'Patient'}` }}
             </button>
           </div>
         </div>
@@ -532,19 +554,27 @@ const fetchUsers = async () => {
   isLoadingUsers.value = true
   usersError.value = ''
   try {
+    console.log('[AdminDashboard] GET', `${API_URL}/utilisateurs`)
     const res = await fetch(`${API_URL}/utilisateurs`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    if (!res.ok) throw new Error('Erreur ' + res.status)
+    console.log('[AdminDashboard] Réponse status:', res.status)
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      console.error('[AdminDashboard] Erreur body:', body)
+      throw new Error(`Erreur ${res.status} : ${body}`)
+    }
     const data = await res.json()
-    rawUsers.value = data  // conserver les données brutes pour les graphiques
+    console.log('[AdminDashboard] Utilisateurs reçus:', data.length, data)
+    rawUsers.value = data
     allUsers.value = data
       .filter(u => {
         const s = (u.statut || '').toLowerCase()
         return s !== 'admin' && s !== 'administrateur'
       })
       .map(u => {
-        const isPro = u.statut === 'pro' || u.statut === 'Professionnel'
+        const s = (u.statut || '').toLowerCase()
+        const isPro = s === 'pro' || s === 'professionnel'
         const list = isPro ? proAvatars : avatars
         return {
           id: u.id,
@@ -558,7 +588,8 @@ const fetchUsers = async () => {
         }
       })
   } catch (e) {
-    usersError.value = 'Impossible de charger les utilisateurs. Vérifiez votre connexion.'
+    console.error('[AdminDashboard] fetchUsers ÉCHEC:', e)
+    usersError.value = `Impossible de charger les utilisateurs : ${e.message}`
   } finally {
     isLoadingUsers.value = false
   }
@@ -593,33 +624,52 @@ const toggleUserStatus = (user) => {
 
 // ── CRÉER UTILISATEUR ──────────────────────────────────────────────────────────
 const showInscriptionForm = ref(false)
-const newUser = ref({ nom: '', email: '', motDePasse: '', statut: 'patient' })
+const newUser = ref({ nom: '', email: '', sexe: '', dateNaissance: '', statut: 'PATIENT' })
 
 const saveUser = async () => {
-  if (!newUser.value.nom || !newUser.value.email || !newUser.value.motDePasse) {
-    showToast('Remplissez tous les champs', 'error')
+  if (!newUser.value.nom || !newUser.value.email || !newUser.value.sexe || !newUser.value.dateNaissance) {
+    showToast('Veuillez remplir tous les champs obligatoires', 'error')
     return
   }
   const token = localStorage.getItem('token')
   isSavingUser.value = true
   try {
+    // Payload strict : uniquement les 5 champs attendus par le Swagger
+    const userData = {
+      nom: newUser.value.nom.trim(),
+      email: newUser.value.email.trim(),
+      sexe: newUser.value.sexe.charAt(0).toUpperCase(),  // garantit 'M' ou 'F'
+      statut: newUser.value.statut,                       // 'PATIENT' ou 'PROFESSIONNEL'
+      dateNaissance: newUser.value.dateNaissance,         // 'YYYY-MM-DD' garanti par input[type=date]
+      motDePasse: 'PlayNRide2024!'
+    }
+    console.log('Payload envoyé au serveur :', userData)
+    console.table(userData)
     const res = await fetch(`${API_URL}/utilisateurs/admin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(newUser.value)
+      body: JSON.stringify(userData)
     })
+    console.log('Réponse serveur status :', res.status)
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'Erreur ' + res.status)
+      const body = await res.text().catch(() => '')
+      console.error('Erreur body :', body)
+      const err = (() => { try { return JSON.parse(body) } catch { return {} } })()
+      throw new Error(err.message || `Erreur ${res.status} : ${body}`)
     }
-    showToast('Compte créé avec succès !', 'success')
-    newUser.value = { nom: '', email: '', motDePasse: '', statut: 'patient' }
+    const created = await res.json().catch(() => ({}))
+    console.log('Utilisateur créé :', created)
+    showToast(`Compte ${newUser.value.statut === 'PROFESSIONNEL' ? 'Professionnel' : 'Patient'} créé ! MDP provisoire : PlayNRide2024!`, 'success')
+    newUser.value = { nom: '', email: '', sexe: '', dateNaissance: '', statut: 'PATIENT' }
+    showInscriptionForm.value = false
     await fetchUsers()
   } catch (e) {
-    showToast('Erreur lors de la création : ' + e.message, 'error')
+    console.error('saveUser ÉCHEC :', e)
+    console.error('Détail erreur serveur :', e.response?.data ?? e.message)
+    showToast('Erreur : ' + e.message, 'error')
   } finally {
     isSavingUser.value = false
   }
@@ -953,6 +1003,19 @@ onMounted(() => {
 
 /* Formulaire 2 colonnes */
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Info mot de passe par défaut */
+.default-pwd-info {
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: #92400E;
+  font-weight: 600;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
 
 /* CATALOGUE SCÉNARIOS */
 .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
