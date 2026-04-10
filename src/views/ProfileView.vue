@@ -126,6 +126,10 @@ const saveProfile = async () => {
   localStorage.setItem('email', form.value.email)
   localStorage.setItem('playnride_user_avatar', form.value.avatar)
   localStorage.setItem('playnride_user_sexe', form.value.sexe)
+  // Sauvegarde liée à l'email pour restauration au prochain login
+  if (form.value.email) {
+    localStorage.setItem('playnride_avatar_' + form.value.email, form.value.avatar)
+  }
 
   // Try to update on the API if user has an account
   if (token && userId) {

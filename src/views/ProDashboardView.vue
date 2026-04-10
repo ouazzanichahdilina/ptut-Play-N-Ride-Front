@@ -55,7 +55,7 @@
       <div class="sidebar-bottom">
         <div class="pro-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
           <div class="pro-avatar">
-            <img :src="proProfileImage" :alt="proName" />
+            <img :src="proProfileImage" :alt="proName" @error="e => e.target.src='/images/avBlonde.png'" />
           </div>
           <div class="pro-info">
             <p class="pro-name">{{ proName }}</p>
@@ -77,11 +77,16 @@
             <h1>File Active des Patients</h1>
             <p class="subtitle">Vue globale et indicateurs cliniques.</p>
           </div>
-          <div class="search-box">
-            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" v-model="searchQuery" placeholder="Rechercher un patient..." />
+          <div style="display:flex; align-items:center; gap:15px;">
+            <div class="search-box">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" v-model="searchQuery" placeholder="Rechercher un patient..." />
+            </div>
+            <button class="btn-primary" @click="showAddPatientModal = true">+ Nouveau Patient</button>
           </div>
         </header>
+
+        <ProActivityChart :sessions="allSessions" style="margin-bottom: 30px;" />
 
         <div class="alerts-container">
           <div class="alert-card alert-warning">
@@ -118,7 +123,7 @@
               <tr v-for="patient in filteredPatients" :key="patient.id" class="patient-row" @click="openPatientDossier(patient)">
                 <td>
                   <div class="patient-cell-info">
-                    <img :src="patient.avatar" :alt="patient.nom" class="table-avatar" />
+                    <img :src="patient.avatar" :alt="patient.nom" class="table-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                     <div>
                       <span class="font-bold">{{ patient.nom }}</span>
                       <span class="text-xs text-muted block">{{ patient.age }} ans</span>
@@ -136,7 +141,9 @@
                   </div>
                 </td>
                 <td>
-                  <span :class="['diff-badge', 'diff-' + patient.lastRPE.toLowerCase()]">{{ patient.lastRPE }}</span>
+                  <span :class="['diff-badge', 'diff-' + (patient.lastRPE || 'inconnu').toLowerCase()]">
+                    {{ patient.lastRPE === 'inconnu' ? '—' : patient.lastRPE }}
+                  </span>
                 </td>
                 <td>
                   <button class="btn-outline-small" @click.stop="openPatientDossier(patient)">Dossier ➔</button>
@@ -153,14 +160,15 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
           <div class="panel-patient-head">
-            <img :src="selectedPatient.avatar" alt="Avatar" class="dossier-avatar" />
+            <img :src="selectedPatient.avatar" alt="Avatar" class="dossier-avatar" @error="e => e.target.src='/images/avatarN.png'" />
             <div>
               <h2>{{ selectedPatient.nom }}</h2>
               <p>{{ selectedPatient.age }} ans • {{ selectedPatient.pathologie }}</p>
             </div>
           </div>
           <div class="panel-actions">
-            <button class="btn-primary-small" @click="activeTab='bibliotheque'; showPatientDossier=false">Prescrire</button>
+            <button class="btn-primary-small" @click="openRecommandModal(selectedPatient)">⭐ Recommander</button>
+            <button class="btn-primary-small" @click="prescribeToPatient(selectedPatient)">Prescrire</button>
             <button class="btn-secondary-small" @click="openChatWith(selectedPatient.id); showPatientDossier=false">Message</button>
           </div>
         </div>
@@ -182,7 +190,95 @@
             </div>
           </div>
 
-          <h3 class="section-title-small">Dernières Séances & Analyse</h3>
+          <!-- Badge DÉMO -->
+          <div v-if="selectedPatient.isDemo" class="demo-badge-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Profil de démonstration — données simulées
+          </div>
+
+          <!-- Graphique effort théorique vs réel -->
+          <h3 class="section-title-small" style="margin-top:20px;">Analyse d'Effort — Profil théorique vs Réel</h3>
+          <div v-if="selectedPatient.historique && selectedPatient.historique.length > 0" class="effort-chart-wrapper">
+            <svg viewBox="0 0 400 130" style="width:100%; height:130px; border-radius:12px; background:#F8FAFC;">
+              <!-- Axe Y label -->
+              <text x="2" y="14" font-size="7" fill="#94A3B8">Effort</text>
+              <text x="2" y="100" font-size="7" fill="#94A3B8">Bas</text>
+              <!-- Grille légère -->
+              <line x1="30" y1="15" x2="390" y2="15" stroke="#F1F5F9" stroke-width="1"/>
+              <line x1="30" y1="55" x2="390" y2="55" stroke="#F1F5F9" stroke-width="1"/>
+              <line x1="30" y1="95" x2="390" y2="95" stroke="#F1F5F9" stroke-width="1"/>
+              <!-- Axes -->
+              <line x1="30" y1="10" x2="30" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <line x1="30" y1="100" x2="390" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <!-- Aire remplie effort réel -->
+              <polyline
+                :points="realEffortPoints(selectedPatient)"
+                fill="#20C99722" stroke="none"
+              />
+              <!-- Profil théorique (obstacles normalisés) -->
+              <polyline
+                :points="theoreticalPoints(selectedPatient)"
+                fill="none" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"
+              />
+              <!-- Effort réel -->
+              <polyline
+                :points="realEffortPoints(selectedPatient)"
+                fill="none" stroke="#20C997" stroke-width="2.5"
+              />
+              <!-- Points réels -->
+              <circle
+                v-for="(pt, i) in realEffortPointsArray(selectedPatient)" :key="i"
+                :cx="pt.x" :cy="pt.y" r="4" fill="#20C997" stroke="white" stroke-width="1.5"
+              />
+              <!-- Légende -->
+              <line x1="40" y1="120" x2="60" y2="120" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"/>
+              <text x="65" y="124" font-size="8" fill="#6B7C93">Profil théorique</text>
+              <line x1="165" y1="120" x2="185" y2="120" stroke="#20C997" stroke-width="2.5"/>
+              <text x="190" y="124" font-size="8" fill="#6B7C93">Effort réel</text>
+            </svg>
+          </div>
+          <!-- Vrai patient sans données : message "En attente" -->
+          <div v-else-if="!selectedPatient.isDemo" class="sensor-waiting-msg">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <div>
+              <p>En attente de données capteurs</p>
+              <span>Les courbes d'effort apparaîtront après la première séance connectée.</span>
+            </div>
+          </div>
+          <div v-else class="empty-effort-chart">Aucune séance enregistrée.</div>
+
+          <!-- Stats Biofeedback (patients démo uniquement) -->
+          <template v-if="selectedPatient.isDemo && selectedPatient.stats">
+            <h3 class="section-title-small" style="margin-top:22px;">Biofeedback & Statistiques Capteurs</h3>
+            <div class="stats-biofeedback-grid">
+              <div class="stat-bio-card">
+                <span>Vitesse Moy.</span>
+                <strong>{{ selectedPatient.stats.vitesseMoy }} km/h</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Vitesse Max.</span>
+                <strong>{{ selectedPatient.stats.vitesseMax }} km/h</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Cadence</span>
+                <strong>{{ selectedPatient.stats.cadence }} RPM</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Résistance Moy.</span>
+                <strong>Niv. {{ selectedPatient.stats.resistance }}</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Effort Moy.</span>
+                <strong class="text-cyan">{{ selectedPatient.stats.effortMoy }}%</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Puissance</span>
+                <strong>{{ selectedPatient.stats.puissance }} W</strong>
+              </div>
+            </div>
+          </template>
+
+          <h3 class="section-title-small" style="margin-top:22px;">Dernières Séances & Analyse</h3>
           <div class="history-mini-list">
             <div class="history-mini-item" v-for="(seance, i) in selectedPatient.historique" :key="i">
               <div class="h-date">{{ seance.date }}</div>
@@ -238,7 +334,7 @@
               <div class="cal-date">{{ day.dateNumber }}</div>
               <div class="cal-events">
                 <div v-for="(event, eIdx) in day.events" :key="eIdx" class="cal-event" :style="{ backgroundColor: event.color + '20', borderLeftColor: event.color }" @click.stop="openEventDetails(event, day.dateNumber, currentMonthName)">
-                  <img :src="event.patient.avatar" class="event-avatar" />
+                  <img :src="event.patient.avatar" class="event-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                   <div class="event-details">
                     <span class="e-name">{{ event.patient.nom }}</span>
                     <span class="e-time">{{ event.time }}</span>
@@ -271,7 +367,10 @@
                 <span>⏱️ {{ exo.duration }}</span>
                 <span>📈 Int. {{ exo.intensity }}</span>
               </div>
-              <button class="btn-primary" :style="{ backgroundColor: exo.color }" @click="openAssignModal(exo)">Prescrire ce protocole</button>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn-primary" :style="{ backgroundColor: exo.color, flex:2 }" @click="openAssignModal(exo)">Prescrire</button>
+                <button v-if="exo.isOwn" class="btn-outline-small" style="flex:1;" @click="openObstacleEditor(exo)" title="Modifier les obstacles">✏️ Obstacles</button>
+              </div>
             </div>
           </div>
         </div>
@@ -298,7 +397,7 @@
                 <span class="live-indicator" v-if="!session.isStopped">🔴 EN SÉANCE</span>
                 <span class="live-indicator" style="background: #94A3B8; animation: none;" v-else>⏹️ SÉANCE ARRÊTÉE</span>
                 
-                <img :src="session.patient.avatar" alt="Avatar" class="live-avatar" />
+                <img :src="session.patient.avatar" alt="Avatar" class="live-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                 <div>
                   <h3>{{ session.patient.nom }}</h3>
                   <span class="equip-badge">{{ session.equipement }} • {{ session.scenario }}</span>
@@ -402,7 +501,7 @@
               :class="{ active: selectedChatUserId === p.id }"
               @click="selectChat(p.id)"
             >
-              <img :src="p.avatar" alt="Avatar" />
+              <img :src="p.avatar" alt="Avatar" @error="e => e.target.src='/images/avatarN.png'" />
               <div class="contact-info">
                 <h4>{{ p.nom }}</h4>
                 <p>{{ getLastMessage(p.id) }}</p>
@@ -495,6 +594,90 @@
       </div>
     </div>
 
+    <div class="modal-overlay" :class="{ active: showAddPatientModal }" @click.self="showAddPatientModal = false">
+      <div class="assign-modal">
+        <div class="modal-header-assign">
+          <h3>Ajouter un nouveau patient</h3>
+          <button class="close-modal" @click="showAddPatientModal = false">&times;</button>
+        </div>
+        <div class="modal-body-assign">
+          <p class="text-sm text-muted" style="margin-bottom: 20px;">Générez un code de liaison unique. Le patient l'utilisera lors de son inscription sur la plateforme pour que son compte soit relié automatiquement à votre cabinet.</p>
+
+          <div class="form-group">
+            <label>Nom complet</label>
+            <input type="text" v-model="newPatientNom" placeholder="Ex: Jean Dupont">
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label>Âge</label>
+              <input type="number" v-model="newPatientAge" placeholder="Ex: 65">
+            </div>
+            <div class="form-group" style="flex: 2;">
+              <label>Pathologie / Motif</label>
+              <input type="text" v-model="newPatientPathologie" placeholder="Ex: Rééducation post-opératoire">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Code de liaison généré (à transmettre au patient)</label>
+            <input type="text" :value="generatedCode" readonly style="font-weight: bold; color: #00B8D9; text-align: center; letter-spacing: 2px;">
+          </div>
+
+          <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;" @click="createNewPatient">Créer le dossier patient</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODAL RECOMMANDER SCÉNARIO ========================= -->
+    <div class="modal-overlay" :class="{ active: showRecommandModal }" @click.self="showRecommandModal = false">
+      <div class="assign-modal" style="max-width:480px;">
+        <div class="modal-header-assign">
+          <h3>Recommander un scénario</h3>
+          <button class="close-modal" @click="showRecommandModal = false">&times;</button>
+        </div>
+        <div class="modal-body-assign" v-if="recommandTarget">
+          <p class="text-sm text-muted" style="margin-bottom:16px;">Patient : <strong>{{ recommandTarget.nom }}</strong></p>
+          <div class="form-group">
+            <label>Choisir le scénario</label>
+            <select v-model="recommandScenario">
+              <option v-for="exo in exercises" :key="exo.id" :value="exo.title">{{ exo.title }} — {{ exo.objective }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Consigne clinique (optionnelle)</label>
+            <input type="text" v-model="recommandNote" placeholder="Ex: Maintenir FC < 110 BPM" />
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:16px;" @click="confirmRecommandation">Envoyer la recommandation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODAL ÉDITEUR OBSTACLES ========================= -->
+    <div class="modal-overlay" :class="{ active: showObstacleEditor }" @click.self="showObstacleEditor = false">
+      <div class="assign-modal" style="max-width:520px;">
+        <div class="modal-header-assign">
+          <h3>Modifier les obstacles — {{ editingExo?.title }}</h3>
+          <button class="close-modal" @click="showObstacleEditor = false">&times;</button>
+        </div>
+        <div class="modal-body-assign" v-if="editingExo">
+          <p class="text-xs text-muted" style="margin-bottom:12px;">Format obstacles : séquence de <code>y1</code>, <code>x1</code>, <code>y2</code>, <code>x2</code> séparés par des espaces (y = Haut, x = Bas, 1 = normal, 2 = difficile).</p>
+          <div class="form-group">
+            <label>Séquence Obstacles (Haut/Bas)</label>
+            <input type="text" v-model="editingExo.obstaclesManager" placeholder="y1 x1 y2 x1 y1 x2" />
+          </div>
+          <div class="form-group">
+            <label>Distances entre obstacles (px)</label>
+            <input type="text" v-model="editingExo.distanceManager" placeholder="70 50 80 60 45 30" />
+          </div>
+          <div class="form-group">
+            <label>Durée (min)</label>
+            <input type="number" v-model="editingExo.dureeMinutes" min="1" />
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:16px;" @click="saveObstacles">Enregistrer les modifications</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-overlay" :class="{ active: showAgendaEventModal }" @click.self="showAgendaEventModal = false">
       <div class="assign-modal" style="max-width: 400px;">
         <div class="modal-header-assign" style="background: white; border-bottom: 1px solid #E2E8F0;">
@@ -503,7 +686,7 @@
         </div>
         <div class="modal-body-assign" v-if="selectedAgendaEvent">
           <div class="event-modal-head">
-            <img :src="selectedAgendaEvent.patient.avatar" alt="Avatar" class="event-modal-avatar"/>
+            <img :src="selectedAgendaEvent.patient.avatar" alt="Avatar" class="event-modal-avatar" @error="e => e.target.src='/images/avatarN.png'" />
             <div>
               <h4 style="margin:0; color:#0A192F;">{{ selectedAgendaEvent.patient.nom }}</h4>
               <p class="text-muted text-xs" style="margin:0;">Prévu à {{ selectedAgendaEvent.time }}</p>
@@ -531,6 +714,10 @@
       </div>
     </div>
 
+  <!-- Toast Pro -->
+  <Transition name="toast">
+    <div v-if="proToast.show" :class="['toast', proToast.type]">{{ proToast.message }}</div>
+  </Transition>
   </div>
 </template>
 
@@ -538,6 +725,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
+import ProActivityChart from '../components/ProActivityChart.vue'
 
 const router = useRouter()
 
@@ -550,9 +738,21 @@ const refreshProProfile = () => {
   proName.value = localStorage.getItem('nom') || proName.value
 }
 
+const allSessions = ref([])
+
+const fetchAllSessions = async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  try {
+    const res = await fetch(`${API_URL}/seances`, { headers: { Authorization: `Bearer ${token}` } })
+    if (res.ok) allSessions.value = await res.json()
+  } catch { /* silencieux si endpoint indisponible */ }
+}
+
 onMounted(async () => {
   refreshProProfile()
   await fetchProPatients()
+  fetchAllSessions()
   generateCalendar()
   window.addEventListener('focus', refreshProProfile)
 })
@@ -563,6 +763,18 @@ onUnmounted(() => {
 
 const activeTab = ref('patients')
 const showAssignModal = ref(false)
+const showAddPatientModal = ref(false)
+const newPatientNom = ref('')
+const newPatientAge = ref('')
+const newPatientPathologie = ref('')
+const generatedCode = computed(() => {
+  if (!newPatientNom.value) return 'CODE-LIAISON-XXXX'
+  const nom = newPatientNom.value.split(' ')[0].toUpperCase().slice(0, 6)
+  const year = new Date().getFullYear()
+  const rand = Math.floor(Math.random() * 9000 + 1000)
+  return `${nom}-${year}-${rand}`
+})
+const createNewPatient = () => { showAddPatientModal.value = false; newPatientNom.value = ''; newPatientAge.value = ''; newPatientPathologie.value = '' }
 const showPatientDossier = ref(false)
 const selectedExo = ref(null)
 const selectedPatient = ref(null)
@@ -575,40 +787,101 @@ const isGeneratingPDF = ref(false)
 const avatarList = ['/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png', '/images/azouz.png', '/images/avatarRousse.png']
 const isLoadingPatients = ref(false)
 
-const patients = ref([])
+// --------------------------------------------------------
+// PATIENTS FICTIFS PERMANENTS (MODÈLES DE DÉMONSTRATION)
+// --------------------------------------------------------
+const FICTITIOUS_PATIENTS = [
+  {
+    id: 9001,
+    nom: 'Jean Dupont',
+    age: 58,
+    pathologie: 'Rééducation Genou Post-Op',
+    observance: 87,
+    lastRPE: 'Moyen',
+    derniereSeance: "Aujourd'hui",
+    avatar: '/images/avatarN.png',
+    isDemo: true,
+    metrics: { fcMax: 130, puissanceMoyenne: 95, materiel: 'Pédalier (Jambes)' },
+    stats: { vitesseMoy: 14.2, vitesseMax: 22.1, cadence: 68, resistance: 5, effortMoy: 72, puissance: 95 },
+    historique: [
+      { date: '08/04', scenario: "L'Aube Douce",         duree: '15', fcMoy: 98,  watts: 80,  rpe: 'Moyen'     },
+      { date: '06/04', scenario: "L'Échappée Sylvestre", duree: '20', fcMoy: 112, watts: 95,  rpe: 'Moyen'     },
+      { date: '04/04', scenario: "L'Ascension Alpine",   duree: '22', fcMoy: 125, watts: 110, rpe: 'Difficile' },
+      { date: '02/04', scenario: "L'Aube Douce",         duree: '14', fcMoy: 96,  watts: 78,  rpe: 'Facile'    },
+      { date: '01/04', scenario: "L'Échappée Sylvestre", duree: '19', fcMoy: 108, watts: 92,  rpe: 'Moyen'     }
+    ]
+  },
+  {
+    id: 9002,
+    nom: 'Marie Lambert',
+    age: 45,
+    pathologie: 'Cardio-Réhabilitation Phase II',
+    observance: 72,
+    lastRPE: 'Facile',
+    derniereSeance: 'Hier',
+    avatar: '/images/avBlonde.png',
+    isDemo: true,
+    metrics: { fcMax: 120, puissanceMoyenne: 75, materiel: 'Vélo Complet' },
+    stats: { vitesseMoy: 11.8, vitesseMax: 17.5, cadence: 55, resistance: 3, effortMoy: 58, puissance: 75 },
+    historique: [
+      { date: '09/04', scenario: "L'Aube Douce",      duree: '15', fcMoy: 95,  watts: 70, rpe: 'Facile' },
+      { date: '07/04', scenario: "Souffle Océanique", duree: '10', fcMoy: 102, watts: 75, rpe: 'Moyen'  },
+      { date: '05/04', scenario: "L'Aube Douce",      duree: '15', fcMoy: 88,  watts: 65, rpe: 'Facile' },
+      { date: '03/04', scenario: "L'Aube Douce",      duree: '12', fcMoy: 93,  watts: 68, rpe: 'Facile' }
+    ]
+  }
+]
+
+const patients = ref([...FICTITIOUS_PATIENTS])
 
 const fetchProPatients = async () => {
   const token = localStorage.getItem('token')
   isLoadingPatients.value = true
   try {
-    const res = await fetch(`${API_URL}/utilisateurs`, {
+    // Tente d'abord /mes-patients (patients assignés au pro connecté)
+    let data = []
+    const res = await fetch(`${API_URL}/utilisateurs/mes-patients`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (res.ok) {
-      const data = await res.json()
-      patients.value = data
-        .filter(u => u.statut === 'patient' || (u.statut || '').toLowerCase() === 'patient')
-        .map(u => ({
-          id: u.id,
-          nom: u.nom,
-          age: u.age || '--',
-          pathologie: u.pathologie || 'Données non renseignées',
-          observance: u.observance || 0,
-          lastRPE: u.lastRPE || 'N/A',
-          derniereSeance: u.derniereSeance || 'Inconnue',
-          avatar: avatarList[u.id % avatarList.length],
-          metrics: {
-            fcMax: u.fcMax || '--',
-            puissanceMoyenne: u.puissanceMoyenne || '--',
-            materiel: u.materiel || 'Non prescrit'
-          },
-          historique: []
-        }))
-      if (!selectedChatUserId.value && patients.value.length > 0) {
-        selectedChatUserId.value = patients.value[0].id
+      data = await res.json()
+    }
+    // Fallback : si aucun patient assigné, on récupère tous les patients
+    if (data.length === 0) {
+      const res2 = await fetch(`${API_URL}/utilisateurs`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (res2.ok) {
+        const all = await res2.json()
+        data = all.filter(u => (u.statut || '').toLowerCase() === 'patient')
       }
     }
-  } catch { /* silencieux */ }
+    const realPatients = data.map(u => ({
+      id: u.id,
+      nom: u.nom,
+      age: u.age || '--',
+      pathologie: u.pathologie || 'Données non renseignées',
+      observance: u.observance || 0,
+      lastRPE: u.lastRPE || 'inconnu',
+      derniereSeance: u.derniereSeance || 'Inconnue',
+      avatar: avatarList[u.id % avatarList.length],
+      isDemo: false,
+      metrics: {
+        fcMax: u.fcMax || '--',
+        puissanceMoyenne: u.puissanceMoyenne || '--',
+        materiel: u.materiel || 'Non prescrit'
+      },
+      historique: []
+    }))
+    // Toujours inclure les patients fictifs en tête de liste
+    patients.value = [...FICTITIOUS_PATIENTS, ...realPatients]
+    if (!selectedChatUserId.value && patients.value.length > 0) {
+      selectedChatUserId.value = patients.value[0].id
+    }
+  } catch {
+    // En cas d'échec API, on garde uniquement les patients fictifs
+    patients.value = [...FICTITIOUS_PATIENTS]
+  }
   finally { isLoadingPatients.value = false }
 }
 
@@ -619,11 +892,127 @@ const filteredPatients = computed(() => {
 // --------------------------------------------------------
 // SCENARIOS CLINIQUES
 // --------------------------------------------------------
-const exercises = [
-  { id: 1, title: "L'Aube Douce", objective: "Échauffement", desc: "Pédalage léger pour réveiller les articulations.", duration: "15 min", intensity: "Faible", image: "/images/scen-matin.png", color: "#20C997" },
-  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", desc: "Adaptation de la cadence aux variations du terrain en forêt.", duration: "20 min", intensity: "Modérée", image: "/images/scen-foret.png", color: "#00B8D9" },
-  { id: 3, title: "L'Ascension Alpine", objective: "Cardio", desc: "Défi stimulant en montagne pour faire travailler le cœur.", duration: "25 min", intensity: "Élevée", image: "/images/scen-montagne.png", color: "#0284C7" }
+const PRO_SCENARIOS_KEY = 'playnride_scenarios'
+const baseExercises = [
+  { id: 1, title: "L'Aube Douce",        objective: "Échauffement", desc: "Pédalage léger pour réveiller les articulations.",            duration: "15 min", intensity: "Faible",   image: "/images/scen-matin.png",    color: "#20C997", obstaclesManager: "y1 y1 y1 y1 x1 x1 x1 x1 y1 y1", distanceManager: "70 70 70 120 70 70 70 120 70 70", dureeMinutes: 15, isOwn: false },
+  { id: 2, title: "L'Échappée Sylvestre", objective: "Coordination", desc: "Adaptation de la cadence aux variations du terrain en forêt.", duration: "20 min", intensity: "Modérée", image: "/images/scen-foret.png",    color: "#00B8D9", obstaclesManager: "y1 x1 y2 x1 y1 x2 y1 x1 y2 x2", distanceManager: "45 20 60 30 50 25 70 20 50 30",  dureeMinutes: 20, isOwn: false },
+  { id: 3, title: "L'Ascension Alpine",   objective: "Cardio",       desc: "Défi stimulant en montagne pour faire travailler le cœur.",  duration: "25 min", intensity: "Élevée",  image: "/images/scen-montagne.png", color: "#0284C7", obstaclesManager: "y2 y2 x1 y2 y2 x2 y2 y2 y2 x2", distanceManager: "20 40 30 20 20 50 30 20 40 60",  dureeMinutes: 25, isOwn: false }
 ]
+
+// Fusionne avec les scénarios créés par l'admin (stockés en localStorage)
+const loadExercises = () => {
+  try {
+    const saved = localStorage.getItem(PRO_SCENARIOS_KEY)
+    if (!saved) return baseExercises
+    const adminScenarios = JSON.parse(saved)
+    return adminScenarios.filter(s => s.actif !== false).map(s => ({
+      ...s,
+      duration: `${s.dureeMinutes || 15} min`,
+      intensity: s.objective === 'Cardio' ? 'Élevée' : s.objective === 'Échauffement' ? 'Faible' : 'Modérée',
+      desc: s.desc || s.objective,
+      isOwn: false
+    }))
+  } catch { return baseExercises }
+}
+
+const exercises = ref(loadExercises())
+
+// ── Recommandations ──────────────────────────────────────────────────────────
+const RECOMMANDATIONS_KEY = 'playnride_recommandations'
+const showRecommandModal = ref(false)
+const recommandTarget = ref(null)
+const recommandScenario = ref('')
+const recommandNote = ref('')
+
+const openRecommandModal = (patient) => {
+  recommandTarget.value = patient
+  recommandScenario.value = exercises.value[0]?.title || ''
+  recommandNote.value = ''
+  showRecommandModal.value = true
+}
+
+const confirmRecommandation = () => {
+  if (!recommandTarget.value || !recommandScenario.value) return
+  const stored = JSON.parse(localStorage.getItem(RECOMMANDATIONS_KEY) || '{}')
+  if (!stored[recommandTarget.value.id]) stored[recommandTarget.value.id] = []
+  stored[recommandTarget.value.id].unshift({ scenario: recommandScenario.value, note: recommandNote.value, date: new Date().toLocaleDateString('fr-FR') })
+  localStorage.setItem(RECOMMANDATIONS_KEY, JSON.stringify(stored))
+  showRecommandModal.value = false
+  showToastPro(`Recommandation envoyée à ${recommandTarget.value.nom}`, 'success')
+}
+
+// ── Éditeur obstacles ────────────────────────────────────────────────────────
+const showObstacleEditor = ref(false)
+const editingExo = ref(null)
+
+const openObstacleEditor = (exo) => {
+  editingExo.value = { ...exo }
+  showObstacleEditor.value = true
+}
+
+const saveObstacles = () => {
+  const idx = exercises.value.findIndex(e => e.id === editingExo.value.id)
+  if (idx !== -1) {
+    exercises.value[idx] = { ...editingExo.value }
+    // Persistance via localStorage scénarios
+    const stored = JSON.parse(localStorage.getItem(PRO_SCENARIOS_KEY) || '[]')
+    const sIdx = stored.findIndex(s => s.id === editingExo.value.id)
+    if (sIdx !== -1) {
+      stored[sIdx] = { ...stored[sIdx], obstaclesManager: editingExo.value.obstaclesManager, distanceManager: editingExo.value.distanceManager, dureeMinutes: editingExo.value.dureeMinutes }
+      localStorage.setItem(PRO_SCENARIOS_KEY, JSON.stringify(stored))
+    }
+  }
+  showObstacleEditor.value = false
+  showToastPro('Obstacles mis à jour !', 'success')
+}
+
+// ── Graphique effort théorique vs réel ──────────────────────────────────────
+const theoreticalPoints = (patient) => {
+  const seances = patient.historique || []
+  if (!seances.length) return ''
+  const w = 360, h = 80, margin = 30
+  return seances.slice(0, 10).map((s, i) => {
+    const x = margin + (i / (seances.length - 1 || 1)) * w
+    // Profil théorique basé sur le RPE prescrit (Facile=20%, Moyen=50%, Dur=80%)
+    const rpeMap = { 'Facile': 0.2, 'Moyen': 0.5, 'Dur': 0.8, 'N/A': 0.4 }
+    const y = 100 - ((rpeMap[s.rpe] || 0.4) * h)
+    return `${x},${y}`
+  }).join(' ')
+}
+
+const realEffortPoints = (patient) => {
+  const seances = patient.historique || []
+  if (!seances.length) return ''
+  const w = 360, h = 80, margin = 30
+  const maxDuree = Math.max(...seances.map(s => parseInt(s.duree) || 1), 1)
+  return seances.slice(0, 10).map((s, i) => {
+    const x = margin + (i / (seances.length - 1 || 1)) * w
+    const duree = parseInt(s.duree) || 0
+    const y = 100 - ((duree / maxDuree) * h)
+    return `${x},${y}`
+  }).join(' ')
+}
+
+// Retourne tableau d'objets {x, y} pour les cercles sur le graphique
+const realEffortPointsArray = (patient) => {
+  const seances = patient.historique || []
+  if (!seances.length) return []
+  const w = 360, h = 80, margin = 30
+  const maxDuree = Math.max(...seances.map(s => parseInt(s.duree) || 1), 1)
+  return seances.slice(0, 10).map((s, i) => {
+    const x = margin + (i / (seances.length - 1 || 1)) * w
+    const duree = parseInt(s.duree) || 0
+    const y = 100 - ((duree / maxDuree) * h)
+    return { x, y }
+  })
+}
+
+// ── Toast local Pro ──────────────────────────────────────────────────────────
+const proToast = ref({ show: false, message: '', type: 'success' })
+const showToastPro = (message, type = 'success') => {
+  proToast.value = { show: true, message, type }
+  setTimeout(() => { proToast.value.show = false }, 3000)
+}
 
 // --------------------------------------------------------
 // GESTION DU CHAT DYNAMIQUE ET NOTIFS
@@ -837,6 +1226,14 @@ const assignDate = ref('')
 const openAssignModal = (exo) => {
   selectedExo.value = exo
   assignTargetPatient.value = patients.value[0]
+  showAssignModal.value = true
+}
+
+// Prescrire directement depuis le dossier patient (pré-sélectionne le patient)
+const prescribeToPatient = (patient) => {
+  showPatientDossier.value = false
+  selectedExo.value = exercises.value[0] || null
+  assignTargetPatient.value = patient
   showAssignModal.value = true
 }
 
@@ -1177,4 +1574,29 @@ input:checked + .slider-toggle:before { transform: translateX(20px); }
 /* ANIMATION */
 .tab-fade { animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.effort-chart-wrapper { margin: 12px 0 20px 0; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; }
+.empty-effort-chart { padding:16px; text-align:center; color:#94A3B8; font-size:0.85rem; font-style:italic; }
+.toast { position:fixed; bottom:30px; right:30px; padding:14px 22px; border-radius:12px; font-weight:800; font-size:0.95rem; z-index:9999; color:white; box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+.toast.success { background:#20C997; }
+.toast.error   { background:#EF4444; }
+.toast.info    { background:#00B8D9; }
+.toast-enter-active, .toast-leave-active { transition: all 0.4s ease; }
+.toast-enter-from, .toast-leave-to { opacity:0; transform:translateY(20px); }
+
+/* BADGE RPE inconnu */
+.diff-inconnu { background: #F1F5F9; color: #94A3B8; }
+
+/* BADGE DÉMO */
+.demo-badge-pill { display: inline-flex; align-items: center; gap: 6px; background: #FFF9E6; color: #D97706; border: 1px solid #FDE68A; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
+
+/* MESSAGE EN ATTENTE CAPTEURS */
+.sensor-waiting-msg { display: flex; align-items: center; gap: 15px; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 12px; padding: 20px; margin: 12px 0 20px 0; color: #6B7C93; }
+.sensor-waiting-msg p { margin: 0 0 4px 0; font-weight: 800; color: #4A5568; font-size: 0.9rem; }
+.sensor-waiting-msg span { font-size: 0.8rem; }
+
+/* GRILLE STATS BIOFEEDBACK */
+.stats-biofeedback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-bio-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.stat-bio-card span { font-size: 0.72rem; font-weight: 700; color: #6B7C93; text-transform: uppercase; letter-spacing: 0.3px; }
+.stat-bio-card strong { font-size: 1.15rem; font-weight: 900; color: #0A192F; }
 </style>

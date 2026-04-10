@@ -58,4 +58,32 @@ const router = createRouter({
   }
 })
 
+// ── Navigation Guards ──────────────────────────────────────────────────────────
+// Routes qui nécessitent une session valide, avec le rôle requis (null = tout rôle)
+const PROTECTED = {
+  'patient-dashboard': 'patient',
+  'pro-dashboard': 'Professionnel',
+  'admin-dashboard': 'Administrateur',
+  'game': null,
+  'profile': null,
+}
+
+router.beforeEach((to, _from, next) => {
+  if (!(to.name in PROTECTED)) return next()
+
+  const token = localStorage.getItem('token')
+  if (!token) return next({ name: 'auth' })
+
+  const requiredRole = PROTECTED[to.name]
+  if (!requiredRole) return next()   // token suffit pour game/profile
+
+  const userRole = localStorage.getItem('statut')
+  if (userRole === requiredRole) return next()
+
+  // Mauvais rôle → redirection vers le bon dashboard
+  if (userRole === 'Administrateur') return next({ name: 'admin-dashboard' })
+  if (userRole === 'Professionnel') return next({ name: 'pro-dashboard' })
+  return next({ name: 'patient-dashboard' })
+})
+
 export default router
