@@ -11,39 +11,39 @@
         </div>
 
         <nav class="sidebar-menu">
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'patients' }" @click="activeTab = 'patients'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'patients' }" @click.prevent="activeTab = 'patients'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </span> 
             Mes Patients
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'agenda' }" @click="activeTab = 'agenda'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'agenda' }" @click.prevent="activeTab = 'agenda'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </span> 
             Agenda Cabinet
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'bibliotheque' }" @click="activeTab = 'bibliotheque'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'bibliotheque' }" @click.prevent="activeTab = 'bibliotheque'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             </span> 
             Prescriptions
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'monitoring' }" @click="openMonitoring">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'monitoring' }" @click.prevent="openMonitoring">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             </span> 
             Temps Réel
             <span class="live-pulse-badge" v-if="unreadLiveAlerts > 0">{{ unreadLiveAlerts }}</span>
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'messagerie' }" @click="openMessagerie">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'messagerie' }" @click.prevent="openMessagerie">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             </span> 
             Messagerie
             <span v-if="unreadMessages > 0" class="notification-badge" style="margin-left: auto;">{{ unreadMessages }}</span>
           </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'parametres' }" @click="activeTab = 'parametres'">
+          <a href="#" class="menu-item" :class="{ active: activeTab === 'parametres' }" @click.prevent="activeTab = 'parametres'; showPatientDossier = false">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </span> 
@@ -53,13 +53,13 @@
       </div>
 
       <div class="sidebar-bottom">
-        <div class="pro-profile">
+        <div class="pro-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
           <div class="pro-avatar">
-            <img :src="proProfileImage" :alt="proName" @error="e => e.target.src='/images/proSanté.png'" />
+            <img :src="proProfileImage" :alt="proName" @error="e => e.target.src='/images/avBlonde.png'" />
           </div>
           <div class="pro-info">
             <p class="pro-name">{{ proName }}</p>
-            <p class="pro-mail">Cabinet Kiné Sport</p>
+            <p class="pro-mail" style="color:#20C997; font-weight:700;">Professionnel de santé</p>
           </div>
         </div>
         <button class="logout-link" @click="$router.push('/')">
@@ -77,7 +77,7 @@
             <h1>File Active des Patients</h1>
             <p class="subtitle">Vue globale et indicateurs cliniques.</p>
           </div>
-          <div style="display:flex; gap:15px;">
+          <div style="display:flex; align-items:center; gap:15px;">
             <div class="search-box">
               <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               <input type="text" v-model="searchQuery" placeholder="Rechercher un patient..." />
@@ -85,6 +85,8 @@
             <button class="btn-primary" @click="showAddPatientModal = true">+ Nouveau Patient</button>
           </div>
         </header>
+
+        <ProActivityChart :sessions="allSessions" style="margin-bottom: 30px;" />
 
         <div class="alerts-container">
           <div class="alert-card alert-warning">
@@ -121,9 +123,7 @@
               <tr v-for="patient in filteredPatients" :key="patient.id" class="patient-row" @click="openPatientDossier(patient)">
                 <td>
                   <div class="patient-cell-info">
-                    <div class="table-avatar-wrapper">
-                      <img :src="patient.avatar" :alt="patient.nom" class="table-avatar" />
-                    </div>
+                    <img :src="patient.avatar" :alt="patient.nom" class="table-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                     <div>
                       <span class="font-bold">{{ patient.nom }}</span>
                       <span class="text-xs text-muted block">{{ patient.age }} ans</span>
@@ -158,15 +158,14 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
           <div class="panel-patient-head">
-            <div class="dossier-avatar-wrapper">
-              <img :src="selectedPatient.avatar" alt="Avatar" class="dossier-avatar" />
-            </div>
+            <img :src="selectedPatient.avatar" alt="Avatar" class="dossier-avatar" @error="e => e.target.src='/images/avatarN.png'" />
             <div>
               <h2>{{ selectedPatient.nom }}</h2>
               <p>{{ selectedPatient.age }} ans • {{ selectedPatient.pathologie }}</p>
             </div>
           </div>
           <div class="panel-actions">
+            <button class="btn-primary-small" @click="openRecommandModal(selectedPatient)">⭐ Recommander</button>
             <button class="btn-primary-small" @click="activeTab='bibliotheque'; showPatientDossier=false">Prescrire</button>
             <button class="btn-secondary-small" @click="openChatWith(selectedPatient.id); showPatientDossier=false">Message</button>
           </div>
@@ -189,59 +188,44 @@
             </div>
           </div>
 
+          <!-- Graphique effort théorique vs réel -->
+          <h3 class="section-title-small" style="margin-top:20px;">Analyse d'Effort — Profil théorique vs Réel</h3>
+          <div v-if="selectedPatient.historique && selectedPatient.historique.length > 0" class="effort-chart-wrapper">
+            <svg viewBox="0 0 400 120" style="width:100%; height:120px; border-radius:12px; background:#F8FAFC;">
+              <!-- Axe -->
+              <line x1="30" y1="10" x2="30" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <line x1="30" y1="100" x2="390" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <!-- Profil théorique (obstacles normalisés) -->
+              <polyline
+                :points="theoreticalPoints(selectedPatient)"
+                fill="none" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"
+              />
+              <!-- Effort réel (durée normalisée) -->
+              <polyline
+                :points="realEffortPoints(selectedPatient)"
+                fill="none" stroke="#20C997" stroke-width="2"
+              />
+              <!-- Légende -->
+              <line x1="40" y1="112" x2="60" y2="112" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"/>
+              <text x="65" y="116" font-size="8" fill="#6B7C93">Profil théorique</text>
+              <line x1="160" y1="112" x2="180" y2="112" stroke="#20C997" stroke-width="2"/>
+              <text x="185" y="116" font-size="8" fill="#6B7C93">Effort réel</text>
+            </svg>
+          </div>
+          <div v-else class="empty-effort-chart">Aucune séance pour générer le graphique.</div>
+
           <h3 class="section-title-small">Dernières Séances & Analyse</h3>
-          <div class="history-list-pro">
-            <div class="history-item-pro" v-for="(seance, i) in selectedPatient.historique" :key="i">
-              
-              <div class="h-header-pro" @click="toggleProSession(i)" style="cursor: pointer;">
-                <div class="h-title-pro">
-                  <h4 style="margin: 0; color: #0A192F; font-size: 1.1rem; font-weight: 900;">Séance {{ selectedPatient.historique.length - i }}</h4>
-                  <span class="text-muted" style="font-size: 0.85rem;">{{ seance.date }} • {{ seance.scenario }} • {{ seance.duree }}</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                  <span :class="['diff-badge', 'diff-' + seance.rpe.toLowerCase()]">EVA : {{ seance.rpe }}</span>
-                  <svg :style="{ transform: expandedProSession === i ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7C93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
+          <div class="history-mini-list">
+            <div class="history-mini-item" v-for="(seance, i) in selectedPatient.historique" :key="i">
+              <div class="h-date">{{ seance.date }}</div>
+              <div class="h-info">
+                <strong>{{ seance.scenario }}</strong>
+                <span>{{ seance.duree }} • FC Moy: {{ seance.fcMoy }} bpm • {{ seance.watts }} W</span>
               </div>
-
-              <div v-if="expandedProSession === i" class="h-details-pro">
-                <div class="h-metrics-grid">
-                  <div class="metric-item"><span>Distance</span><strong>{{ seance.distance }} m</strong></div>
-                  <div class="metric-item"><span>Vit. Moyenne</span><strong>{{ seance.avgSpeed }} km/h</strong></div>
-                  <div class="metric-item"><span>Vit. Maximale</span><strong>{{ seance.vitesseMax }} km/h</strong></div>
-                  
-                  <div class="metric-item"><span>Cadence Moy.</span><strong>{{ seance.rpm }} RPM</strong></div>
-                  <div class="metric-item"><span>Cadence Max.</span><strong>{{ seance.maxRpm }} RPM</strong></div>
-                  <div class="metric-item"><span>Résistance Effort</span><strong>{{ seance.resistanceEffort }}</strong></div>
-                  
-                  <div class="metric-item"><span>Puissance Moy.</span><strong class="text-cyan">{{ seance.watts }} W</strong></div>
-                  <div class="metric-item"><span>Puissance Exp.</span><strong class="text-cyan">{{ seance.puissanceExplosive }} W</strong></div>
-                  <div class="metric-item"><span>Cardio (Moy/Max)</span><strong class="text-red">{{ seance.avgBpm }} / {{ seance.maxBpm }}</strong></div>
-                </div>
-                
-                <div class="h-chart-effort-pro" v-if="seance.svgPoints">
-                  <span class="chart-label-mini">Biofeedback : Profil d'effort (Position Avatar / Temps)</span>
-                  <svg viewBox="-20 -10 440 120" class="mini-svg-chart">
-                    <line x1="0" y1="0" x2="0" y2="100" stroke="#CBD5E1" stroke-width="2"/>
-                    <line x1="0" y1="100" x2="400" y2="100" stroke="#CBD5E1" stroke-width="2"/>
-                    <line x1="0" y1="50" x2="400" y2="50" stroke="#E2E8F0" stroke-dasharray="4" stroke-width="1"/>
-                    
-                    <text x="-5" y="10" font-size="10" fill="#94A3B8" text-anchor="end">Haut</text>
-                    <text x="-5" y="55" font-size="10" fill="#94A3B8" text-anchor="end">Moy</text>
-                    <text x="-5" y="100" font-size="10" fill="#94A3B8" text-anchor="end">Bas</text>
-                    
-                    <text x="0" y="115" font-size="10" fill="#94A3B8">0s</text>
-                    <text x="400" y="115" font-size="10" fill="#94A3B8" text-anchor="end">Fin de séance</text>
-
-                    <polyline :points="seance.svgPoints" fill="none" stroke="#00B8D9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </div>
-              </div>
-
+              <div class="h-rpe"><span :class="['diff-badge', 'diff-' + seance.rpe.toLowerCase()]">{{ seance.rpe }}</span></div>
             </div>
-
-            <div v-if="selectedPatient.historique.length === 0" class="text-muted text-center" style="padding:20px;">
-              Aucune séance enregistrée pour le moment.
+            <div v-if="selectedPatient.historique.length === 0" class="text-muted text-xs text-center" style="padding:10px;">
+              Aucune séance enregistrée.
             </div>
           </div>
           
@@ -286,7 +270,7 @@
               <div class="cal-date">{{ day.dateNumber }}</div>
               <div class="cal-events">
                 <div v-for="(event, eIdx) in day.events" :key="eIdx" class="cal-event" :style="{ backgroundColor: event.color + '20', borderLeftColor: event.color }" @click.stop="openEventDetails(event, day.dateNumber, currentMonthName)">
-                  <img :src="event.patient.avatar" class="event-avatar" />
+                  <img :src="event.patient.avatar" class="event-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                   <div class="event-details">
                     <span class="e-name">{{ event.patient.nom }}</span>
                     <span class="e-time">{{ event.time }}</span>
@@ -319,7 +303,10 @@
                 <span>⏱️ {{ exo.duration }}</span>
                 <span>📈 Int. {{ exo.intensity }}</span>
               </div>
-              <button class="btn-primary" :style="{ backgroundColor: exo.color }" @click="openAssignModal(exo)">Prescrire ce protocole</button>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn-primary" :style="{ backgroundColor: exo.color, flex:2 }" @click="openAssignModal(exo)">Prescrire</button>
+                <button v-if="exo.isOwn" class="btn-outline-small" style="flex:1;" @click="openObstacleEditor(exo)" title="Modifier les obstacles">✏️ Obstacles</button>
+              </div>
             </div>
           </div>
         </div>
@@ -329,7 +316,7 @@
         <header class="content-header">
           <div>
             <h1>Monitoring Temps Réel</h1>
-            <p class="subtitle">Supervisez les constantes de vos patients en cours de séance.</p>
+            <p class="subtitle">Supervisez les séances en cours et ajustez la charge clinique.</p>
           </div>
         </header>
 
@@ -346,12 +333,16 @@
                 <span class="live-indicator" v-if="!session.isStopped">🔴 EN SÉANCE</span>
                 <span class="live-indicator" style="background: #94A3B8; animation: none;" v-else>⏹️ SÉANCE ARRÊTÉE</span>
                 
-                <img :src="session.patient.avatar" alt="Avatar" class="live-avatar" />
+                <img :src="session.patient.avatar" alt="Avatar" class="live-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                 <div>
                   <h3>{{ session.patient.nom }}</h3>
                   <span class="equip-badge">{{ session.equipement }} • {{ session.scenario }}</span>
                 </div>
               </div>
+              <button class="btn-emergency" @click="emergencyStop(session)" :disabled="session.isStopped">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                ARRÊT MOTEUR
+              </button>
             </div>
 
             <div class="live-metrics">
@@ -371,6 +362,32 @@
                 <strong>{{ session.timeElapsed }}</strong>
                 <span class="text-xs text-muted">Sur {{ session.timeTotal }}</span>
               </div>
+            </div>
+
+            <div class="live-controls">
+              <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Ajustement Télé-réadaptation</h4>
+              <div class="control-row">
+                <div class="slider-labels"><label>Niveau de Résistance (Moteur)</label><span>Niv. {{ session.resistance }}</span></div>
+                <input type="range" min="1" max="10" v-model="session.resistance" class="slider custom-slider" :disabled="session.isStopped">
+              </div>
+              
+              <button 
+                class="btn-outline" 
+                style="margin-top: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" 
+                @click="sendAdjustment(session)"
+                :disabled="session.isSending || session.isStopped"
+              >
+                <template v-if="session.isSending">
+                  <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Transmission...
+                </template>
+                <template v-else-if="session.adjustmentSent">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#20C997" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span style="color: #20C997;">Ajustement envoyé</span>
+                </template>
+                <template v-else>
+                  Transmettre l'ajustement
+                </template>
+              </button>
+
             </div>
           </div>
         </div>
@@ -413,14 +430,14 @@
 
         <div class="messages-layout">
           <div class="messages-list">
-            <div 
-              v-for="p in patients" 
-              :key="p.id" 
-              class="msg-contact" 
+            <div
+              v-for="p in messagerieContacts"
+              :key="p.id"
+              class="msg-contact"
               :class="{ active: selectedChatUserId === p.id }"
               @click="selectChat(p.id)"
             >
-              <img :src="p.avatar" alt="Avatar" />
+              <img :src="p.avatar" alt="Avatar" @error="e => e.target.src='/images/avatarN.png'" />
               <div class="contact-info">
                 <h4>{{ p.nom }}</h4>
                 <p>{{ getLastMessage(p.id) }}</p>
@@ -463,7 +480,6 @@
           </div>
         </div>
       </div>
-
     </main>
 
     <div class="modal-overlay" :class="{ active: showAssignModal }" @click.self="showAssignModal = false">
@@ -522,28 +538,78 @@
         </div>
         <div class="modal-body-assign">
           <p class="text-sm text-muted" style="margin-bottom: 20px;">Générez un code de liaison unique. Le patient l'utilisera lors de son inscription sur la plateforme pour que son compte soit relié automatiquement à votre cabinet.</p>
-          
+
           <div class="form-group">
             <label>Nom complet</label>
-            <input type="text" placeholder="Ex: Jean Dupont">
+            <input type="text" v-model="newPatientNom" placeholder="Ex: Jean Dupont">
           </div>
           <div class="form-row">
             <div class="form-group" style="flex: 1;">
               <label>Âge</label>
-              <input type="number" placeholder="Ex: 65">
+              <input type="number" v-model="newPatientAge" placeholder="Ex: 65">
             </div>
             <div class="form-group" style="flex: 2;">
               <label>Pathologie / Motif</label>
-              <input type="text" placeholder="Ex: Rééducation post-opératoire">
+              <input type="text" v-model="newPatientPathologie" placeholder="Ex: Rééducation post-opératoire">
             </div>
           </div>
-          
+
           <div class="form-group">
             <label>Code de liaison généré (à transmettre au patient)</label>
-            <input type="text" value="DUPONT-2024-KINE" readonly style="font-weight: bold; color: #00B8D9; text-align: center; letter-spacing: 2px;">
+            <input type="text" :value="generatedCode" readonly style="font-weight: bold; color: #00B8D9; text-align: center; letter-spacing: 2px;">
           </div>
 
-          <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;" @click="showAddPatientModal = false">Créer le dossier patient</button>
+          <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;" @click="createNewPatient">Créer le dossier patient</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODAL RECOMMANDER SCÉNARIO ========================= -->
+    <div class="modal-overlay" :class="{ active: showRecommandModal }" @click.self="showRecommandModal = false">
+      <div class="assign-modal" style="max-width:480px;">
+        <div class="modal-header-assign">
+          <h3>Recommander un scénario</h3>
+          <button class="close-modal" @click="showRecommandModal = false">&times;</button>
+        </div>
+        <div class="modal-body-assign" v-if="recommandTarget">
+          <p class="text-sm text-muted" style="margin-bottom:16px;">Patient : <strong>{{ recommandTarget.nom }}</strong></p>
+          <div class="form-group">
+            <label>Choisir le scénario</label>
+            <select v-model="recommandScenario">
+              <option v-for="exo in exercises" :key="exo.id" :value="exo.title">{{ exo.title }} — {{ exo.objective }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Consigne clinique (optionnelle)</label>
+            <input type="text" v-model="recommandNote" placeholder="Ex: Maintenir FC < 110 BPM" />
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:16px;" @click="confirmRecommandation">Envoyer la recommandation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODAL ÉDITEUR OBSTACLES ========================= -->
+    <div class="modal-overlay" :class="{ active: showObstacleEditor }" @click.self="showObstacleEditor = false">
+      <div class="assign-modal" style="max-width:520px;">
+        <div class="modal-header-assign">
+          <h3>Modifier les obstacles — {{ editingExo?.title }}</h3>
+          <button class="close-modal" @click="showObstacleEditor = false">&times;</button>
+        </div>
+        <div class="modal-body-assign" v-if="editingExo">
+          <p class="text-xs text-muted" style="margin-bottom:12px;">Format obstacles : séquence de <code>y1</code>, <code>x1</code>, <code>y2</code>, <code>x2</code> séparés par des espaces (y = Haut, x = Bas, 1 = normal, 2 = difficile).</p>
+          <div class="form-group">
+            <label>Séquence Obstacles (Haut/Bas)</label>
+            <input type="text" v-model="editingExo.obstaclesManager" placeholder="y1 x1 y2 x1 y1 x2" />
+          </div>
+          <div class="form-group">
+            <label>Distances entre obstacles (px)</label>
+            <input type="text" v-model="editingExo.distanceManager" placeholder="70 50 80 60 45 30" />
+          </div>
+          <div class="form-group">
+            <label>Durée (min)</label>
+            <input type="number" v-model="editingExo.dureeMinutes" min="1" />
+          </div>
+          <button class="btn-primary" style="width:100%; margin-top:16px;" @click="saveObstacles">Enregistrer les modifications</button>
         </div>
       </div>
     </div>
@@ -556,9 +622,7 @@
         </div>
         <div class="modal-body-assign" v-if="selectedAgendaEvent">
           <div class="event-modal-head">
-            <div class="event-modal-avatar-wrapper">
-              <img :src="selectedAgendaEvent.patient.avatar" alt="Avatar" class="event-modal-avatar"/>
-            </div>
+            <img :src="selectedAgendaEvent.patient.avatar" alt="Avatar" class="event-modal-avatar" @error="e => e.target.src='/images/avatarN.png'" />
             <div>
               <h4 style="margin:0; color:#0A192F;">{{ selectedAgendaEvent.patient.nom }}</h4>
               <p class="text-muted text-xs" style="margin:0;">Prévu à {{ selectedAgendaEvent.time }}</p>
@@ -586,6 +650,10 @@
       </div>
     </div>
 
+  <!-- Toast Pro -->
+  <Transition name="toast">
+    <div v-if="proToast.show" :class="['toast', proToast.type]">{{ proToast.message }}</div>
+  </Transition>
   </div>
 </template>
 
@@ -1138,14 +1206,11 @@ const openPatientDossierFromAgenda = () => {
 
 .sidebar-bottom { border-top: 1px solid #E2E8F0; padding-top: 20px; }
 .pro-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: #F8FAFC; padding: 12px; border-radius: 12px;}
-
-/* CORRECTION AVATAR PRO */
-.pro-avatar { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 2px solid white; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; background: white;}
+.pro-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid white; }
 .pro-avatar img { width: 100%; height: 100%; object-fit: cover;}
-
 .pro-name { font-size: 0.9rem; font-weight: 800; color: #0A192F; margin: 0 0 2px 0;}
 .pro-mail { font-size: 0.75rem; color: #6B7C93; margin: 0;}
-.logout-link { background: none; border: none; color: #6B7C93; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px;}
+.logout-link { background: none; border: none; color: #94A3B8; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; transition: 0.2s; padding: 5px 10px;}
 .logout-link:hover { color: #FC8181; }
 
 .main-content { flex: 1; padding: 40px 50px; overflow-y: auto; position: relative;}
@@ -1163,7 +1228,7 @@ const openPatientDossierFromAgenda = () => {
 .bg-green { background-color: #20C997; }
 .bg-warning { background-color: #D97706; }
 .bg-red { background-color: #E53E3E; }
-.btn-primary { background: #00B8D9; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; height: fit-content;}
+.btn-primary { background: #00B8D9; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;}
 .btn-primary:hover:not(:disabled) { filter: brightness(0.9); transform: translateY(-2px);}
 .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 .btn-primary-small { background: #00B8D9; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem;}
@@ -1204,32 +1269,24 @@ const openPatientDossierFromAgenda = () => {
 .patient-row:hover { background: #F8FAFC; }
 .patient-row td { padding: 12px 20px; vertical-align: middle; font-size: 0.95rem;}
 .patient-cell-info { display: flex; align-items: center; gap: 12px; }
-
-/* CORRECTION AVATAR LISTE */
-.table-avatar-wrapper { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #F1F5F9; display: flex; align-items: center; justify-content: center;}
-.table-avatar { width: 100%; height: 100%; object-fit: cover;}
-
+.table-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #F1F5F9;}
 .observance-wrapper { display: flex; align-items: center; gap: 8px;}
 .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .date-info { font-weight: 600; color: #4A5568; }
 .diff-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
 .diff-facile { background: #E8F8F5; color: #20C997; }
 .diff-moyen { background: #FFF9E6; color: #D97706; }
-.diff-dur { background: #FFF5F5; color: #E53E3E; }
+.diff-difficile { background: #FFF5F5; color: #E53E3E; }
 
-/* --- DOSSIER PATIENT PANEL (ÉLARGI) --- */
-.patient-slide-panel { position: fixed; top: 0; right: -750px; width: 750px; height: 100vh; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.1); z-index: 100; transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column;}
+/* DOSSIER PATIENT PANEL */
+.patient-slide-panel { position: fixed; top: 0; right: -450px; width: 450px; height: 100vh; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.1); z-index: 100; transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column;}
 .patient-slide-panel.panel-open { right: 0; }
 .panel-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.3); z-index: 90; backdrop-filter: blur(2px);}
 .panel-header { padding: 30px 25px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; position: relative;}
-.btn-close-panel { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #6B7C93; cursor: pointer; transition: 0.2s;}
+.btn-close-panel { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #94A3B8; cursor: pointer; transition: 0.2s;}
 .btn-close-panel:hover { color: #0A192F; }
 .panel-patient-head { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
-
-/* CORRECTION AVATAR DOSSIER */
-.dossier-avatar-wrapper { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); background:#fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
-.dossier-avatar { width: 100%; height: 100%; object-fit: cover; }
-
+.dossier-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); background:#fff;}
 .panel-patient-head h2 { margin: 0; color: #0A192F; font-size: 1.4rem; font-weight: 900;}
 .panel-patient-head p { margin: 0; color: #6B7C93; font-size: 0.9rem; font-weight: 600;}
 .panel-actions { display: flex; gap: 10px; }
@@ -1242,32 +1299,16 @@ const openPatientDossierFromAgenda = () => {
 .health-list li { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #F1F5F9;}
 .health-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
 .observance-big { font-size: 2.2rem; font-weight: 900; color: #20C997; text-align: center; line-height: 1; margin-bottom: 5px;}
-.section-title-small { font-size: 1.1rem; color: #0A192F; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid #F1F5F9; padding-bottom: 10px;}
+.section-title-small { font-size: 0.95rem; color: #0A192F; font-weight: 800; margin-bottom: 15px; border-bottom: 2px solid #F1F5F9; padding-bottom: 8px;}
+.history-mini-list { display: flex; flex-direction: column; gap: 10px;}
+.history-mini-item { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 10px 12px; border-radius: 8px; border: 1px solid #E2E8F0;}
+.h-date { font-size: 0.75rem; font-weight: 800; color: #6B7C93; width: 70px;}
+.h-info { flex: 1; display: flex; flex-direction: column;}
+.h-info strong { font-size: 0.85rem; color: #0A192F;}
+.h-info span { font-size: 0.7rem; color: #94A3B8;}
+.h-rpe { margin-left: 5px; }
 
-/* HISTORIQUE ACCORDÉON (PRO) */
-.history-list-pro { display: flex; flex-direction: column; gap: 20px;}
-.history-item-pro { display: flex; flex-direction: column; background: #FAFCFF; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); overflow: hidden;}
-.h-header-pro { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white;}
-.h-header-pro:hover { background: #F8FAFC; }
-.h-title-pro h4 { margin: 0 0 5px 0; color: #0A192F; font-size: 1.1rem;}
-.h-details-pro { padding: 20px; border-top: 1px solid #E2E8F0; background: #FAFCFF; animation: fadeIn 0.3s ease;}
-
-/* Grille de 9 métriques */
-.h-metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;}
-.metric-item { background: white; border: 1px solid #E2E8F0; padding: 15px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
-.metric-item span { font-size: 0.7rem; color: #6B7C93; text-transform: uppercase; font-weight: 800; margin-bottom: 5px; line-height: 1.1;}
-.metric-item strong { font-size: 1.1rem; font-weight: 900; color: #0A192F; }
-
-/* COURBE SVG D'EFFORT (PRO) */
-.h-chart-effort-pro { background: white; border-radius: 12px; padding: 20px; border: 1px solid #E2E8F0; }
-.chart-label-mini { font-size: 0.85rem; font-weight: 800; color: #0A192F; text-transform: uppercase; margin-bottom: 15px; display: block;}
-.mini-svg-chart { width: 100%; height: 120px; display: block; overflow: visible;}
-
-/* RESTE DU CSS CONSERVÉ */
-.tab-fade { animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* AGENDA, BIBLIOTHEQUE, MESSAGERIE, ETC. */
+/* ONGLET 2 : AGENDA CALENDRIER */
 .calendar-controls { display: flex; align-items: center; gap: 15px;}
 .current-month { margin: 0; font-size: 1.2rem; color: #0A192F; font-weight: 900; width: 180px; text-align: center;}
 .calendar-container { background: white; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden; display: flex; flex-direction: column; flex: 1; min-height: 500px;}
@@ -1277,7 +1318,7 @@ const openPatientDossierFromAgenda = () => {
 .cal-cell { border-right: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; padding: 8px; transition: background 0.2s;}
 .cal-cell:nth-child(7n) { border-right: none; }
 .cal-cell.other-month { background: #F8FAFC; opacity: 0.5;}
-.cal-cell.is-today { background: #00B8D9; opacity: 0.1;}
+.cal-cell.is-today { background: #F0F9FF; }
 .cal-cell.is-today .cal-date { background: #00B8D9; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center;}
 .cal-date { font-weight: 800; color: #0A192F; font-size: 0.9rem; margin-bottom: 5px; width: 24px;}
 .cal-events { display: flex; flex-direction: column; gap: 4px; }
@@ -1288,6 +1329,7 @@ const openPatientDossierFromAgenda = () => {
 .e-name { font-weight: 700; color: #0A192F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60px;}
 .e-time { font-size: 0.65rem; color: #4A5568;}
 
+/* ONGLET 3 : BIBLIOTHEQUE PRESCRIPTION */
 .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
 .prescription-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; display: flex; flex-direction: column;}
 .presc-img-wrapper { height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;}
@@ -1298,6 +1340,7 @@ const openPatientDossierFromAgenda = () => {
 .presc-content p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; flex: 1;}
 .presc-metrics { display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.8rem; font-weight: 700; color: #4A5568;}
 
+/* ONGLET 4 : MONITORING LIVE */
 .empty-state { background: white; padding: 50px; border-radius: 16px; text-align: center; border: 1px dashed #CBD5E1; color: #6B7C93;}
 .empty-state h4 { color: #0A192F; font-size: 1.2rem; margin: 15px 0 5px; font-weight: 800;}
 .monitoring-panel { max-width: 900px; }
@@ -1308,16 +1351,29 @@ const openPatientDossierFromAgenda = () => {
 .live-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #fff;}
 .live-patient-info h3 { margin: 0 0 2px 0; color: #0A192F; font-size: 1.1rem; font-weight: 900;}
 .equip-badge { background: white; color: #4A5568; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #E2E8F0; }
+.btn-emergency { display: flex; align-items: center; gap: 8px; background: #E53E3E; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 0.85rem; cursor: pointer; transition: 0.2s;}
+.btn-emergency:hover:not(:disabled) { background: #C53030; transform: scale(1.05);}
+.btn-emergency:disabled { opacity: 0.5; cursor: not-allowed; }
 .live-metrics { display: flex; padding: 25px; gap: 20px; background: white;}
 .metric { flex: 1; background: #F8FAFC; padding: 15px 20px; border-radius: 12px; display: flex; flex-direction: column; border: 1px solid #E2E8F0;}
 .metric span { font-size: 0.8rem; color: #6B7C93; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;}
 .metric strong { font-size: 2rem; font-weight: 900; line-height: 1;}
 .metric-chart { font-family: monospace; letter-spacing: -1px; color: #00B8D9; margin-top: 10px; font-weight: bold; overflow: hidden; white-space: nowrap;}
+.live-controls { padding: 25px; background: #FAFCFF; border-top: 1px solid #E2E8F0;}
+.live-controls h4 { display: flex; align-items: center; gap: 10px; color: #0A192F; font-size: 1rem; margin: 0 0 20px 0; font-weight: 900;}
+.control-row { margin-bottom: 20px; }
+.slider-labels { display: flex; justify-content: space-between; margin-bottom: 10px;}
+.slider-labels label { font-weight: 700; color: #4A5568; font-size: 0.9rem;}
+.slider-labels span { font-weight: 900; color: #00B8D9; background: #EAF7F9; padding: 2px 10px; border-radius: 6px; font-size: 0.85rem;}
+.custom-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #E2E8F0; border-radius: 5px; outline: none;}
+.custom-slider:disabled::-webkit-slider-thumb { background: #94A3B8; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #00B8D9; cursor: pointer; border: 4px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
 
+/* ONGLET 5 : PARAMETRES */
 .settings-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; max-width: 700px;}
 .settings-card h3 { color: #0A192F; font-size: 1.1rem; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid #F1F5F9; padding-bottom: 10px;}
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
-.form-group label { font-weight: 700; color: #6B7C93; font-size: 0.85rem; }
+.form-group label { font-weight: 700; color: #4A5568; font-size: 0.85rem; }
 .form-group input, .form-group select { padding: 12px; border: 2px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; font-family: inherit; font-size: 0.95rem; color: #0A192F; transition: 0.2s;}
 .form-group input:focus, .form-group select:focus { border-color: #00B8D9; outline: none; background: white;}
 .toggle-label { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #0A192F; margin-bottom: 15px; cursor: pointer; font-size: 0.95rem;}
@@ -1328,6 +1384,7 @@ const openPatientDossierFromAgenda = () => {
 input:checked + .slider-toggle { background-color: #20C997; }
 input:checked + .slider-toggle:before { transform: translateX(20px); }
 
+/* ONGLET 6 : MESSAGERIE DYNAMIQUE */
 .messages-layout { display: flex; height: 600px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
 .messages-list { width: 320px; border-right: 1px solid #E2E8F0; background: #F8FAFC; overflow-y: auto;}
 .msg-contact { display: flex; align-items: center; gap: 12px; padding: 15px 20px; border-bottom: 1px solid #E2E8F0; cursor: pointer; transition: 0.2s;}
@@ -1347,13 +1404,14 @@ input:checked + .slider-toggle:before { transform: translateX(20px); }
 .message-bubble { max-width: 65%; padding: 12px 18px; border-radius: 14px; font-size: 0.95rem; line-height: 1.5;}
 .from-pro .message-bubble { background: #00B8D9; color: white; border-bottom-right-radius: 4px;}
 .from-patient .message-bubble { background: white; color: #0A192F; border: 1px solid #E2E8F0; border-bottom-left-radius: 4px;}
-.message-time { display: block; font-size: 0.7rem; margin-top: 5px; opacity: 0.7; text-align: right; color: #6B7C93; }
+.message-time { display: block; font-size: 0.7rem; margin-top: 5px; opacity: 0.7; text-align: right; }
 .chat-input-pro { padding: 20px 25px; border-top: 1px solid #E2E8F0; display: flex; gap: 12px; background: white;}
 .chat-input-pro input { flex: 1; padding: 12px 18px; border: 2px solid #E2E8F0; border-radius: 10px; font-size: 0.95rem; outline: none; transition: 0.2s;}
 .chat-input-pro input:focus { border-color: #00B8D9;}
 .btn-send-pro { background: #00B8D9; border: none; width: 48px; height: 48px; border-radius: 10px; display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.2s;}
 .btn-send-pro:hover { background: #0284C7; transform: scale(1.05);}
 
+/* MODAL ASSIGNATION & AGENDA DETAIL */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; backdrop-filter: blur(3px);}
 .modal-overlay.active { opacity: 1; visibility: visible; }
 .assign-modal { background: white; width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: translateY(30px); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px rgba(0,0,0,0.2);}
@@ -1368,11 +1426,23 @@ input:checked + .slider-toggle:before { transform: translateX(20px); }
 .presc-summary strong { color: #0A192F; font-size: 1rem; display: block; margin-bottom: 4px;}
 .form-row { display: flex; gap: 15px; }
 
+/* STYLES SPECIFIQUES MODAL AGENDA */
 .event-modal-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #F1F5F9;}
-.event-modal-avatar-wrapper { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid #E2E8F0; display: flex; align-items: center; justify-content: center; background: white;}
-.event-modal-avatar { width: 100%; height: 100%; object-fit: cover;}
+.event-modal-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #E2E8F0;}
 .event-modal-body { display: flex; flex-direction: column; gap: 15px;}
 .e-data { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; padding: 12px; border-radius: 8px;}
 .e-data span { font-size: 0.85rem; color: #6B7C93; font-weight: 700; text-transform: uppercase;}
 .e-data strong { font-size: 0.95rem; color: #0A192F;}
+
+/* ANIMATION */
+.tab-fade { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.effort-chart-wrapper { margin: 12px 0 20px 0; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; }
+.empty-effort-chart { padding:16px; text-align:center; color:#94A3B8; font-size:0.85rem; font-style:italic; }
+.toast { position:fixed; bottom:30px; right:30px; padding:14px 22px; border-radius:12px; font-weight:800; font-size:0.95rem; z-index:9999; color:white; box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+.toast.success { background:#20C997; }
+.toast.error   { background:#EF4444; }
+.toast.info    { background:#00B8D9; }
+.toast-enter-active, .toast-leave-active { transition: all 0.4s ease; }
+.toast-enter-from, .toast-leave-to { opacity:0; transform:translateY(20px); }
 </style>
