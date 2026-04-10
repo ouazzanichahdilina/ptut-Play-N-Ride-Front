@@ -194,12 +194,6 @@
           <p class="subtitle">Historique de vos séances partagé automatiquement avec votre praticien.</p>
         </header>
 
-        <PatientProgressChart
-          :sessions="rawSessions"
-          :current-user-id="currentUserId"
-          style="margin-bottom: 30px;"
-        />
-
         <div class="history-stats-container">
           <div class="history-stat-card">
             <div class="stat-icon" style="background-color: #E8F8F5; color: #20C997;">
@@ -230,57 +224,24 @@
           </div>
         </div>
 
-        <div v-if="historyData.length > 0" class="charts-dashboard">
-          <div class="chart-card chart-large">
-            <h3 class="chart-title">Évolution de vos performances (Score)</h3>
-            <div class="chart-container-axes">
-              <svg width="100%" height="100%" viewBox="0 0 650 240" class="svg-chart" preserveAspectRatio="xMidYMid meet">
-                <text x="-120" y="15" transform="rotate(-90)" fill="#6B7C93" font-size="12" font-weight="bold" letter-spacing="1">SCORE OBTENU (pts)</text>
-                <g class="grid" stroke="#E2E8F0" stroke-width="1">
-                  <line x1="60" y1="20" x2="620" y2="20" stroke-dasharray="4"/>
-                  <text x="50" y="24" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">600</text>
-                  <line x1="60" y1="70" x2="620" y2="70" stroke-dasharray="4"/>
-                  <text x="50" y="74" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">400</text>
-                  <line x1="60" y1="120" x2="620" y2="120" stroke-dasharray="4"/>
-                  <text x="50" y="124" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">200</text>
-                  <line x1="60" y1="170" x2="620" y2="170" stroke="#CBD5E1" stroke-width="2" />
-                  <text x="50" y="174" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">0</text>
-                </g>
-                <defs>
-                  <linearGradient id="barGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#00B8D9" />
-                    <stop offset="100%" stop-color="#20C997" />
-                  </linearGradient>
-                </defs>
-                <g v-for="(pt, i) in scoreBarPoints" :key="'bar-'+i">
-                  <rect :x="pt.x - 20" :y="pt.y" width="40" :height="pt.h" fill="url(#barGradient)" rx="4">
-                    <title>{{ pt.score }} points ({{ pt.scenario }})</title>
-                  </rect>
-                  <text :x="pt.x" y="195" fill="#0A192F" font-size="11" font-weight="bold" text-anchor="middle">{{ pt.date }}</text>
-                </g>
-                <text x="340" y="230" fill="#6B7C93" font-size="12" font-weight="bold" letter-spacing="1" text-anchor="middle">DATE DE LA SÉANCE</text>
-              </svg>
-            </div>
-          </div>
-          <div class="chart-card chart-small">
-            <h3 class="chart-title">Répartition des séances</h3>
-            <div class="donut-wrapper">
-              <svg viewBox="0 0 36 36" class="circular-chart">
-                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle libre-segment" :stroke-dasharray="`${percentLibre}, 100`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle prescrit-segment" :stroke-dasharray="`${percentPrescrit}, 100`" :stroke-dashoffset="`-${percentLibre}`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <text x="18" y="18" class="donut-number">{{ historyData.length }}</text>
-                <text x="18" y="23" class="donut-label">Séances</text>
-              </svg>
-              <div class="donut-legend">
-                <div class="legend-item">
-                  <span class="legend-color" style="background:#00B8D9"></span>
-                  <div class="legend-text"><strong>Prescrit</strong><span>{{ percentPrescrit }}% ({{ prescritCount }})</span></div>
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color" style="background:#20C997"></span>
-                  <div class="legend-text"><strong>Libre</strong><span>{{ percentLibre }}% ({{ libreCount }})</span></div>
-                </div>
+        <div v-if="historyData.length > 0" class="chart-card chart-donut-standalone" style="max-width: 380px; margin-bottom: 30px;">
+          <h3 class="chart-title">Répartition des séances</h3>
+          <div class="donut-wrapper">
+            <svg viewBox="0 0 36 36" class="circular-chart">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="circle libre-segment" :stroke-dasharray="`${percentLibre}, 100`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="circle prescrit-segment" :stroke-dasharray="`${percentPrescrit}, 100`" :stroke-dashoffset="`-${percentLibre}`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <text x="18" y="18" class="donut-number">{{ historyData.length }}</text>
+              <text x="18" y="23" class="donut-label">Séances</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background:#00B8D9"></span>
+                <div class="legend-text"><strong>Prescrit</strong><span>{{ percentPrescrit }}% ({{ prescritCount }})</span></div>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background:#20C997"></span>
+                <div class="legend-text"><strong>Libre</strong><span>{{ percentLibre }}% ({{ libreCount }})</span></div>
               </div>
             </div>
           </div>
@@ -321,14 +282,30 @@
                 <tr v-if="expandedRow === idx" class="history-details-row">
                   <td colspan="6">
                     <div class="history-details-box">
-                      <div class="details-grid">
+                      <div class="details-grid details-grid-extended">
                         <div class="detail-item">
                           <span class="detail-label">Vitesse moyenne</span>
                           <span class="detail-value text-cyan">{{ session.avgSpeed }} km/h</span>
                         </div>
+                        <div v-if="session.vitesseMax" class="detail-item">
+                          <span class="detail-label">Vitesse maximale</span>
+                          <span class="detail-value text-cyan">{{ session.vitesseMax }} km/h</span>
+                        </div>
                         <div class="detail-item">
                           <span class="detail-label">Fréq. cardiaque moy.</span>
                           <span class="detail-value text-red">{{ session.avgBpm }} BPM</span>
+                        </div>
+                        <div v-if="session.cadence" class="detail-item">
+                          <span class="detail-label">Cadence moyenne</span>
+                          <span class="detail-value">{{ session.cadence }} RPM</span>
+                        </div>
+                        <div v-if="session.watts" class="detail-item">
+                          <span class="detail-label">Puissance moyenne</span>
+                          <span class="detail-value text-cyan">{{ session.watts }} W</span>
+                        </div>
+                        <div v-if="session.distance" class="detail-item">
+                          <span class="detail-label">Distance parcourue</span>
+                          <span class="detail-value">{{ session.distance }} m</span>
                         </div>
                         <div class="detail-item">
                           <span class="detail-label">Ressenti patient</span>
@@ -336,8 +313,37 @@
                             <span v-for="star in 5" :key="star" class="star-icon" :class="{ filled: star <= session.rating }">
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                             </span>
-                            <span class="diff-badge" :class="'diff-' + session.difficulty.toLowerCase()">{{ session.difficulty }}</span>
+                            <span class="diff-badge" :class="'diff-' + (session.difficulty || 'moyen').toLowerCase()">{{ session.difficulty }}</span>
                           </div>
+                        </div>
+                      </div>
+
+                      <!-- Courbe d'effort sauvegardée -->
+                      <div v-if="session.svgPoints" class="effort-curve-archived">
+                        <p class="effort-curve-title">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                          Profil d'effort de la séance
+                        </p>
+                        <div class="effort-curve-svg-wrap">
+                          <svg viewBox="-20 -10 440 130" width="100%" height="90" preserveAspectRatio="none">
+                            <line x1="0" y1="0" x2="0" y2="100" stroke="#CBD5E1" stroke-width="1.5"/>
+                            <line x1="0" y1="100" x2="400" y2="100" stroke="#CBD5E1" stroke-width="1.5"/>
+                            <line x1="0" y1="50" x2="400" y2="50" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="4"/>
+                            <text x="-5" y="8"   font-size="9" fill="#94A3B8" text-anchor="end">Haut</text>
+                            <text x="-5" y="53"  font-size="9" fill="#94A3B8" text-anchor="end">Moy</text>
+                            <text x="-5" y="100" font-size="9" fill="#94A3B8" text-anchor="end">Bas</text>
+                            <text x="0"   y="115" font-size="9" fill="#94A3B8">0s</text>
+                            <text x="200" y="115" font-size="9" fill="#94A3B8" text-anchor="middle">Temps</text>
+                            <text x="400" y="115" font-size="9" fill="#94A3B8" text-anchor="end">Fin</text>
+                            <defs>
+                              <linearGradient id="effortGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#20C997" stop-opacity="0.25"/>
+                                <stop offset="100%" stop-color="#20C997" stop-opacity="0"/>
+                              </linearGradient>
+                            </defs>
+                            <polygon :points="session.svgPoints + ' 400,100 0,100'" fill="url(#effortGrad)"/>
+                            <polyline :points="session.svgPoints" fill="none" stroke="#20C997" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
                         </div>
                       </div>
                     </div>
@@ -506,13 +512,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_URL } from '../config.js'
-import PatientProgressChart from '../components/PatientProgressChart.vue'
 
 const router = useRouter()
 
 const nom = ref(localStorage.getItem('nom') || 'Utilisateur')
 const currentUserId = parseInt(localStorage.getItem('id')) || 0
-const rawSessions = ref([])
 const email = ref(localStorage.getItem('email') || '')
 const statut = ref(localStorage.getItem('statut') || '')
 const activeTab = ref('programme')
@@ -657,29 +661,57 @@ const generateWeekSchedule = () => {
 const historyData = ref([])
 
 const fetchHistory = async () => {
+  // 1. Load local sessions (from game end screen → localStorage)
+  const localRaw = JSON.parse(localStorage.getItem('playnride_history') || '[]')
+  const localEntries = localRaw.map(s => ({
+    date: s.date || '',
+    type: s.type || 'libre',
+    scenario: s.scenario || 'Séance',
+    duration: s.duration || '--',
+    score: s.score || 0,
+    reviewed: s.reviewed || false,
+    avgSpeed: s.avgSpeed || '--',
+    avgBpm: s.avgBpm || '--',
+    rating: s.rating || 0,
+    difficulty: s.rpe || s.difficulty || 'Moyen',
+    // extended stats
+    distance: s.distance || null,
+    vitesseMax: s.vitesseMax || null,
+    cadence: s.rpm || null,
+    watts: s.watts || null,
+    svgPoints: s.svgPoints || null
+  }))
+
+  // 2. Try to fetch from API and append (API sessions won't have svgPoints)
   const patientId = localStorage.getItem('id')
   const token = localStorage.getItem('token')
-  if (!patientId || !token) return
-  try {
-    const res = await fetch(`${API_URL}/seances/patient/${patientId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    if (!res.ok) throw new Error()
-    const data = await res.json()
-    rawSessions.value = data  // données brutes pour le graphique Chart.js
-    historyData.value = data.map(s => ({
-      date: new Date(s.dateDebut).toLocaleDateString('fr-FR'),
-      type: s.mode === 'PRESCRIT' ? 'prescrit' : 'libre',
-      scenario: s.mode || 'Séance',
-      duration: (s.dureeMinutes || '--') + ' min',
-      score: (s.wattsMoy || 0) * (s.dureeMinutes || 1),
-      reviewed: false,
-      avgSpeed: s.wattsMoy ? (s.wattsMoy / 5).toFixed(1) : '--',
-      avgBpm: s.bpmMoy || '--',
-      rating: 0,
-      difficulty: 'Moyen'
-    }))
-  } catch { /* garde les données vides si l'API échoue */ }
+  let apiEntries = []
+  if (patientId && token) {
+    try {
+      const res = await fetch(`${API_URL}/seances/patient/${patientId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        apiEntries = data.map(s => ({
+          date: new Date(s.dateDebut).toLocaleDateString('fr-FR'),
+          type: s.mode === 'PRESCRIT' ? 'prescrit' : 'libre',
+          scenario: s.scenario || s.mode || 'Séance',
+          duration: (s.dureeMinutes || '--') + ' min',
+          score: (s.wattsMoy || 0) * (s.dureeMinutes || 1),
+          reviewed: false,
+          avgSpeed: s.wattsMoy ? (s.wattsMoy / 5).toFixed(1) : '--',
+          avgBpm: s.bpmMoy || '--',
+          rating: 0,
+          difficulty: 'Moyen',
+          distance: null, vitesseMax: null, cadence: null, watts: s.wattsMoy || null, svgPoints: null
+        }))
+      }
+    } catch { /* silent fail */ }
+  }
+
+  // 3. Merge: local first (most recent on top), then API
+  historyData.value = [...localEntries, ...apiEntries]
 }
 
 const totalTimePlayed = computed(() => historyData.value.reduce((acc, curr) => acc + parseInt(curr.duration), 0))
@@ -871,8 +903,12 @@ const startGame = () => {
 .history-row-clickable:hover { background-color: #F8FAFC; }
 .history-details-row td { padding: 0; border-bottom: 2px solid #E2E8F0;}
 .history-details-box { background-color: #FAFCFF; padding: 25px 40px; border-left: 4px solid #00B8D9; box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.05);}
-.details-grid { display: flex; justify-content: space-between; gap: 20px; }
-.detail-item { flex: 1; display: flex; flex-direction: column; gap: 8px;}
+.details-grid { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.details-grid-extended { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+.detail-item { display: flex; flex-direction: column; gap: 8px;}
+.effort-curve-archived { margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 16px; }
+.effort-curve-title { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800; color: #6B7C93; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; }
+.effort-curve-svg-wrap { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; overflow: hidden; }
 .detail-label { color: #6B7C93; font-size: 0.85rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;}
 .detail-value { font-size: 1.2rem; font-weight: 900; }
 .detail-value-stars { display: flex; align-items: center; gap: 8px; }

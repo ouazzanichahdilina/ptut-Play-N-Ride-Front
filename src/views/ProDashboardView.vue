@@ -141,7 +141,9 @@
                   </div>
                 </td>
                 <td>
-                  <span :class="['diff-badge', 'diff-' + patient.lastRPE.toLowerCase()]">{{ patient.lastRPE }}</span>
+                  <span :class="['diff-badge', 'diff-' + (patient.lastRPE || 'inconnu').toLowerCase()]">
+                    {{ patient.lastRPE === 'inconnu' ? '—' : patient.lastRPE }}
+                  </span>
                 </td>
                 <td>
                   <button class="btn-outline-small" @click.stop="openPatientDossier(patient)">Dossier ➔</button>
@@ -166,7 +168,7 @@
           </div>
           <div class="panel-actions">
             <button class="btn-primary-small" @click="openRecommandModal(selectedPatient)">⭐ Recommander</button>
-            <button class="btn-primary-small" @click="activeTab='bibliotheque'; showPatientDossier=false">Prescrire</button>
+            <button class="btn-primary-small" @click="prescribeToPatient(selectedPatient)">Prescrire</button>
             <button class="btn-secondary-small" @click="openChatWith(selectedPatient.id); showPatientDossier=false">Message</button>
           </div>
         </div>
@@ -188,33 +190,95 @@
             </div>
           </div>
 
+          <!-- Badge DÉMO -->
+          <div v-if="selectedPatient.isDemo" class="demo-badge-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Profil de démonstration — données simulées
+          </div>
+
           <!-- Graphique effort théorique vs réel -->
           <h3 class="section-title-small" style="margin-top:20px;">Analyse d'Effort — Profil théorique vs Réel</h3>
           <div v-if="selectedPatient.historique && selectedPatient.historique.length > 0" class="effort-chart-wrapper">
-            <svg viewBox="0 0 400 120" style="width:100%; height:120px; border-radius:12px; background:#F8FAFC;">
-              <!-- Axe -->
+            <svg viewBox="0 0 400 130" style="width:100%; height:130px; border-radius:12px; background:#F8FAFC;">
+              <!-- Axe Y label -->
+              <text x="2" y="14" font-size="7" fill="#94A3B8">Effort</text>
+              <text x="2" y="100" font-size="7" fill="#94A3B8">Bas</text>
+              <!-- Grille légère -->
+              <line x1="30" y1="15" x2="390" y2="15" stroke="#F1F5F9" stroke-width="1"/>
+              <line x1="30" y1="55" x2="390" y2="55" stroke="#F1F5F9" stroke-width="1"/>
+              <line x1="30" y1="95" x2="390" y2="95" stroke="#F1F5F9" stroke-width="1"/>
+              <!-- Axes -->
               <line x1="30" y1="10" x2="30" y2="100" stroke="#CBD5E1" stroke-width="1"/>
               <line x1="30" y1="100" x2="390" y2="100" stroke="#CBD5E1" stroke-width="1"/>
+              <!-- Aire remplie effort réel -->
+              <polyline
+                :points="realEffortPoints(selectedPatient)"
+                fill="#20C99722" stroke="none"
+              />
               <!-- Profil théorique (obstacles normalisés) -->
               <polyline
                 :points="theoreticalPoints(selectedPatient)"
                 fill="none" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"
               />
-              <!-- Effort réel (durée normalisée) -->
+              <!-- Effort réel -->
               <polyline
                 :points="realEffortPoints(selectedPatient)"
-                fill="none" stroke="#20C997" stroke-width="2"
+                fill="none" stroke="#20C997" stroke-width="2.5"
+              />
+              <!-- Points réels -->
+              <circle
+                v-for="(pt, i) in realEffortPointsArray(selectedPatient)" :key="i"
+                :cx="pt.x" :cy="pt.y" r="4" fill="#20C997" stroke="white" stroke-width="1.5"
               />
               <!-- Légende -->
-              <line x1="40" y1="112" x2="60" y2="112" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"/>
-              <text x="65" y="116" font-size="8" fill="#6B7C93">Profil théorique</text>
-              <line x1="160" y1="112" x2="180" y2="112" stroke="#20C997" stroke-width="2"/>
-              <text x="185" y="116" font-size="8" fill="#6B7C93">Effort réel</text>
+              <line x1="40" y1="120" x2="60" y2="120" stroke="#00B8D9" stroke-width="2" stroke-dasharray="4 2"/>
+              <text x="65" y="124" font-size="8" fill="#6B7C93">Profil théorique</text>
+              <line x1="165" y1="120" x2="185" y2="120" stroke="#20C997" stroke-width="2.5"/>
+              <text x="190" y="124" font-size="8" fill="#6B7C93">Effort réel</text>
             </svg>
           </div>
-          <div v-else class="empty-effort-chart">Aucune séance pour générer le graphique.</div>
+          <!-- Vrai patient sans données : message "En attente" -->
+          <div v-else-if="!selectedPatient.isDemo" class="sensor-waiting-msg">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <div>
+              <p>En attente de données capteurs</p>
+              <span>Les courbes d'effort apparaîtront après la première séance connectée.</span>
+            </div>
+          </div>
+          <div v-else class="empty-effort-chart">Aucune séance enregistrée.</div>
 
-          <h3 class="section-title-small">Dernières Séances & Analyse</h3>
+          <!-- Stats Biofeedback (patients démo uniquement) -->
+          <template v-if="selectedPatient.isDemo && selectedPatient.stats">
+            <h3 class="section-title-small" style="margin-top:22px;">Biofeedback & Statistiques Capteurs</h3>
+            <div class="stats-biofeedback-grid">
+              <div class="stat-bio-card">
+                <span>Vitesse Moy.</span>
+                <strong>{{ selectedPatient.stats.vitesseMoy }} km/h</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Vitesse Max.</span>
+                <strong>{{ selectedPatient.stats.vitesseMax }} km/h</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Cadence</span>
+                <strong>{{ selectedPatient.stats.cadence }} RPM</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Résistance Moy.</span>
+                <strong>Niv. {{ selectedPatient.stats.resistance }}</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Effort Moy.</span>
+                <strong class="text-cyan">{{ selectedPatient.stats.effortMoy }}%</strong>
+              </div>
+              <div class="stat-bio-card">
+                <span>Puissance</span>
+                <strong>{{ selectedPatient.stats.puissance }} W</strong>
+              </div>
+            </div>
+          </template>
+
+          <h3 class="section-title-small" style="margin-top:22px;">Dernières Séances & Analyse</h3>
           <div class="history-mini-list">
             <div class="history-mini-item" v-for="(seance, i) in selectedPatient.historique" :key="i">
               <div class="h-date">{{ seance.date }}</div>
@@ -723,7 +787,52 @@ const isGeneratingPDF = ref(false)
 const avatarList = ['/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png', '/images/azouz.png', '/images/avatarRousse.png']
 const isLoadingPatients = ref(false)
 
-const patients = ref([])
+// --------------------------------------------------------
+// PATIENTS FICTIFS PERMANENTS (MODÈLES DE DÉMONSTRATION)
+// --------------------------------------------------------
+const FICTITIOUS_PATIENTS = [
+  {
+    id: 9001,
+    nom: 'Jean Dupont',
+    age: 58,
+    pathologie: 'Rééducation Genou Post-Op',
+    observance: 87,
+    lastRPE: 'Moyen',
+    derniereSeance: "Aujourd'hui",
+    avatar: '/images/avatarN.png',
+    isDemo: true,
+    metrics: { fcMax: 130, puissanceMoyenne: 95, materiel: 'Pédalier (Jambes)' },
+    stats: { vitesseMoy: 14.2, vitesseMax: 22.1, cadence: 68, resistance: 5, effortMoy: 72, puissance: 95 },
+    historique: [
+      { date: '08/04', scenario: "L'Aube Douce",         duree: '15', fcMoy: 98,  watts: 80,  rpe: 'Moyen'     },
+      { date: '06/04', scenario: "L'Échappée Sylvestre", duree: '20', fcMoy: 112, watts: 95,  rpe: 'Moyen'     },
+      { date: '04/04', scenario: "L'Ascension Alpine",   duree: '22', fcMoy: 125, watts: 110, rpe: 'Difficile' },
+      { date: '02/04', scenario: "L'Aube Douce",         duree: '14', fcMoy: 96,  watts: 78,  rpe: 'Facile'    },
+      { date: '01/04', scenario: "L'Échappée Sylvestre", duree: '19', fcMoy: 108, watts: 92,  rpe: 'Moyen'     }
+    ]
+  },
+  {
+    id: 9002,
+    nom: 'Marie Lambert',
+    age: 45,
+    pathologie: 'Cardio-Réhabilitation Phase II',
+    observance: 72,
+    lastRPE: 'Facile',
+    derniereSeance: 'Hier',
+    avatar: '/images/avBlonde.png',
+    isDemo: true,
+    metrics: { fcMax: 120, puissanceMoyenne: 75, materiel: 'Vélo Complet' },
+    stats: { vitesseMoy: 11.8, vitesseMax: 17.5, cadence: 55, resistance: 3, effortMoy: 58, puissance: 75 },
+    historique: [
+      { date: '09/04', scenario: "L'Aube Douce",      duree: '15', fcMoy: 95,  watts: 70, rpe: 'Facile' },
+      { date: '07/04', scenario: "Souffle Océanique", duree: '10', fcMoy: 102, watts: 75, rpe: 'Moyen'  },
+      { date: '05/04', scenario: "L'Aube Douce",      duree: '15', fcMoy: 88,  watts: 65, rpe: 'Facile' },
+      { date: '03/04', scenario: "L'Aube Douce",      duree: '12', fcMoy: 93,  watts: 68, rpe: 'Facile' }
+    ]
+  }
+]
+
+const patients = ref([...FICTITIOUS_PATIENTS])
 
 const fetchProPatients = async () => {
   const token = localStorage.getItem('token')
@@ -747,15 +856,16 @@ const fetchProPatients = async () => {
         data = all.filter(u => (u.statut || '').toLowerCase() === 'patient')
       }
     }
-    patients.value = data.map(u => ({
+    const realPatients = data.map(u => ({
       id: u.id,
       nom: u.nom,
       age: u.age || '--',
       pathologie: u.pathologie || 'Données non renseignées',
       observance: u.observance || 0,
-      lastRPE: u.lastRPE || 'N/A',
+      lastRPE: u.lastRPE || 'inconnu',
       derniereSeance: u.derniereSeance || 'Inconnue',
       avatar: avatarList[u.id % avatarList.length],
+      isDemo: false,
       metrics: {
         fcMax: u.fcMax || '--',
         puissanceMoyenne: u.puissanceMoyenne || '--',
@@ -763,10 +873,15 @@ const fetchProPatients = async () => {
       },
       historique: []
     }))
+    // Toujours inclure les patients fictifs en tête de liste
+    patients.value = [...FICTITIOUS_PATIENTS, ...realPatients]
     if (!selectedChatUserId.value && patients.value.length > 0) {
       selectedChatUserId.value = patients.value[0].id
     }
-  } catch { /* silencieux */ }
+  } catch {
+    // En cas d'échec API, on garde uniquement les patients fictifs
+    patients.value = [...FICTITIOUS_PATIENTS]
+  }
   finally { isLoadingPatients.value = false }
 }
 
@@ -876,6 +991,20 @@ const realEffortPoints = (patient) => {
     const y = 100 - ((duree / maxDuree) * h)
     return `${x},${y}`
   }).join(' ')
+}
+
+// Retourne tableau d'objets {x, y} pour les cercles sur le graphique
+const realEffortPointsArray = (patient) => {
+  const seances = patient.historique || []
+  if (!seances.length) return []
+  const w = 360, h = 80, margin = 30
+  const maxDuree = Math.max(...seances.map(s => parseInt(s.duree) || 1), 1)
+  return seances.slice(0, 10).map((s, i) => {
+    const x = margin + (i / (seances.length - 1 || 1)) * w
+    const duree = parseInt(s.duree) || 0
+    const y = 100 - ((duree / maxDuree) * h)
+    return { x, y }
+  })
 }
 
 // ── Toast local Pro ──────────────────────────────────────────────────────────
@@ -1097,6 +1226,14 @@ const assignDate = ref('')
 const openAssignModal = (exo) => {
   selectedExo.value = exo
   assignTargetPatient.value = patients.value[0]
+  showAssignModal.value = true
+}
+
+// Prescrire directement depuis le dossier patient (pré-sélectionne le patient)
+const prescribeToPatient = (patient) => {
+  showPatientDossier.value = false
+  selectedExo.value = exercises.value[0] || null
+  assignTargetPatient.value = patient
   showAssignModal.value = true
 }
 
@@ -1445,4 +1582,21 @@ input:checked + .slider-toggle:before { transform: translateX(20px); }
 .toast.info    { background:#00B8D9; }
 .toast-enter-active, .toast-leave-active { transition: all 0.4s ease; }
 .toast-enter-from, .toast-leave-to { opacity:0; transform:translateY(20px); }
+
+/* BADGE RPE inconnu */
+.diff-inconnu { background: #F1F5F9; color: #94A3B8; }
+
+/* BADGE DÉMO */
+.demo-badge-pill { display: inline-flex; align-items: center; gap: 6px; background: #FFF9E6; color: #D97706; border: 1px solid #FDE68A; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
+
+/* MESSAGE EN ATTENTE CAPTEURS */
+.sensor-waiting-msg { display: flex; align-items: center; gap: 15px; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 12px; padding: 20px; margin: 12px 0 20px 0; color: #6B7C93; }
+.sensor-waiting-msg p { margin: 0 0 4px 0; font-weight: 800; color: #4A5568; font-size: 0.9rem; }
+.sensor-waiting-msg span { font-size: 0.8rem; }
+
+/* GRILLE STATS BIOFEEDBACK */
+.stats-biofeedback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-bio-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.stat-bio-card span { font-size: 0.72rem; font-weight: 700; color: #6B7C93; text-transform: uppercase; letter-spacing: 0.3px; }
+.stat-bio-card strong { font-size: 1.15rem; font-weight: 900; color: #0A192F; }
 </style>
