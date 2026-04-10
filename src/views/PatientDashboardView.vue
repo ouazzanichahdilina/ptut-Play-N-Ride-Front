@@ -44,7 +44,7 @@
       <div class="sidebar-bottom">
         <div class="user-mini-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
           <div class="user-avatar-mini">
-            <img :src="userProfileImage" alt="Patient" />
+            <img :src="userProfileImage" alt="Patient" @error="e => e.target.src='/images/avBlonde.png'" />
           </div>
           <div class="user-info">
             <p class="user-name">{{ nom }}</p>

@@ -47,7 +47,7 @@
       <div class="sidebar-bottom">
         <div class="pro-profile" @click="$router.push('/profile')" style="cursor:pointer;">
           <div class="pro-avatar-img">
-            <img :src="adminAvatar" alt="Admin" />
+            <img :src="adminAvatar" alt="Admin" @error="e => e.target.src='/images/avBlonde.png'" />
           </div>
           <div class="pro-info">
             <p class="pro-name">{{ adminName }}</p>
@@ -144,7 +144,7 @@
         <header class="content-header">
           <div>
             <h1>Gestion des Utilisateurs</h1>
-            <p class="subtitle">Bannissez, modifiez ou vérifiez les comptes de la plateforme.</p>
+            <p class="subtitle">Inscrivez, associez et gérez les comptes de la plateforme.</p>
           </div>
           <div class="search-box">
             <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -152,6 +152,64 @@
           </div>
         </header>
 
+        <!-- ── FORMULAIRE D'INSCRIPTION EN HAUT ── -->
+        <div class="inscription-panel">
+          <div class="inscription-header">
+            <div>
+              <h3>Inscrire un nouvel utilisateur</h3>
+              <p class="text-xs text-muted">Créez manuellement un compte Patient ou Professionnel de santé.</p>
+            </div>
+            <button class="btn-toggle-form" @click="showInscriptionForm = !showInscriptionForm">
+              {{ showInscriptionForm ? '▲ Réduire' : '▼ Nouveau compte' }}
+            </button>
+          </div>
+
+          <div v-if="showInscriptionForm" class="inscription-form-body">
+            <div class="role-selector-group" style="margin-bottom:18px;">
+              <button
+                type="button"
+                :class="['role-selector-btn', newUser.statut === 'patient' ? 'active-patient' : '']"
+                @click="newUser.statut = 'patient'"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Nouveau Patient
+              </button>
+              <button
+                type="button"
+                :class="['role-selector-btn', newUser.statut === 'Professionnel' ? 'active-pro' : '']"
+                @click="newUser.statut = 'Professionnel'"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Nouveau Professionnel de santé
+              </button>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Nom complet <span style="color:#EF4444;">*</span></label>
+                <input type="text" v-model="newUser.nom" placeholder="Ex: Jean Dupont" />
+              </div>
+              <div class="form-group">
+                <label>Adresse email <span style="color:#EF4444;">*</span></label>
+                <input type="email" v-model="newUser.email" placeholder="jean@example.com" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Mot de passe provisoire <span style="color:#EF4444;">*</span></label>
+              <input type="password" v-model="newUser.motDePasse" placeholder="Minimum 6 caractères" />
+            </div>
+            <button
+              class="btn-primary"
+              :disabled="isSavingUser || !newUser.nom || !newUser.email || !newUser.motDePasse"
+              @click="saveUser"
+              :style="newUser.statut === 'Professionnel' ? 'background:#8B5CF6;' : ''"
+            >
+              <svg v-if="!isSavingUser" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px;vertical-align:-2px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              {{ isSavingUser ? 'Création...' : `Créer le compte ${newUser.statut === 'Professionnel' ? 'Professionnel' : 'Patient'}` }}
+            </button>
+          </div>
+        </div>
+
+        <!-- ── FILTRES + ERREURS ── -->
         <p v-if="usersError" style="color:#EF4444; font-weight:700; margin-bottom:15px;">{{ usersError }}</p>
         <p v-if="isLoadingUsers" style="color:#6B7C93; font-weight:700; margin-bottom:15px;">Chargement des utilisateurs...</p>
 
@@ -161,16 +219,17 @@
           <button class="filter-btn" :class="{ active: filterRole === 'Pro' }" @click="filterRole = 'Pro'">Professionnels</button>
         </div>
 
+        <!-- ── TABLEAU ── -->
         <div class="table-wrapper">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th style="width:60px">ID</th>
                 <th>Utilisateur</th>
-                <th>Rôle</th>
-                <th>Pro lié</th>
-                <th>Statut</th>
-                <th>Actions</th>
+                <th style="width:120px">Rôle</th>
+                <th>Associé à</th>
+                <th style="width:100px">Statut</th>
+                <th style="width:80px">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -181,7 +240,7 @@
                 <td><span class="text-xs text-muted font-bold">#{{ user.id }}</span></td>
                 <td>
                   <div class="patient-cell-info">
-                    <img :src="user.avatar" alt="Avatar" class="table-avatar" />
+                    <img :src="user.avatar" alt="Avatar" class="table-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                     <div>
                       <span class="font-bold">{{ user.nom }}</span>
                       <span class="text-xs text-muted block">{{ user.email }}</span>
@@ -193,10 +252,61 @@
                     {{ user.role === 'Pro' ? 'Praticien' : 'Patient' }}
                   </span>
                 </td>
+
+                <!-- Colonne "Associé à" -->
                 <td>
-                  <span v-if="user.proNom" class="text-xs" style="color:#20C997; font-weight:700;">{{ user.proNom }}</span>
-                  <span v-else class="text-xs text-muted">—</span>
+                  <!-- PATIENT : choisir son praticien référent -->
+                  <div v-if="user.role === 'Patient'" class="inline-assign-cell">
+                    <div v-if="user.proNom" class="current-pro-badge">
+                      <span class="pro-check">✓</span>
+                      <span>{{ user.proNom }}</span>
+                    </div>
+                    <div v-else class="no-pro-badge">Non assigné</div>
+                    <div class="inline-assign-row">
+                      <select v-model="inlineProSelection[user.id]" class="inline-pro-select">
+                        <option value="" disabled>{{ user.proNom ? 'Changer...' : 'Choisir un praticien...' }}</option>
+                        <option v-for="pro in proList" :key="pro.id" :value="pro.id">{{ pro.nom }}</option>
+                      </select>
+                      <button
+                        class="btn-assign-inline"
+                        :disabled="!inlineProSelection[user.id] || inlineAssigning[user.id]"
+                        @click="assignInline(user)"
+                        title="Confirmer l'assignation"
+                      >{{ inlineAssigning[user.id] ? '…' : '✓' }}</button>
+                    </div>
+                  </div>
+
+                  <!-- PRO : voir ses patients + en assigner un nouveau -->
+                  <div v-else class="inline-assign-cell">
+                    <!-- Liste des patients déjà assignés -->
+                    <div v-if="patientsByProId[user.id] && patientsByProId[user.id].length > 0" class="pro-patients-list">
+                      <span
+                        v-for="p in patientsByProId[user.id]"
+                        :key="p.id"
+                        class="patient-mini-badge"
+                      >{{ p.nom }}</span>
+                    </div>
+                    <div v-else class="no-pro-badge">Aucun patient</div>
+                    <!-- Assigner un patient libre -->
+                    <div class="inline-assign-row">
+                      <select v-model="inlinePatientSelection[user.id]" class="inline-pro-select">
+                        <option value="" disabled>Ajouter un patient...</option>
+                        <option
+                          v-for="p in unassignedPatients"
+                          :key="p.id"
+                          :value="p.id"
+                        >{{ p.nom }}</option>
+                      </select>
+                      <button
+                        class="btn-assign-inline"
+                        :disabled="!inlinePatientSelection[user.id] || inlinePatientAssigning[user.id]"
+                        @click="assignPatientInline(user)"
+                        title="Ajouter ce patient au praticien"
+                      >{{ inlinePatientAssigning[user.id] ? '…' : '✓' }}</button>
+                    </div>
+                  </div>
                 </td>
+
                 <td>
                   <span v-if="user.actif" class="status-badge bg-green-light text-green">Actif</span>
                   <span v-else class="status-badge bg-red-light text-red">Suspendu</span>
@@ -209,60 +319,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <!-- Créer un utilisateur -->
-        <div style="margin-top: 35px;">
-          <h3 style="font-size:1.1rem; font-weight:900; color:#0A192F; margin-bottom:20px;">Créer un compte utilisateur</h3>
-          <div class="settings-card" style="max-width:600px;">
-            <div class="form-group">
-              <label>Nom complet</label>
-              <input type="text" v-model="newUser.nom" placeholder="Ex: Jean Dupont" />
-            </div>
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" v-model="newUser.email" placeholder="jean@example.com" />
-            </div>
-            <div class="form-group">
-              <label>Mot de passe</label>
-              <input type="password" v-model="newUser.motDePasse" placeholder="Minimum 6 caractères" />
-            </div>
-            <div class="form-group">
-              <label>Rôle</label>
-              <select v-model="newUser.statut">
-                <option value="patient">Patient</option>
-                <option value="Professionnel">Professionnel de santé</option>
-                <option value="Administrateur">Administrateur</option>
-              </select>
-            </div>
-            <button class="btn-primary" :disabled="isSavingUser" @click="saveUser">
-              {{ isSavingUser ? 'Création...' : 'Créer le compte' }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Associer un patient à un professionnel -->
-        <div style="margin-top: 35px;">
-          <h3 style="font-size:1.1rem; font-weight:900; color:#0A192F; margin-bottom:20px;">Associer un patient à un professionnel</h3>
-          <div class="settings-card" style="max-width:600px;">
-            <div class="form-group">
-              <label>Patient</label>
-              <select v-model="linkPatientId">
-                <option value="" disabled>Sélectionner un patient...</option>
-                <option v-for="p in patientList" :key="p.id" :value="p.id">{{ p.nom }} ({{ p.email }})</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Professionnel de santé</label>
-              <select v-model="linkProId">
-                <option value="" disabled>Sélectionner un professionnel...</option>
-                <option v-for="p in proList" :key="p.id" :value="p.id">{{ p.nom }} ({{ p.email }})</option>
-              </select>
-            </div>
-            <button class="btn-primary" :disabled="isLinking || !linkPatientId || !linkProId" @click="assignProToPatient">
-              {{ isLinking ? 'Association...' : 'Associer' }}
-            </button>
-          </div>
         </div>
       </div>
 
@@ -448,7 +504,7 @@ const goHome = () => router.push('/')
 
 // ── PROFIL ADMIN DYNAMIQUE ─────────────────────────────────────────────────────
 const adminName = ref(localStorage.getItem('nom') || 'Admin Principal')
-const adminEmail = ref(localStorage.getItem('email') || 'admin@playnride.fr')
+
 const adminAvatar = ref(localStorage.getItem('playnride_user_avatar') || '/images/avatar-1.png')
 const apiUrl = API_URL
 
@@ -497,7 +553,8 @@ const fetchUsers = async () => {
           role: isPro ? 'Pro' : 'Patient',
           actif: true,
           avatar: list[u.id % list.length],
-          proNom: u.professionnelDeSante ? u.professionnelDeSante.nom : null
+          proNom: u.professionnelDeSante ? u.professionnelDeSante.nom : null,
+          proId: u.professionnelDeSante ? u.professionnelDeSante.id : null
         }
       })
   } catch (e) {
@@ -535,6 +592,7 @@ const toggleUserStatus = (user) => {
 }
 
 // ── CRÉER UTILISATEUR ──────────────────────────────────────────────────────────
+const showInscriptionForm = ref(false)
 const newUser = ref({ nom: '', email: '', motDePasse: '', statut: 'patient' })
 
 const saveUser = async () => {
@@ -568,35 +626,73 @@ const saveUser = async () => {
 }
 
 // ── LIER PATIENT ↔ PROFESSIONNEL ───────────────────────────────────────────────
-const linkPatientId = ref('')
-const linkProId = ref('')
-const isLinking = ref(false)
-
 const patientList = computed(() => allUsers.value.filter(u => u.role === 'Patient'))
-const proList = computed(() => allUsers.value.filter(u => u.role === 'Pro'))
+const proList    = computed(() => allUsers.value.filter(u => u.role === 'Pro'))
 
-const assignProToPatient = async () => {
-  if (!linkPatientId.value || !linkProId.value) return
+// Patients sans praticien assigné (disponibles pour un pro)
+const unassignedPatients = computed(() => patientList.value.filter(p => !p.proId))
+
+// Map proId → liste de ses patients
+const patientsByProId = computed(() => {
+  const map = {}
+  patientList.value.forEach(p => {
+    if (p.proId) {
+      if (!map[p.proId]) map[p.proId] = []
+      map[p.proId].push(p)
+    }
+  })
+  return map
+})
+
+// ── Depuis la ligne Patient : choisir son praticien ──
+const inlineProSelection = ref({})
+const inlineAssigning    = ref({})
+
+const assignInline = async (patient) => {
+  const proId = inlineProSelection.value[patient.id]
+  if (!proId) return
   const token = localStorage.getItem('token')
-  isLinking.value = true
+  inlineAssigning.value[patient.id] = true
   try {
     const res = await fetch(
-      `${API_URL}/utilisateurs/patients/${linkPatientId.value}/assign-pro/${linkProId.value}`,
+      `${API_URL}/utilisateurs/patients/${patient.id}/assign-pro/${proId}`,
       { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'Erreur ' + res.status)
-    }
-    const patient = patientList.value.find(p => p.id === linkPatientId.value)
-    const pro = proList.value.find(p => p.id === linkProId.value)
-    showToast(`"${patient?.nom}" associé à "${pro?.nom}" ✓`, 'success')
-    linkPatientId.value = ''
-    linkProId.value = ''
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || 'Erreur ' + res.status)
+    const pro = proList.value.find(p => p.id === proId)
+    showToast(`${patient.nom} assigné à ${pro?.nom} ✓`, 'success')
+    delete inlineProSelection.value[patient.id]
+    await fetchUsers()
   } catch (e) {
     showToast('Erreur : ' + e.message, 'error')
   } finally {
-    isLinking.value = false
+    inlineAssigning.value[patient.id] = false
+  }
+}
+
+// ── Depuis la ligne Pro : ajouter un patient libre ──
+const inlinePatientSelection = ref({})
+const inlinePatientAssigning = ref({})
+
+const assignPatientInline = async (pro) => {
+  const patientId = inlinePatientSelection.value[pro.id]
+  if (!patientId) return
+  const token = localStorage.getItem('token')
+  inlinePatientAssigning.value[pro.id] = true
+  try {
+    const res = await fetch(
+      `${API_URL}/utilisateurs/patients/${patientId}/assign-pro/${pro.id}`,
+      { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || 'Erreur ' + res.status)
+    const patient = patientList.value.find(p => p.id === patientId)
+    showToast(`${patient?.nom} ajouté à ${pro.nom} ✓`, 'success')
+    delete inlinePatientSelection.value[pro.id]
+    await fetchUsers()
+  } catch (e) {
+    showToast('Erreur : ' + e.message, 'error')
+  } finally {
+    inlinePatientAssigning.value[pro.id] = false
   }
 }
 
@@ -823,6 +919,40 @@ onMounted(() => {
 .patient-cell-info { display: flex; align-items: center; gap: 12px; }
 .table-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #F1F5F9; }
 .role-badge, .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
+
+/* Panel inscription en haut */
+.inscription-panel { background: white; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; }
+.inscription-header { display: flex; align-items: center; justify-content: space-between; }
+.inscription-header h3 { font-size: 1rem; font-weight: 900; color: #0A192F; margin: 0; }
+.btn-toggle-form { padding: 8px 16px; border: 1.5px solid #00B8D9; border-radius: 10px; background: white; color: #00B8D9; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.btn-toggle-form:hover { background: #EAF7F9; }
+.inscription-form-body { margin-top: 20px; padding-top: 20px; border-top: 1px solid #F1F5F9; }
+
+/* Badges patients d'un pro */
+.pro-patients-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+.patient-mini-badge { padding: 3px 9px; background: #EAF7F9; color: #0284C7; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+
+/* Praticien référent inline */
+.inline-assign-cell { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+.current-pro-badge { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; font-weight: 700; color: #20C997; }
+.current-pro-badge .pro-check { width: 16px; height: 16px; background: #20C997; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0; }
+.no-pro-badge { font-size: 0.75rem; color: #94A3B8; font-style: italic; }
+.inline-assign-row { display: flex; align-items: center; gap: 6px; }
+.inline-pro-select { flex: 1; padding: 5px 8px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.75rem; color: #0A192F; background: #F8FAFC; cursor: pointer; outline: none; transition: border-color 0.2s; }
+.inline-pro-select:focus { border-color: #00B8D9; background: white; }
+.btn-assign-inline { width: 30px; height: 30px; border-radius: 8px; border: none; background: #20C997; color: white; font-size: 0.85rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s; }
+.btn-assign-inline:hover:not(:disabled) { background: #17a589; transform: scale(1.05); }
+.btn-assign-inline:disabled { background: #CBD5E1; cursor: not-allowed; }
+
+/* Sélecteur de rôle en 2 boutons */
+.role-selector-group { display: flex; gap: 10px; margin-top: 6px; }
+.role-selector-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 12px; background: #F8FAFC; color: #64748B; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.role-selector-btn:hover { border-color: #CBD5E1; background: white; }
+.role-selector-btn.active-patient { border-color: #00B8D9; background: #EAF7F9; color: #0284C7; }
+.role-selector-btn.active-pro { border-color: #8B5CF6; background: #F3EEFF; color: #7C3AED; }
+
+/* Formulaire 2 colonnes */
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
 /* CATALOGUE SCÉNARIOS */
 .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }

@@ -219,8 +219,17 @@ const submitLogin = async () => {
       localStorage.removeItem('remember_email')
     }
 
-    if (!localStorage.getItem('playnride_user_avatar')) {
-      localStorage.setItem('playnride_user_avatar', '/images/avBlonde.png')
+    // Restaure l'avatar propre à cet utilisateur (clé par email)
+    const userAvatarKey = 'playnride_avatar_' + data.email
+    const savedAvatar = localStorage.getItem(userAvatarKey)
+    if (savedAvatar) {
+      localStorage.setItem('playnride_user_avatar', savedAvatar)
+    } else {
+      // Première connexion : on attribue un avatar par défaut selon l'id
+      const defaultAvatars = ['/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png', '/images/azouz.png', '/images/avatarRousse.png']
+      const defaultAvatar = defaultAvatars[(data.id || 0) % defaultAvatars.length]
+      localStorage.setItem('playnride_user_avatar', defaultAvatar)
+      localStorage.setItem(userAvatarKey, defaultAvatar)
     }
 
     userRole.value = data.statut
@@ -275,7 +284,10 @@ const submitSignup = async () => {
       userRole.value = signupRole.value
     }
 
-    localStorage.setItem('playnride_user_avatar', '/images/' + signupAvatar.value)
+    const chosenAvatar = '/images/' + signupAvatar.value
+    localStorage.setItem('playnride_user_avatar', chosenAvatar)
+    // Sauvegarde liée à l'email pour restauration future
+    localStorage.setItem('playnride_avatar_' + signupEmail.value, chosenAvatar)
     showPopup.value = true
 
   } catch {

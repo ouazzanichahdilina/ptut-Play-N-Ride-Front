@@ -55,7 +55,7 @@
       <div class="sidebar-bottom">
         <div class="pro-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
           <div class="pro-avatar">
-            <img :src="proProfileImage" :alt="proName" />
+            <img :src="proProfileImage" :alt="proName" @error="e => e.target.src='/images/avBlonde.png'" />
           </div>
           <div class="pro-info">
             <p class="pro-name">{{ proName }}</p>
@@ -123,7 +123,7 @@
               <tr v-for="patient in filteredPatients" :key="patient.id" class="patient-row" @click="openPatientDossier(patient)">
                 <td>
                   <div class="patient-cell-info">
-                    <img :src="patient.avatar" :alt="patient.nom" class="table-avatar" />
+                    <img :src="patient.avatar" :alt="patient.nom" class="table-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                     <div>
                       <span class="font-bold">{{ patient.nom }}</span>
                       <span class="text-xs text-muted block">{{ patient.age }} ans</span>
@@ -158,7 +158,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
           <div class="panel-patient-head">
-            <img :src="selectedPatient.avatar" alt="Avatar" class="dossier-avatar" />
+            <img :src="selectedPatient.avatar" alt="Avatar" class="dossier-avatar" @error="e => e.target.src='/images/avatarN.png'" />
             <div>
               <h2>{{ selectedPatient.nom }}</h2>
               <p>{{ selectedPatient.age }} ans • {{ selectedPatient.pathologie }}</p>
@@ -270,7 +270,7 @@
               <div class="cal-date">{{ day.dateNumber }}</div>
               <div class="cal-events">
                 <div v-for="(event, eIdx) in day.events" :key="eIdx" class="cal-event" :style="{ backgroundColor: event.color + '20', borderLeftColor: event.color }" @click.stop="openEventDetails(event, day.dateNumber, currentMonthName)">
-                  <img :src="event.patient.avatar" class="event-avatar" />
+                  <img :src="event.patient.avatar" class="event-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                   <div class="event-details">
                     <span class="e-name">{{ event.patient.nom }}</span>
                     <span class="e-time">{{ event.time }}</span>
@@ -333,7 +333,7 @@
                 <span class="live-indicator" v-if="!session.isStopped">🔴 EN SÉANCE</span>
                 <span class="live-indicator" style="background: #94A3B8; animation: none;" v-else>⏹️ SÉANCE ARRÊTÉE</span>
                 
-                <img :src="session.patient.avatar" alt="Avatar" class="live-avatar" />
+                <img :src="session.patient.avatar" alt="Avatar" class="live-avatar" @error="e => e.target.src='/images/avatarN.png'" />
                 <div>
                   <h3>{{ session.patient.nom }}</h3>
                   <span class="equip-badge">{{ session.equipement }} • {{ session.scenario }}</span>
@@ -437,7 +437,7 @@
               :class="{ active: selectedChatUserId === p.id }"
               @click="selectChat(p.id)"
             >
-              <img :src="p.avatar" alt="Avatar" />
+              <img :src="p.avatar" alt="Avatar" @error="e => e.target.src='/images/avatarN.png'" />
               <div class="contact-info">
                 <h4>{{ p.nom }}</h4>
                 <p>{{ getLastMessage(p.id) }}</p>
@@ -622,7 +622,7 @@
         </div>
         <div class="modal-body-assign" v-if="selectedAgendaEvent">
           <div class="event-modal-head">
-            <img :src="selectedAgendaEvent.patient.avatar" alt="Avatar" class="event-modal-avatar"/>
+            <img :src="selectedAgendaEvent.patient.avatar" alt="Avatar" class="event-modal-avatar" @error="e => e.target.src='/images/avatarN.png'" />
             <div>
               <h4 style="margin:0; color:#0A192F;">{{ selectedAgendaEvent.patient.nom }}</h4>
               <p class="text-muted text-xs" style="margin:0;">Prévu à {{ selectedAgendaEvent.time }}</p>
@@ -729,11 +729,24 @@ const fetchProPatients = async () => {
   const token = localStorage.getItem('token')
   isLoadingPatients.value = true
   try {
-    // Tente d'abord /mes-patients (ne retourne que les patients assignés au pro connecté)
+    // Tente d'abord /mes-patients (patients assignés au pro connecté)
+    let data = []
     const res = await fetch(`${API_URL}/utilisateurs/mes-patients`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    const data = res.ok ? await res.json() : []
+    if (res.ok) {
+      data = await res.json()
+    }
+    // Fallback : si aucun patient assigné, on récupère tous les patients
+    if (data.length === 0) {
+      const res2 = await fetch(`${API_URL}/utilisateurs`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (res2.ok) {
+        const all = await res2.json()
+        data = all.filter(u => (u.statut || '').toLowerCase() === 'patient')
+      }
+    }
     patients.value = data.map(u => ({
       id: u.id,
       nom: u.nom,
