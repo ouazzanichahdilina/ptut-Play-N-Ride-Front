@@ -4,8 +4,12 @@
       <div class="sidebar-top">
         <div class="sidebar-brand" @click="goHome">
           <img src="/images/logo.png" alt="Logo" class="sidebar-logo" />
-          <span class="logo-text">Play <span class="text-cyan">'N</span> Ride</span>
+          <div class="brand-info">
+            <p class="brand-name">Play 'N Ride</p>
+            <p class="brand-tag">Espace Patient</p>
+          </div>
         </div>
+
         <nav class="sidebar-menu">
           <a href="#" class="menu-item" :class="{ active: activeTab === 'programme' }" @click="activeTab = 'programme'">
             <span class="menu-icon">
@@ -28,27 +32,20 @@
           <a href="#" class="menu-item" :class="{ active: activeTab === 'messagerie' }" @click="openMessagerie">
             <span class="menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            </span>
+            </span> 
             Suivi & Messages
             <span v-if="unreadMessages > 0" class="notification-badge">{{ unreadMessages }}</span>
-          </a>
-          <a href="#" class="menu-item" :class="{ active: activeTab === 'profilage' }" @click="activeTab = 'profilage'">
-            <span class="menu-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </span>
-            Mon Profil Santé
-            <span v-if="!profilComplete" class="notification-badge" style="background:#F59E0B;">!</span>
           </a>
         </nav>
       </div>
       <div class="sidebar-bottom">
-        <div class="user-mini-profile" @click="$router.push('/profile')" style="cursor:pointer;" title="Modifier mon profil">
+        <div class="user-mini-profile">
           <div class="user-avatar-mini">
-            <img :src="userProfileImage" alt="Patient" @error="e => e.target.src='/images/avBlonde.png'" />
+            <img :src="userProfileImage" alt="Patient" />
           </div>
           <div class="user-info">
             <p class="user-name">{{ nom }}</p>
-            <p class="user-status">Patient</p>
+            <p class="user-status">Suivi par Dr. Lefevre</p>
           </div>
         </div>
         <button class="logout-btn-sidebar" @click="goHome">
@@ -142,33 +139,7 @@
           <h1>Activités en accès libre</h1>
           <p class="subtitle">Des parcours supplémentaires pour pédaler selon vos envies.</p>
         </header>
-
-        <!-- Scénarios recommandés par le pro -->
-        <div v-if="myRecommandations.length > 0" style="margin-bottom:28px;">
-          <h3 class="section-title-small" style="color:#20C997;">⭐ Recommandés par votre praticien</h3>
-          <div class="activities-grid">
-            <div
-              v-for="rec in myRecommandations" :key="rec.scenario"
-              class="activity-card"
-              style="border-top:3px solid #20C997; position:relative;"
-            >
-              <div class="card-img-wrapper" style="background:#E8F8F515;">
-                <img :src="getActivityByTitle(rec.scenario)?.image || '/images/scen-matin.png'" :alt="rec.scenario" class="activity-img" />
-                <span style="position:absolute;top:8px;right:8px;background:#20C997;color:white;font-size:0.7rem;font-weight:900;padding:3px 8px;border-radius:20px;">Recommandé</span>
-              </div>
-              <div class="card-content">
-                <h3 class="poetic-title">{{ rec.scenario }}</h3>
-                <p class="activity-desc" v-if="rec.note">📋 {{ rec.note }}</p>
-                <p class="activity-desc" style="color:#94A3B8; font-size:0.8rem;">{{ rec.date }}</p>
-              </div>
-              <button class="btn-play-activity" style="background:#20C997;" @click="openConfigStudio(getActivityByTitle(rec.scenario) || activities[0])">
-                Lancer l'activité
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <h3 v-if="myRecommandations.length > 0" class="section-title-small">Tous les scénarios</h3>
+        
         <div class="activities-grid">
           <div v-for="(activity, index) in activities" :key="index" class="activity-card" :style="{ borderTopColor: activity.color }">
             <div class="card-img-wrapper" :style="{ backgroundColor: activity.color + '15' }">
@@ -191,14 +162,8 @@
       <div v-if="activeTab === 'historique'" class="tab-fade">
         <header class="content-header">
           <h1>Vos progrès cliniques</h1>
-          <p class="subtitle">Historique de vos séances partagé automatiquement avec votre praticien.</p>
+          <p class="subtitle">Historique de vos séances et analyse mathématique de vos efforts.</p>
         </header>
-
-        <PatientProgressChart
-          :sessions="rawSessions"
-          :current-user-id="currentUserId"
-          style="margin-bottom: 30px;"
-        />
 
         <div class="history-stats-container">
           <div class="history-stat-card">
@@ -230,175 +195,104 @@
           </div>
         </div>
 
-        <div v-if="historyData.length > 0" class="charts-dashboard">
-          <div class="chart-card chart-large">
-            <h3 class="chart-title">Évolution de vos performances (Score)</h3>
-            <div class="chart-container-axes">
-              <svg width="100%" height="100%" viewBox="0 0 650 240" class="svg-chart" preserveAspectRatio="xMidYMid meet">
-                <text x="-120" y="15" transform="rotate(-90)" fill="#6B7C93" font-size="12" font-weight="bold" letter-spacing="1">SCORE OBTENU (pts)</text>
-                <g class="grid" stroke="#E2E8F0" stroke-width="1">
-                  <line x1="60" y1="20" x2="620" y2="20" stroke-dasharray="4"/>
-                  <text x="50" y="24" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">600</text>
-                  <line x1="60" y1="70" x2="620" y2="70" stroke-dasharray="4"/>
-                  <text x="50" y="74" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">400</text>
-                  <line x1="60" y1="120" x2="620" y2="120" stroke-dasharray="4"/>
-                  <text x="50" y="124" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">200</text>
-                  <line x1="60" y1="170" x2="620" y2="170" stroke="#CBD5E1" stroke-width="2" />
-                  <text x="50" y="174" fill="#94A3B8" font-size="11" text-anchor="end" font-weight="bold">0</text>
-                </g>
-                <defs>
-                  <linearGradient id="barGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#00B8D9" />
-                    <stop offset="100%" stop-color="#20C997" />
-                  </linearGradient>
-                </defs>
-                <g v-for="(pt, i) in scoreBarPoints" :key="'bar-'+i">
-                  <rect :x="pt.x - 20" :y="pt.y" width="40" :height="pt.h" fill="url(#barGradient)" rx="4">
-                    <title>{{ pt.score }} points ({{ pt.scenario }})</title>
-                  </rect>
-                  <text :x="pt.x" y="195" fill="#0A192F" font-size="11" font-weight="bold" text-anchor="middle">{{ pt.date }}</text>
-                </g>
-                <text x="340" y="230" fill="#6B7C93" font-size="12" font-weight="bold" letter-spacing="1" text-anchor="middle">DATE DE LA SÉANCE</text>
-              </svg>
-            </div>
-          </div>
-          <div class="chart-card chart-small">
-            <h3 class="chart-title">Répartition des séances</h3>
-            <div class="donut-wrapper">
-              <svg viewBox="0 0 36 36" class="circular-chart">
-                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle libre-segment" :stroke-dasharray="`${percentLibre}, 100`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle prescrit-segment" :stroke-dasharray="`${percentPrescrit}, 100`" :stroke-dashoffset="`-${percentLibre}`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <text x="18" y="18" class="donut-number">{{ historyData.length }}</text>
-                <text x="18" y="23" class="donut-label">Séances</text>
-              </svg>
-              <div class="donut-legend">
-                <div class="legend-item">
-                  <span class="legend-color" style="background:#00B8D9"></span>
-                  <div class="legend-text"><strong>Prescrit</strong><span>{{ percentPrescrit }}% ({{ prescritCount }})</span></div>
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color" style="background:#20C997"></span>
-                  <div class="legend-text"><strong>Libre</strong><span>{{ percentLibre }}% ({{ libreCount }})</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="table-wrapper">
           <table class="history-table">
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Aventure (Objectif)</th>
-                <th>Type</th>
+                <th>Scénario</th>
+                <th>Durée</th>
                 <th>Score</th>
-                <th>Revue Praticien</th>
-                <th></th>
+                <th>Statut</th>
+                <th>Détails</th>
               </tr>
             </thead>
             <tbody>
               <template v-for="(session, idx) in historyData" :key="idx">
                 <tr class="history-row-clickable" @click="toggleRow(idx)">
                   <td><strong>{{ session.date }}</strong></td>
-                  <td>{{ session.scenario }}<br><span style="font-size: 0.8rem; color: #94A3B8;">{{ session.duration }}</span></td>
-                  <td>
-                    <span v-if="session.type === 'prescrit'" class="tag-type prescrit">Prescrit</span>
-                    <span v-else class="tag-type libre">Libre</span>
-                  </td>
+                  <td>{{ session.scenario }}</td>
+                  <td>{{ session.duration }}</td>
                   <td><strong class="text-green">{{ session.score }} pts</strong></td>
-                  <td>
-                    <span v-if="session.reviewed" class="reviewed-status">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#20C997" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Analysé
-                    </span>
-                    <span v-else class="pending-status">En attente</span>
-                  </td>
+                  <td><span class="tag-type prescrit">Validé</span></td>
                   <td style="text-align: right; color: #94A3B8;">
                     <svg :style="{ transform: expandedRow === idx ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                   </td>
                 </tr>
+                
                 <tr v-if="expandedRow === idx" class="history-details-row">
                   <td colspan="6">
                     <div class="history-details-box">
-                      <div class="details-grid">
-                        <div class="detail-item">
-                          <span class="detail-label">Vitesse moyenne</span>
-                          <span class="detail-value text-cyan">{{ session.avgSpeed }} km/h</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Fréq. cardiaque moy.</span>
-                          <span class="detail-value text-red">{{ session.avgBpm }} BPM</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Ressenti patient</span>
-                          <div class="detail-value-stars">
-                            <span v-for="star in 5" :key="star" class="star-icon" :class="{ filled: star <= session.rating }">
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            </span>
-                            <span class="diff-badge" :class="'diff-' + session.difficulty.toLowerCase()">{{ session.difficulty }}</span>
-                          </div>
+                      
+                      <div class="h-chart-effort-container">
+                        <span class="chart-label-mini">VOTRE PROFIL D'EFFORT (Temps Réel)</span>
+                        <p class="chart-desc">Déplacement de l'avatar en fonction des obstacles franchis.</p>
+                        
+                        <div class="svg-wrapper">
+                          <svg viewBox="-20 -10 440 130" width="100%" height="100%" preserveAspectRatio="none">
+                            <line x1="0" y1="0" x2="0" y2="100" stroke="#CBD5E1" stroke-width="2"/>
+                            <line x1="0" y1="100" x2="400" y2="100" stroke="#CBD5E1" stroke-width="2"/>
+                            <line x1="0" y1="50" x2="400" y2="50" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="4"/>
+                            
+                            <text x="-5" y="10" font-size="10" fill="#94A3B8" text-anchor="end" font-weight="bold">Max</text>
+                            <text x="-5" y="55" font-size="10" fill="#94A3B8" text-anchor="end">Moy</text>
+                            <text x="-5" y="100" font-size="10" fill="#94A3B8" text-anchor="end">Repos</text>
+                            
+                            <text x="0" y="115" font-size="10" fill="#94A3B8">0s</text>
+                            <text x="400" y="115" font-size="10" fill="#94A3B8" text-anchor="end">Fin</text>
+
+                            <polyline :points="session.svgPoints" fill="none" stroke="#20C997" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
                         </div>
                       </div>
+
+                      <div class="h-metrics-grid">
+                        <div class="metric-item">
+                          <span class="metric-label">Distance (d)</span>
+                          <span class="metric-value">{{ session.distance }} m</span>
+                        </div>
+                        <div class="metric-item">
+                          <span class="metric-label">Vit. Moy.</span>
+                          <span class="metric-value">{{ session.avgSpeed }} km/h</span>
+                        </div>
+                        <div class="metric-item">
+                          <span class="metric-label">Vit. Max</span>
+                          <span class="metric-value">{{ session.vitesseMax }} km/h</span>
+                        </div>
+                        
+                        <div class="metric-item">
+                          <span class="metric-label">Cadence Moy.</span>
+                          <span class="metric-value text-red">{{ session.rpm }} RPM</span>
+                        </div>
+                        <div class="metric-item">
+                          <span class="metric-label">Cadence Max</span>
+                          <span class="metric-value text-red">{{ session.maxRpm }} RPM</span>
+                        </div>
+                        <div class="metric-item">
+                          <span class="metric-label">Résistance Effort</span>
+                          <span class="metric-value">{{ session.resistanceEffort }}</span>
+                        </div>
+                        
+                        <div class="metric-item">
+                          <span class="metric-label">Puiss. Moyenne</span>
+                          <span class="metric-value text-cyan">{{ session.watts }} W</span>
+                        </div>
+                        <div class="metric-item">
+                          <span class="metric-label">Puiss. Explosive</span>
+                          <span class="metric-value text-cyan">{{ session.puissanceExplosive }} W</span>
+                        </div>
+                        <div class="metric-item">
+                          <span class="metric-label">Cardio (Moy/Max)</span>
+                          <span class="metric-value">{{ session.avgBpm }} / {{ session.maxBpm }}</span>
+                        </div>
+                      </div>
+
                     </div>
                   </td>
                 </tr>
               </template>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- ========================= PROFILAGE ========================= -->
-      <div v-if="activeTab === 'profilage'" class="tab-fade">
-        <header class="content-header">
-          <h1>Mon Profil Santé</h1>
-          <p class="subtitle">Ces informations permettent à votre praticien d'adapter vos séances.</p>
-        </header>
-
-        <div class="settings-card" style="max-width:560px;">
-          <h3 style="font-size:1rem; font-weight:900; color:#0A192F; margin-bottom:20px;">Questionnaire de profilage</h3>
-
-          <div class="form-group">
-            <label>Poids (kg)</label>
-            <input type="number" v-model="profil.poids" min="30" max="200" placeholder="Ex: 72" />
-          </div>
-          <div class="form-group">
-            <label>Taille (cm)</label>
-            <input type="number" v-model="profil.taille" min="100" max="220" placeholder="Ex: 170" />
-          </div>
-          <div class="form-group">
-            <label>Niveau d'activité physique habituel</label>
-            <select v-model="profil.niveauActivite">
-              <option value="" disabled>Choisir...</option>
-              <option value="sedentaire">Sédentaire (< 1h/semaine)</option>
-              <option value="leger">Léger (1-2h/semaine)</option>
-              <option value="modere">Modéré (3-4h/semaine)</option>
-              <option value="actif">Actif (5h+/semaine)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Pathologie / Motif de rééducation</label>
-            <input type="text" v-model="profil.pathologie" placeholder="Ex: Rééducation post-AVC, arthrose..." />
-          </div>
-          <div class="form-group">
-            <label>Matériel disponible</label>
-            <select v-model="profil.materiel">
-              <option value="">Non précisé</option>
-              <option value="velo">Vélo complet</option>
-              <option value="pedalier-bras">Pédalier bras</option>
-              <option value="pedalier-jambes">Pédalier jambes</option>
-            </select>
-          </div>
-
-          <div v-if="profil.poids && profil.taille" class="imc-card">
-            <span>IMC calculé : </span>
-            <strong :class="imcClass">{{ imcValue }} — {{ imcLabel }}</strong>
-          </div>
-
-          <button class="btn-primary" style="margin-top:20px;" @click="saveProfil">
-            {{ profilSaved ? '✓ Profil enregistré' : 'Enregistrer mon profil' }}
-          </button>
         </div>
       </div>
 
@@ -469,7 +363,7 @@
 
           <div class="config-panel">
             <div class="config-step">
-              <p class="instruction">Équipement utilisé</p>
+              <p class="instruction">1. Équipement utilisé</p>
               <div class="equip-grid">
                 <div class="equip-card" :class="{ selected: selectedEquip === 'Vélo complet' }" @click="selectedEquip = 'Vélo complet'">
                   <img src="/images/equip-velo.png" alt="Vélo complet" class="custom-equip-icon" />
@@ -481,6 +375,16 @@
                 </div>
               </div>
             </div>
+            
+            <div class="config-step">
+              <p class="instruction">2. Choisissez votre Avatar</p>
+              <div class="options-grid-images">
+                <button v-for="avatar in avatars" :key="avatar.id" class="option-btn-image" :class="{ selected: selectedAvatar === avatar.id }" @click="selectedAvatar = avatar.id">
+                  <img :src="avatar.imgSrc" :alt="avatar.id" class="custom-avatar-img" />
+                </button>
+              </div>
+            </div>
+
             <div class="action-footer">
               <button class="btn-start-game" :style="{ backgroundColor: selectedActivity.color }" @click="startGame">
                 DÉMARRER LA SÉANCE
@@ -518,6 +422,15 @@ const goHome = () => router.push('/')
 
 // RÉCUPÉRATION DE L'AVATAR DU LOCAL STORAGE
 const userProfileImage = ref(localStorage.getItem('playnride_user_avatar') || '/images/avBlonde.png')
+const selectedAvatar = ref(localStorage.getItem('playnride_user_avatar_id') || 'avatar1')
+const avatars = [
+  { id: 'avatar1', imgSrc: '/images/avatar-1.png' },
+  { id: 'avatar2', imgSrc: '/images/avatar-2.png' },
+  { id: 'avatar3', imgSrc: '/images/avatar-3.png' },
+  { id: 'avatar4', imgSrc: '/images/avatar-4.png' },
+  { id: 'avatar5', imgSrc: '/images/avatar-5.png' },
+  { id: 'avatar6', imgSrc: '/images/avatar-6.png' }
+]
 
 const refreshProfile = () => {
   const saved = localStorage.getItem('playnride_user_avatar')
@@ -733,15 +646,16 @@ const startGame = () => {
 }
 </script>
 
+
 <style scoped>
-/* VARIABLES ET LAYOUT GLOBAL */
 .dashboard-layout { display: flex; height: 100vh; background-color: #FAFCFF; font-family: 'Nunito', sans-serif;}
-.sidebar { width: 280px; background: white; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 20px; border-right: 1px solid #E2E8F0; z-index: 10;}
-.sidebar-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 50px; }
+.sidebar { width: 280px; background: white; padding: 30px 20px; border-right: 1px solid #E2E8F0; display:flex; flex-direction:column; justify-content:space-between; z-index: 10;}
+.sidebar-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; cursor: pointer;}
 .sidebar-logo { height: 40px; }
-.logo-text { font-weight: 900; color: #0A192F; font-size: 1.2rem; }
-.sidebar-menu { display: flex; flex-direction: column; gap: 10px; }
-.menu-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; text-decoration: none; color: #6B7C93; font-weight: 700; border-radius: 12px; transition: all 0.2s ease; font-size: 1rem; position: relative;}
+.brand-name { font-weight: 900; font-size: 1.2rem; margin:0;}
+.brand-tag { font-size: 0.75rem; color: #00B8D9; font-weight: 800; text-transform: uppercase;}
+.sidebar-menu { display: flex; flex-direction: column; gap: 6px; }
+.menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: #6B7C93; font-weight: 700; border-radius: 12px; transition: all 0.2s ease; font-size: 1rem; position: relative;}
 .menu-icon { display: flex; align-items: center; justify-content: center; margin-right: 15px;}
 .menu-item > span:first-child { display: flex; align-items: center; }
 .menu-item:hover { background-color: #F8FAFC; color: #0A192F; }
@@ -750,15 +664,36 @@ const startGame = () => {
 .sidebar-bottom { border-top: 1px solid #E2E8F0; padding-top: 25px; }
 
 .user-mini-profile { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; background: #F8FAFC; padding: 15px; border-radius: 12px;}
-.user-avatar-mini { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: white;}
-.user-avatar-mini img { width: 100%; height: 100%; object-fit: contain; padding: 2px;}
+
+/* CSS ROBUSTE POUR L'AVATAR (Empêche l'overflow massif) */
+.user-avatar-mini { 
+  width: 45px; 
+  height: 45px; 
+  min-width: 45px; 
+  min-height: 45px; 
+  border-radius: 50%; 
+  overflow: hidden; 
+  border: 2px solid white; 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+  background: white; 
+  display: block; 
+  position: relative;
+  flex-shrink: 0;
+}
+.user-avatar-mini img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block;
+}
+
 .user-name { font-size: 0.95rem; font-weight: 800; color: #0A192F; margin: 0 0 3px 0; line-height: 1.2;}
 .user-status { font-size: 0.8rem; color: #20C997; margin: 0; font-weight: 700;}
 
 .logout-btn-sidebar { background: none; border: none; color: #94A3B8; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.2s; width: 100%; justify-content: flex-start;}
 .logout-btn-sidebar:hover { color: #FC8181; }
 
-.main-content { flex: 1; padding: 40px 60px; overflow-y: auto; }
+.main-content { flex: 1; padding: 40px 60px; overflow-y: auto; position: relative;}
 .content-header { margin-bottom: 35px; } 
 .content-header h1 { font-size: 2.2rem; color: #0A192F; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px;}
 .subtitle { color: #6B7C93; font-size: 1.1rem; }
@@ -820,32 +755,13 @@ const startGame = () => {
 .btn-play-activity:hover { opacity: 0.9; }
 
 /* TAB HISTORIQUE */
-.history-stats-container { display: flex; gap: 20px; margin-bottom: 30px; }
+.history-stats-container { display: flex; gap: 20px; margin-bottom: 25px; }
 .history-stat-card { flex: 1; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 20px; border: 1px solid #E2E8F0;}
 .stat-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; justify-content: center; align-items: center;}
 .stat-info p { color: #6B7C93; font-size: 0.95rem; margin-bottom: 5px; font-weight: 700; text-transform: uppercase;}
 .stat-info h3 { color: #0A192F; font-size: 1.8rem; font-weight: 900; margin: 0;}
-.charts-dashboard { display: flex; gap: 20px; margin-bottom: 30px; }
-.chart-card { background: white; border-radius: 16px; padding: 25px; border: 1px solid #E2E8F0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-.chart-large { flex: 2; }
-.chart-small { flex: 1; }
-.chart-title { color: #0A192F; font-size: 1rem; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }
-.chart-container-axes { width: 100%; height: 240px; position: relative; }
-.svg-chart { width: 100%; height: 100%; overflow: visible; }
-.donut-wrapper { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.circular-chart { width: 130px; height: 130px; }
-.circle-bg { fill: none; stroke: #F1F5F9; stroke-width: 3.8; }
-.circle { fill: none; stroke-width: 3.8; stroke-linecap: round; }
-.libre-segment { stroke: #20C997; }
-.prescrit-segment { stroke: #00B8D9; }
-.donut-number { fill: #0A192F; font-size: 5px; font-weight: 900; text-anchor: middle; dominant-baseline: middle; }
-.donut-label { fill: #6B7C93; font-size: 2.5px; text-anchor: middle; }
-.donut-legend { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-.legend-item { display: flex; align-items: center; gap: 10px; }
-.legend-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-.legend-text { display: flex; flex-direction: column; }
-.legend-text strong { font-size: 0.9rem; color: #0A192F; }
-.legend-text span { font-size: 0.8rem; color: #6B7C93; }
+
+/* TABLEAU HISTORIQUE */
 .table-wrapper { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid #E2E8F0;}
 .history-table { width: 100%; border-collapse: collapse; }
 .history-table th { text-align: left; padding: 20px 25px; color: #6B7C93; font-weight: 800; background-color: #F8FAFC; border-bottom: 2px solid #E2E8F0; font-size: 0.85rem; text-transform: uppercase;}
@@ -853,26 +769,61 @@ const startGame = () => {
 .history-row-clickable { cursor: pointer; transition: background-color 0.2s; }
 .history-row-clickable:hover { background-color: #F8FAFC; }
 .history-details-row td { padding: 0; border-bottom: 2px solid #E2E8F0;}
-.history-details-box { background-color: #FAFCFF; padding: 25px 40px; border-left: 4px solid #00B8D9; box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.05);}
-.details-grid { display: flex; justify-content: space-between; gap: 20px; }
-.detail-item { flex: 1; display: flex; flex-direction: column; gap: 8px;}
-.detail-label { color: #6B7C93; font-size: 0.85rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;}
-.detail-value { font-size: 1.2rem; font-weight: 900; }
-.detail-value-stars { display: flex; align-items: center; gap: 8px; }
-.star-icon { color: #E2E8F0; }
-.star-icon.filled { color: #FFB800; }
-.diff-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-left: 10px; }
-.diff-facile { background: #E8F8F5; color: #20C997; }
-.diff-moyen { background: #FFF9E6; color: #FFB800; }
-.diff-dur { background: #FFF5F5; color: #FC8181; }
+.text-green { color: #20C997; }
 .tag-type { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;}
 .tag-type.prescrit { background: #EAF7F9; color: #00B8D9;}
 .tag-type.libre { background: #F1F5F9; color: #6B7C93;}
-.text-green { color: #20C997; }
+
+/* --- DESIGN DE LA ZONE DÉROULANTE --- */
+.history-details-box { 
+  display: flex; 
+  gap: 30px; 
+  background-color: #FAFCFF; 
+  padding: 30px 40px; 
+  border-left: 4px solid #00B8D9; 
+  box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.05);
+  align-items: stretch;
+}
+
+@media (max-width: 1100px) {
+  .history-details-box { flex-direction: column; }
+}
+
+/* COURBE À GAUCHE */
+.h-chart-effort-container { 
+  flex: 1; 
+  min-width: 350px; 
+  background: white; 
+  padding: 20px; 
+  border-radius: 12px; 
+  border: 1px solid #E2E8F0; 
+  display: flex;
+  flex-direction: column;
+}
+.chart-label-mini { font-size: 0.8rem; font-weight: 800; color: #0A192F; text-transform: uppercase; margin-bottom: 5px; display: block;}
+.chart-desc { font-size: 0.75rem; color: #6B7C93; margin: 0 0 15px 0;}
+.svg-wrapper { flex: 1; min-height: 120px; display: block; overflow: visible;}
+
+/* GRILLE À DROITE (9 METRIQUES) */
+.h-metrics-grid { 
+  flex: 1.5; 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 15px; 
+}
+.metric-item { 
+  background: white; 
+  border: 1px solid #E2E8F0; 
+  padding: 15px; 
+  border-radius: 12px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
+}
+.metric-label { color: #6B7C93; font-size: 0.7rem; text-transform: uppercase; font-weight: 800; margin-bottom: 6px; line-height: 1.1;}
+.metric-value { font-size: 1.2rem; font-weight: 900; color: #0A192F; }
 .text-cyan { color: #00B8D9; }
 .text-red { color: #FC8181; }
-.reviewed-status { display: inline-flex; align-items: center; gap: 6px; color: #047857; font-weight: 700; font-size: 0.85rem;}
-.pending-status { color: #94A3B8; font-style: italic; font-size: 0.85rem;}
 
 /* TAB MESSAGERIE */
 .chat-container { background: white; border-radius: 16px; border: 1px solid #E2E8F0; display: flex; flex-direction: column; height: 600px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
@@ -894,7 +845,7 @@ const startGame = () => {
 .btn-send { background: #00B8D9; border: none; width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: background 0.2s;}
 .btn-send:hover { background: #0284C7; }
 
-/* MODAL CONFIG */
+/* MODAL CONFIG STUDIO (AVEC CHOIX AVATAR) */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,25,47,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px;}
 .modal-overlay.active { opacity: 1; visibility: visible; }
 .clinical-modal { background: white; width: 100%; max-width: 900px; border-radius: 24px; overflow: hidden; position: relative; transform: translateY(30px); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
@@ -921,24 +872,22 @@ const startGame = () => {
 .equip-card.selected { border-color: #00B8D9; background: #EAF7F9; }
 .custom-equip-icon { width: 30px; height: 30px; object-fit: contain; } 
 .equip-card p { font-weight: 800; color: #0A192F; margin: 0;}
+
+.options-grid-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.option-btn-image { padding: 10px; background: white; border: 2px solid #F1F5F9; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
+.option-btn-image:hover { border-color: #CBD5E1; }
+.option-btn-image.selected { border-color: #0EA5E9; background: #F0F9FF; }
+.custom-avatar-img { width: 45px; height: 45px; object-fit: contain; }
+
 .action-footer { margin-top: auto; padding: 40px; }
 .btn-start-game { width: 100%; padding: 20px; border: none; border-radius: 16px; color: white; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;}
 .btn-start-game:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,0,0,0.15); }
 
-/* UTILITAIRES ANIMATION */
 .tab-fade { animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 1024px) {
   .modal-inner { flex-direction: column; }
   .clinical-briefing { border-right: none; border-bottom: 1px solid #E2E8F0; padding: 30px; }
-  .prescription-card { flex-direction: column; }
-  .prescription-image { min-height: 200px; }
+  .history-details-box { flex-direction: column; }
 }
-.imc-card { background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px; padding:12px 16px; margin-top:16px; font-size:0.95rem; }
-.text-green { color:#20C997; }
-.text-warning { color:#F59E0B; }
-.text-red { color:#EF4444; }
-.effort-chart-wrapper { margin-bottom: 16px; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; }
-.empty-effort-chart { padding:20px; text-align:center; color:#94A3B8; font-size:0.85rem; font-style:italic; margin-bottom:16px; }
-</style>

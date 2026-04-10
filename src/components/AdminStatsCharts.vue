@@ -3,7 +3,7 @@
     <div class="chart-card">
       <div class="chart-header">
         <h3 class="chart-title">Répartition des comptes</h3>
-        <span class="chart-sub">{{ props.users.length }} utilisateurs inscrits</span>
+        <span class="chart-sub">{{ statusCounts.patient + statusCounts.professionnel }} utilisateurs inscrits</span>
       </div>
       <div class="chart-wrapper">
         <Pie v-if="hasUsers" :data="statusData" :options="pieOptions" />
@@ -11,8 +11,7 @@
       </div>
       <div class="legend-pills">
         <span class="pill" style="background:#EAF7F9;color:#00B8D9">Patients · {{ statusCounts.patient }}</span>
-        <span class="pill" style="background:#E8F8F5;color:#20C997">Praticiens · {{ statusCounts.Professionnel }}</span>
-        <span class="pill" style="background:#EDE9FE;color:#8B5CF6">Admins · {{ statusCounts.Administrateur }}</span>
+        <span class="pill" style="background:#E8F8F5;color:#20C997">Praticiens · {{ statusCounts.professionnel }}</span>
       </div>
     </div>
 
@@ -47,18 +46,20 @@ const hasUsers = computed(() => props.users.length > 0)
 
 // --- Répartition par statut ---
 const statusCounts = computed(() => {
-  const counts = { patient: 0, Professionnel: 0, Administrateur: 0 }
+  const counts = { patient: 0, professionnel: 0 }
   props.users.forEach(u => {
-    if (u.statut in counts) counts[u.statut]++
+    const s = (u.statut || '').toLowerCase()
+    if (s === 'patient') counts.patient++
+    else if (s === 'professionnel' || s === 'pro') counts.professionnel++
   })
   return counts
 })
 
 const statusData = computed(() => ({
-  labels: ['Patients', 'Praticiens', 'Admins'],
+  labels: ['Patients', 'Praticiens'],
   datasets: [{
-    data: [statusCounts.value.patient, statusCounts.value.Professionnel, statusCounts.value.Administrateur],
-    backgroundColor: ['#00B8D9', '#20C997', '#8B5CF6'],
+    data: [statusCounts.value.patient, statusCounts.value.professionnel],
+    backgroundColor: ['#00B8D9', '#20C997'],
     borderWidth: 0,
     hoverOffset: 6,
   }]
