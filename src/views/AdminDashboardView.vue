@@ -775,7 +775,9 @@ const defaultScenarios = [
 const loadScenarios = () => {
   try {
     const saved = localStorage.getItem(SCENARIOS_KEY)
-    return saved ? JSON.parse(saved) : defaultScenarios
+    if (!saved) return defaultScenarios
+    const parsed = JSON.parse(saved)
+    return (Array.isArray(parsed) && parsed.length > 0) ? parsed : defaultScenarios
   } catch { return defaultScenarios }
 }
 
