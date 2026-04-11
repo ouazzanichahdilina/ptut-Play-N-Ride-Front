@@ -247,21 +247,36 @@ const submitSignup = async () => {
   authError.value = ''
   loading.value = true
   try {
+    // Convertit l'âge en date de naissance approximative (1er janvier)
+    const birthYear = signupAge.value
+      ? new Date().getFullYear() - parseInt(signupAge.value)
+      : null
+    const dateNaissance = birthYear ? `${birthYear}-01-01` : null
+
+    const payload = {
+      nom: signupNom.value,
+      email: signupEmail.value,
+      motDePasse: signupPassword.value,
+      sexe: signupSexe.value,
+      statut: 'patient',
+      ...(dateNaissance && { dateNaissance })
+    }
+
     const res = await fetch(`${API_URL}/utilisateurs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nom: signupNom.value,
-        email: signupEmail.value,
-        motDePasse: signupPassword.value,
-        sexe: signupSexe.value,
-        statut: 'patient'
-      })
+      body: JSON.stringify(payload)
     })
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      authError.value = err.message || 'Erreur lors de l\'inscription.'
+      // Lire d'abord comme texte pour éviter un crash si ce n'est pas du JSON
+      const rawText = await res.text()
+      console.error('[Inscription] HTTP', res.status, rawText)
+      let errBody = {}
+      try { errBody = JSON.parse(rawText) } catch { /* réponse HTML ou vide */ }
+      // Spring Boot 3 renvoie { detail: "..." } ou { message: "..." }
+      authError.value = errBody.message || errBody.detail || errBody.title
+        || `Erreur ${res.status} lors de l'inscription. Consultez la console pour les détails.`
       return
     }
 
@@ -281,16 +296,17 @@ const submitSignup = async () => {
       localStorage.setItem('id', data.id)
       userRole.value = data.statut
     } else {
-      userRole.value = signupRole.value
+      // Login auto échoué après inscription réussie — on redirige quand même
+      userRole.value = 'patient'
     }
 
     const chosenAvatar = '/images/' + signupAvatar.value
     localStorage.setItem('playnride_user_avatar', chosenAvatar)
-    // Sauvegarde liée à l'email pour restauration future
     localStorage.setItem('playnride_avatar_' + signupEmail.value, chosenAvatar)
     showPopup.value = true
 
-  } catch {
+  } catch (err) {
+    console.error('[Inscription] Erreur réseau :', err)
     authError.value = 'Impossible de joindre le serveur. Vérifiez votre connexion.'
   } finally {
     loading.value = false
