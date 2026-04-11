@@ -197,7 +197,7 @@
               </div>
             </div>
 
-            <!-- Sexe + Date de naissance -->
+            <!-- Sexe -->
             <div class="form-row-2">
               <div class="form-group">
                 <label>Sexe <span style="color:#EF4444;">*</span></label>
@@ -206,10 +206,6 @@
                   <option value="M">Masculin</option>
                   <option value="F">Féminin</option>
                 </select>
-              </div>
-              <div class="form-group">
-                <label>Date de naissance <span style="color:#EF4444;">*</span></label>
-                <input type="date" v-model="newUser.dateNaissance" />
               </div>
             </div>
 
@@ -221,7 +217,7 @@
 
             <button
               class="btn-primary"
-              :disabled="isSavingUser || !newUser.nom || !newUser.email || !newUser.sexe || !newUser.dateNaissance"
+              :disabled="isSavingUser || !newUser.nom || !newUser.email || !newUser.sexe"
               @click="saveUser"
               :style="newUser.statut === 'PROFESSIONNEL' ? 'background:#8B5CF6;' : ''"
             >
@@ -624,23 +620,21 @@ const toggleUserStatus = (user) => {
 
 // ── CRÉER UTILISATEUR ──────────────────────────────────────────────────────────
 const showInscriptionForm = ref(false)
-const newUser = ref({ nom: '', email: '', sexe: '', dateNaissance: '', statut: 'PATIENT' })
+const newUser = ref({ nom: '', email: '', sexe: '', statut: 'PATIENT' })
 
 const saveUser = async () => {
-  if (!newUser.value.nom || !newUser.value.email || !newUser.value.sexe || !newUser.value.dateNaissance) {
+  if (!newUser.value.nom || !newUser.value.email || !newUser.value.sexe) {
     showToast('Veuillez remplir tous les champs obligatoires', 'error')
     return
   }
   const token = localStorage.getItem('token')
   isSavingUser.value = true
   try {
-    // Payload strict : uniquement les 5 champs attendus par le Swagger
     const userData = {
       nom: newUser.value.nom.trim(),
       email: newUser.value.email.trim(),
-      sexe: newUser.value.sexe.charAt(0).toUpperCase(),  // garantit 'M' ou 'F'
-      statut: newUser.value.statut,                       // 'PATIENT' ou 'PROFESSIONNEL'
-      dateNaissance: newUser.value.dateNaissance,         // 'YYYY-MM-DD' garanti par input[type=date]
+      sexe: newUser.value.sexe,
+      statut: newUser.value.statut === 'PROFESSIONNEL' ? 'Professionnel' : 'patient',
       motDePasse: 'PlayNRide2024!'
     }
     console.log('Payload envoyé au serveur :', userData)
@@ -663,7 +657,7 @@ const saveUser = async () => {
     const created = await res.json().catch(() => ({}))
     console.log('Utilisateur créé :', created)
     showToast(`Compte ${newUser.value.statut === 'PROFESSIONNEL' ? 'Professionnel' : 'Patient'} créé ! MDP provisoire : PlayNRide2024!`, 'success')
-    newUser.value = { nom: '', email: '', sexe: '', dateNaissance: '', statut: 'PATIENT' }
+    newUser.value = { nom: '', email: '', sexe: '', statut: 'PATIENT' }
     showInscriptionForm.value = false
     await fetchUsers()
   } catch (e) {
