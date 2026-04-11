@@ -247,19 +247,12 @@ const submitSignup = async () => {
   authError.value = ''
   loading.value = true
   try {
-    // Convertit l'âge en date de naissance approximative (1er janvier)
-    const birthYear = signupAge.value
-      ? new Date().getFullYear() - parseInt(signupAge.value)
-      : null
-    const dateNaissance = birthYear ? `${birthYear}-01-01` : null
-
     const payload = {
       nom: signupNom.value,
       email: signupEmail.value,
       motDePasse: signupPassword.value,
       sexe: signupSexe.value,
-      statut: 'patient',
-      ...(dateNaissance && { dateNaissance })
+      statut: 'patient'
     }
 
     const res = await fetch(`${API_URL}/utilisateurs`, {
