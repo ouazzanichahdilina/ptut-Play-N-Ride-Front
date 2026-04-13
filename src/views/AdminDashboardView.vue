@@ -542,7 +542,7 @@ const usersError = ref('')
 const allUsers = ref([])
 const rawUsers = ref([])  // données brutes pour AdminStatsCharts
 
-const avatars = ['/images/avatar-1.png', '/images/avatar-2.png', '/images/avatar-3.png', '/images/avatarN.png', '/images/avBlonde.png', '/images/avBlackW.png']
+const avatars = ['/images/avatarN.png', '/images/avatarRousse.png', '/images/avBlackW.png', '/images/avBlonde.png', '/images/azouz.png']
 const proAvatars = ['/images/proSanté.png']
 
 const fetchUsers = async () => {
@@ -578,7 +578,7 @@ const fetchUsers = async () => {
           email: u.email,
           role: isPro ? 'Pro' : 'Patient',
           actif: true,
-          avatar: list[u.id % list.length],
+          avatar: localStorage.getItem('playnride_avatar_' + u.email) || list[u.id % list.length],
           proNom: u.professionnelDeSante ? u.professionnelDeSante.nom : null,
           proId: u.professionnelDeSante ? u.professionnelDeSante.id : null
         }
